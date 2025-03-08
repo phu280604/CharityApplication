@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome">Chào mừng</string>
+    <string name="username_email">Tên đăng nhập/email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="login">Đăng nhập</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="or">HOẶC</string>
+    <string name="continue_with_google">Tiếp tục với Google</string>
+    <string name="continue_with_facebook">Tiếp tục với Facebook</string>
+    <string name="no_account">Chưa có tài khoản?</string>
+    <string name="sign_up">Đăng ký</string>
+</resources>

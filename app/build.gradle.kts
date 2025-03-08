@@ -107,3 +107,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 // endregion
+
+dependencies {
+    implementation ("androidx.compose.material3:material3:1.3.1")
+}
