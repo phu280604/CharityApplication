@@ -15,33 +15,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.developing.charityapplication.presentation.view.component.ComponentContentAlignment
 import javax.inject.Inject
 
 class ButtonContentAlignment @Inject constructor(
     var config: ButtonConfig
-) : ComponentContentAlignment {
+) : IButtonContentAlignment {
 
     @Composable
-    override fun ContentAlignment() {
-        if(config.isRow){
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ){
-                ContentIconButton(
-                    isIcon =  config.isIcon,
-                    iconRes =  config.iconRes
-                )
+    override fun HorizontalAlignment() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ){
+            ContentIconButton(
+                isIcon =  config.isIcon,
+                iconRes =  config.iconRes
+            )
 
-                ContentTextButton(
-                    text = config.text,
-                    textStyle = config.textStyle
-                )
-            }
-            return
+            ContentTextButton(
+                text = config.text,
+                textStyle = config.textStyle
+            )
         }
+    }
 
+    @Composable
+    override fun VerticalAlignment() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

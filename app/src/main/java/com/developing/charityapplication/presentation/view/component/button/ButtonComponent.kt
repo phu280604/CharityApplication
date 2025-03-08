@@ -3,20 +3,15 @@ package com.developing.charityapplication.presentation.view.component.button
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.developing.charityapplication.presentation.view.component.ComponentContentAlignment
-
-interface ComponentDecorator {
-    @Composable
-    fun Decorate(content: @Composable () -> Unit)
-    fun getConfig() : ButtonConfig
-}
+import com.developing.charityapplication.presentation.view.component.button.decorator.IButtonComponentDecotator
 
 
 class ButtonComponent(
     private val config: ButtonConfig
-) : ComponentDecorator {
+) : IButtonComponentDecotator {
     @Composable
     override fun Decorate(content: @Composable (() -> Unit)) {
         Button(
@@ -27,8 +22,11 @@ class ButtonComponent(
             colors = config.colors,
             enabled = config.enable
         ) {
-            val contentAlign : ComponentContentAlignment = ButtonContentAlignment(config = config)
-            contentAlign.ContentAlignment()
+            val contentAlign : IButtonContentAlignment = ButtonContentAlignment(config = config)
+            if (config.isHorizontal)
+                contentAlign.HorizontalAlignment()
+            else
+                contentAlign.VerticalAlignment()
         }
     }
 
@@ -36,3 +34,5 @@ class ButtonComponent(
         return config
     }
 }
+
+

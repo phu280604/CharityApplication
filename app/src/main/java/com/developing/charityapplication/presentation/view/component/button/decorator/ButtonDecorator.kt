@@ -1,23 +1,35 @@
-package com.developing.charityapplication.presentation.view.component.button
+package com.developing.charityapplication.presentation.view.component.button.decorator
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import com.developing.charityapplication.presentation.view.component.button.ButtonComponent
+import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
+import com.developing.charityapplication.presentation.view.component.text.decorator.BaseTextDecorator
+import com.developing.charityapplication.presentation.view.component.text.decorator.ITextComponentDecorator
 
 // region - BASE DECORATOR -
 
 abstract class BaseButtonDecorator(
-    protected var wrapped: ComponentDecorator
-) : ComponentDecorator {
+    protected var wrapped: IButtonComponentDecotator
+) : IButtonComponentDecotator {
 
     // region --- Overrides ---
 
     @Composable
     override fun Decorate(content: @Composable (() -> Unit)) {
-        baseConfig = (wrapped as? ButtonComponent)?.getConfig()?.copy() ?: nextWrapped(content)
+        when (wrapped) {
+            is ButtonComponent -> {
+                baseConfig = wrapped.getConfig().copy()
+                return
+            }
+
+            else -> baseConfig = nextWrapped(content)
+        }
     }
 
     override fun getConfig(): ButtonConfig {
@@ -29,7 +41,7 @@ abstract class BaseButtonDecorator(
     // region --- Methods ---
 
     @Composable
-    fun nextWrapped(content: @Composable (() -> Unit)) : ButtonConfig{
+    fun nextWrapped(content: @Composable (() -> Unit)) : ButtonConfig {
         wrapped.Decorate(content)
         return wrapped.getConfig().copy()
     }
@@ -53,9 +65,9 @@ abstract class BaseButtonDecorator(
 
 // region - TEXT -
 
-class TextDecorator(
+class ButtonTextDecorator(
     private val text: String,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -78,9 +90,9 @@ class TextDecorator(
 
 }
 
-class TextStyleDecorator(
+class ButtonTextStyleDecorator(
     private val textStyle: TextStyle,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -107,9 +119,9 @@ class TextStyleDecorator(
 
 // region - ACTION -
 
-class OnClickDecorator(
+class ButtonOnClickDecorator(
     private val customOnClick: () -> Unit,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -136,11 +148,11 @@ class OnClickDecorator(
 
 // region - OPTIONAL -
 
-class IsIconDecorator(
+class ButtonIsIconDecorator(
     private val isIcon: Boolean,
     private val iconRes: Int,
-    private val isRow: Boolean = true,
-    wrapped: ComponentDecorator,
+    private val isHorizontal: Boolean = true,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -152,7 +164,7 @@ class IsIconDecorator(
 
         baseConfig?.isIcon = isIcon
         baseConfig?.iconRes = iconRes
-        baseConfig?.isRow = isRow
+        baseConfig?.isHorizontal = isHorizontal
         if (isParent) ParentWrapped(content)
     }
 
@@ -165,9 +177,9 @@ class IsIconDecorator(
 
 }
 
-class ColorDecorator(
+class ButtonColorDecorator(
     private val colors: ButtonColors,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -194,9 +206,9 @@ class ColorDecorator(
 
 // region - CUSTOM DESIGN -
 
-class ShapeDecorator(
+class ButtonShapeDecorator(
     private val shape: Shape,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -219,9 +231,9 @@ class ShapeDecorator(
 
 }
 
-class ContentPaddingDecorator(
+class ButtonContentPaddingDecorator(
     private val contentPadding: PaddingValues,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -244,9 +256,9 @@ class ContentPaddingDecorator(
 
 }
 
-class EnableDecorator(
+class ButtonEnableDecorator(
     private val enable: Boolean,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 
@@ -269,9 +281,9 @@ class EnableDecorator(
 
 }
 
-class ModifierDecorator(
+class ButtonModifierDecorator(
     private val customModifier: Modifier,
-    wrapped: ComponentDecorator,
+    wrapped: IButtonComponentDecotator,
     private var isParent: Boolean = false
 ) : BaseButtonDecorator(wrapped) {
 

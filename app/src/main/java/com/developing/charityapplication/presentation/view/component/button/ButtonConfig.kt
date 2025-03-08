@@ -24,5 +24,5 @@ data class ButtonConfig(
     var modifier: Modifier = Modifier,
     var shape: Shape? = null,
     var enable: Boolean = true,
-    var isRow: Boolean = true
+    var isHorizontal: Boolean = true
 )
