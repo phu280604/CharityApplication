@@ -3,6 +3,8 @@ package com.developing.charityapplication.presentation.view.component.button
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
@@ -13,7 +15,7 @@ class ButtonComponent(
     private val config: ButtonConfig
 ) : IButtonComponentDecotator {
     @Composable
-    override fun Decorate(content: @Composable (() -> Unit)) {
+    override fun BaseDecorate(content: @Composable (() -> Unit)) {
         Button(
             onClick = config.onClick,
             modifier = config.modifier,

@@ -13,7 +13,7 @@ class InputFieldComponent(
 ) : IInputFieldComponentDecorator {
 
     @Composable
-    override fun Decorate(content: @Composable (() -> Unit)) {
+    override fun BaseDecorate(content: @Composable (() -> Unit)) {
 
         OutlinedTextField(
             value = config.value,

@@ -7,8 +7,9 @@ import com.developing.charityapplication.presentation.view.component.text.decora
 class TextComponent(
     private val config: TextConfig
 ) : ITextComponentDecorator {
+
     @Composable
-    override fun Decorate(content: @Composable (() -> Unit)) {
+    override fun BaseDecorate(content: @Composable (() -> Unit)) {
         Text(
             text = config.text,
             style = config.textStyle,
@@ -20,7 +21,5 @@ class TextComponent(
         )
     }
 
-    override fun getConfig(): TextConfig {
-        return config
-    }
+    override fun getConfig(): TextConfig = config
 }

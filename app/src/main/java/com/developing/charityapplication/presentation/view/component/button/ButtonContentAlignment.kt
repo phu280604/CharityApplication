@@ -1,5 +1,6 @@
 package com.developing.charityapplication.presentation.view.component.button
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,15 +29,15 @@ class ButtonContentAlignment @Inject constructor(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ){
-            ContentIconButton(
-                isIcon =  config.isIcon,
-                iconRes =  config.iconRes
-            )
+            ContentIconButton(config.iconRes)
 
-            ContentTextButton(
-                text = config.text,
-                textStyle = config.textStyle
-            )
+            ContentImageButton(config.imageRes)
+
+            if (!config.text.isEmpty())
+                ContentTextButton(
+                    text = config.text,
+                    textStyle = config.textStyle
+                )
         }
     }
 
@@ -45,31 +47,42 @@ class ButtonContentAlignment @Inject constructor(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            ContentIconButton(
-                isIcon =  config.isIcon,
-                iconRes =  config.iconRes
-            )
+            ContentIconButton(config.iconRes)
 
-            ContentTextButton(
-                text = config.text,
-                textStyle = config.textStyle
-            )
+            ContentImageButton(config.imageRes)
+
+            if (!config.text.isEmpty())
+                ContentTextButton(
+                    text = config.text,
+                    textStyle = config.textStyle
+                )
         }
     }
 
     @Composable
     fun ContentIconButton(
-        isIcon: Boolean,
         iconRes: Int?
     ){
-        if(isIcon && iconRes != null){
+        if(iconRes != null){
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = Color.Unspecified
+                tint = MaterialTheme.colorScheme.onPrimary
             )
-            Spacer(modifier = Modifier.width(16.dp))
+        }
+    }
+
+    @Composable
+    fun ContentImageButton(
+        imageRes: Int?
+    ){
+        if(imageRes != null){
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
         }
     }
 
@@ -78,6 +91,7 @@ class ButtonContentAlignment @Inject constructor(
         text: String,
         textStyle: TextStyle
     ){
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = text,
             style = textStyle

@@ -12,7 +12,7 @@ data class ButtonConfig(
     var text: String = "",
     var textStyle: TextStyle = AppTypography.titleMedium,
     var onClick: () -> Unit = {},
-    var isIcon: Boolean = false,
+    var imageRes: Int? = null,
     var iconRes: Int? = null,
     var colors: ButtonColors = ButtonColors(
         containerColor = Color.Unspecified,

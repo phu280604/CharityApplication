@@ -49,33 +49,15 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.developing.charityapplication.R
-import com.developing.charityapplication.presentation.view.component.button.ButtonComponent
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
-import com.developing.charityapplication.presentation.view.component.button.decorator.ButtonColorDecorator
-import com.developing.charityapplication.presentation.view.component.button.decorator.ButtonIsIconDecorator
-import com.developing.charityapplication.presentation.view.component.button.decorator.ButtonModifierDecorator
-import com.developing.charityapplication.presentation.view.component.button.decorator.ButtonOnClickDecorator
-import com.developing.charityapplication.presentation.view.component.button.decorator.ButtonTextDecorator
-import com.developing.charityapplication.presentation.view.component.button.decorator.IButtonComponentDecotator
-import com.developing.charityapplication.presentation.view.component.inputField.InputFieldComponent
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
-import com.developing.charityapplication.presentation.view.component.inputField.decorator.IInputFieldComponentDecorator
-import com.developing.charityapplication.presentation.view.component.inputField.decorator.InputFieldColorDecorator
-import com.developing.charityapplication.presentation.view.component.inputField.decorator.InputFieldLabelDecorator
-import com.developing.charityapplication.presentation.view.component.inputField.decorator.InputFieldValueDecorator
-import com.developing.charityapplication.presentation.view.component.inputField.decorator.InputFieldleadingIconDecorator
-import com.developing.charityapplication.presentation.view.component.text.TextComponent
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
-import com.developing.charityapplication.presentation.view.component.text.decorator.ColorDecorator
-import com.developing.charityapplication.presentation.view.component.text.decorator.ITextComponentDecorator
-import com.developing.charityapplication.presentation.view.component.text.decorator.ModifierDecorator
-import com.developing.charityapplication.presentation.view.component.text.decorator.TextAlignDecorator
-import com.developing.charityapplication.presentation.view.component.text.decorator.TextDecorator
 import com.developing.charityapplication.presentation.view.theme.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -85,51 +67,61 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent{
-            HeartBellTheme {
-                Scaffold { innerPadding ->
-                    Box(
+            LoginScreenOverview()
+        }
+    }
+
+    @Preview
+    @Composable
+    fun LoginScreenOverview(){
+        HeartBellTheme {
+            Scaffold { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(innerPadding)
+                ) {
+                    // region - Remember Theme -
+                    color = MaterialTheme.colorScheme
+                    typography = AppTypography
+                    //endregion
+
+                    LoginCard(
                         modifier = Modifier
+                            .align(Alignment.Center)
                             .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.primary)
-                            .padding(innerPadding)
-                    ) {
-
-
-                        LoginCard(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .fillMaxSize()
-                        )
-                    }
-
+                    )
                 }
+
             }
         }
     }
 
     // region -- Login Card Fragment --
     // region -- Create Login Default Component --
-    fun createDefaultButton(color: ColorScheme) : ButtonComponent{
+    fun createDefaultButton() : ButtonConfig{
         return ButtonComponentBuilder()
             .withConfig(
                 ButtonConfig(
                     colors = ButtonColors(
-                        containerColor = color.secondary,
-                        contentColor = color.onSecondaryContainer,
-                        disabledContainerColor = color.surface,
-                        disabledContentColor = color.onSurface
+                        containerColor = color!!.secondary,
+                        contentColor = color!!.onSecondaryContainer,
+                        disabledContainerColor = color!!.surface,
+                        disabledContentColor = color!!.onSurface
                     ),
                     shape = RoundedCornerShape(8.dp),
                 )
             )
             .build()
+            .getConfig()
     }
 
-    fun createDefaultInputField(textStyle: Typography) : InputFieldComponent{
+    fun createDefaultInputField() : InputFieldConfig{
         return InputFieldComponentBuilder()
             .withConfig(
                 InputFieldConfig(
-                    valueStyle = textStyle.titleMedium,
+                    valueStyle = typography!!.titleMedium,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,17 +129,21 @@ class LoginActivity : ComponentActivity() {
                 )
             )
             .build()
+            .getConfig()
     }
 
-    fun createDefaultText(color: ColorScheme, textStyle: Typography) : TextComponent{
+    fun createDefaultText() : TextConfig{
+        if (this.color == null || this.typography == null) return TextConfig()
+
         return TextComponentBuilder()
             .withConfig(
                 TextConfig(
-                    color = color.onPrimary,
-                    textStyle = textStyle.bodyMedium
+                    color = this.color!!.onPrimary,
+                    textStyle = this.typography!!.bodyMedium
                 )
             )
             .build()
+            .getConfig()
     }
     // endregion
 
@@ -155,29 +151,6 @@ class LoginActivity : ComponentActivity() {
     fun LoginCard(
         modifier: Modifier = Modifier
     ) {
-        // region - Remember Theme -
-        val color by rememberUpdatedState(MaterialTheme.colorScheme)
-        val typography by rememberUpdatedState(AppTypography)
-        //endregion
-
-        // region - Remember Buttons -
-        val defaultButton = remember {
-            createDefaultButton(color)
-        }
-        // endregion
-
-        // region - Remember Texts -
-        val defaultText = remember {
-            createDefaultText(color, typography)
-        }
-        // endregion
-
-        // region - Remember TextFields -
-        val defaultInputField = remember {
-            createDefaultInputField(typography)
-        }
-        // endregion
-
         Card(
             modifier = modifier,
             colors = CardDefaults.cardColors(
@@ -193,19 +166,9 @@ class LoginActivity : ComponentActivity() {
             ) {
                 HeaderSection()
 
-                BodySection(
-                    defaultInputField = defaultInputField,
-                    defaultButton = defaultButton,
-                    defaultText = defaultText,
-                    color = color,
-                    typography = typography
-                )
+                BodySection()
 
-                FooterSection(
-                    defaultButton = defaultButton,
-                    defaultText = defaultText,
-                    color = color
-                )
+                FooterSection()
             }
         }
     }
@@ -234,13 +197,7 @@ class LoginActivity : ComponentActivity() {
 
     // region -- Body Section --
     @Composable
-    fun BodySection(
-        defaultInputField : IInputFieldComponentDecorator,
-        defaultButton : IButtonComponentDecotator,
-        defaultText: ITextComponentDecorator,
-        color: ColorScheme,
-        typography: Typography
-    ){
+    fun BodySection(){
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var passwordVisible by remember { mutableStateOf(false) }
@@ -253,46 +210,42 @@ class LoginActivity : ComponentActivity() {
         ) {
             // region - Input Field Section -
             // Username/Email Input Field
-            val usernameInputField = InputFieldValueDecorator(
-                isParent = true,
-                value = username,
-                onValueChange = { username = it },
-                wrapped = InputFieldColorDecorator(
-                    color = OutlinedTextFieldDefaults.colors(
-                        cursorColor = color.onPrimary,
-                        selectionColors = TextSelectionColors(
-                            handleColor = color.onBackground,
-                            backgroundColor = color.background
+            val usernameInputField = InputFieldComponentBuilder()
+                .withConfig(
+                    inputFieldConfigDefault.copy(
+                        value = username,
+                        onValueChange = { username = it },
+                        color = OutlinedTextFieldDefaults.colors(
+                            cursorColor = color!!.onPrimary,
+                            selectionColors = TextSelectionColors(
+                                handleColor = color!!.onBackground,
+                                backgroundColor = color!!.background
+                            ),
+                            unfocusedBorderColor = color!!.surface,
+                            unfocusedTextColor = color!!.onPrimary,
+                            focusedBorderColor = color!!.secondary,
+                            focusedTextColor = color!!.onPrimary,
+                            focusedLabelColor = color!!.onPrimary.copy(alpha = 0.8f),
+                            unfocusedLabelColor = color!!.onPrimary.copy(alpha = 0.8f),
+                            errorTextColor = color!!.onError
                         ),
-                        unfocusedBorderColor = color.surface,
-                        unfocusedTextColor = color.onPrimary,
-                        focusedBorderColor = color.secondary,
-                        focusedTextColor = color.onPrimary,
-                        focusedLabelColor = color.onPrimary.copy(alpha = 0.8f),
-                        unfocusedLabelColor = color.onPrimary.copy(alpha = 0.8f),
-                        errorTextColor = color.onError
-                    ),
-                    wrapped = InputFieldLabelDecorator(
                         label = {
                             Text(
                                 text = stringResource(id = R.string.username_email),
-                                style = typography.titleMedium
+                                style = typography!!.titleMedium
                             )
                         },
-                        wrapped = InputFieldleadingIconDecorator(
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_user),
-                                    contentDescription = "User Icon",
-                                    tint = color.onPrimary
-                                )
-                            },
-                            wrapped = defaultInputField
-                        )
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_user),
+                                contentDescription = "User Icon",
+                                tint = color!!.onPrimary
+                            )
+                        },
                     )
                 )
-            )
-            usernameInputField.Decorate {  }
+                .build()
+            usernameInputField.BaseDecorate {  }
 
             // Password Input Field
             val passwordInputField = InputFieldComponentBuilder()
@@ -303,7 +256,7 @@ class LoginActivity : ComponentActivity() {
                         label = {
                             Text(
                                 text = stringResource(id = R.string.password),
-                                style = typography.titleMedium
+                                style = typography!!.titleMedium
                             )
                         },
                         modifier = Modifier
@@ -322,54 +275,48 @@ class LoginActivity : ComponentActivity() {
                                         id = if (passwordVisible) R.drawable.ic_eye_open else R.drawable.ic_eye_closed
                                     ),
                                     contentDescription = if (passwordVisible) "Hide Password" else "Show Password",
-                                    tint = color.onPrimary
+                                    tint = color!!.onPrimary
                                 )
                             }
                         }
                     )
                 )
                 .build()
-            passwordInputField.Decorate {  }
+            passwordInputField.BaseDecorate {  }
             // endregion
 
             // region - Button Section -
             // Login
-            val loginButton = ButtonTextDecorator(
-                isParent = true,
-                text = stringResource(id = R.string.login),
-                wrapped = ButtonOnClickDecorator(
-                    customOnClick = { /*TODO: Implement login logic*/ },
-                    wrapped = ButtonModifierDecorator(
-                        customModifier = Modifier
+            ButtonComponentBuilder()
+                .withConfig(
+                    buttonConfigDefault.copy(
+                        text = stringResource(id = R.string.login),
+                        onClick = { /*TODO: Implement login logic*/ },
+                        modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        wrapped = defaultButton
                     )
                 )
-            )
-            loginButton.Decorate {  }
+                .build()
+                .BaseDecorate {  }
 
             // Forgot Password
-            val forgotPasswordButton = TextDecorator(
-                isParent = true,
-                text = stringResource(id = R.string.forgot_password),
-                wrapped = ColorDecorator(
-                    color = color.secondary,
-                    wrapped = ModifierDecorator(
+            TextComponentBuilder()
+                .withConfig(
+                    newConfig = textConfigDefault.copy(
+                        text = stringResource(id = R.string.forgot_password),
+                        color = color!!.secondary,
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .clickable(
                                 onClick = { /*TODO: Implement forgot password logic*/ },
                                 role = Role.Button
                             ),
-                        wrapped = TextAlignDecorator(
-                            textAlign = TextAlign.Center,
-                            wrapped = defaultText
-                        )
+                        textAlign = TextAlign.Center,
                     )
                 )
-            )
-            forgotPasswordButton.Decorate {  }
+                .build()
+                .BaseDecorate {  }
             // endregion
         }
     }
@@ -379,7 +326,6 @@ class LoginActivity : ComponentActivity() {
     @Composable
     fun TextDivider(
         text: String,
-        color: ColorScheme,
         modifier: Modifier = Modifier
     ) {
         Row(
@@ -388,39 +334,34 @@ class LoginActivity : ComponentActivity() {
         ) {
             Divider(
                 modifier = Modifier.weight(1f),
-                color = color.surface,
+                color = color!!.surface,
                 thickness = 1.dp
             )
 
             Text(
                 text = text,
                 style = AppTypography.bodyMedium.copy(
-                    color = color.surface
+                    color = color!!.surface
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
             Divider(
                 modifier = Modifier.weight(1f),
-                color = color.surface,
+                color = color!!.surface,
                 thickness = 1.dp
             )
         }
     }
 
     @Composable
-    fun FooterSection(
-        defaultButton : IButtonComponentDecotator,
-        defaultText: ITextComponentDecorator,
-        color: ColorScheme
-    ){
+    fun FooterSection(){
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             // region - Divider Section -
             TextDivider(
                 text = stringResource(id = R.string.or),
-                color = color,
                 modifier = Modifier.padding(
                     top = 16.dp
                 ),
@@ -436,43 +377,33 @@ class LoginActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 // Google Login Button
-                val googleButton = ButtonTextDecorator(
-                    isParent = true,
-                    text = stringResource(id = R.string.continue_with_google),
-                    wrapped = ButtonOnClickDecorator(
-                        customOnClick = {
-                            /*TODO: Implement Google login*/
-                            Log.d("Message", "Success login with google!")
-                        },
-                        wrapped = ButtonColorDecorator(
+                val googleButton = ButtonComponentBuilder()
+                    .withConfig(
+                        buttonConfigDefault.copy(
+                            text = stringResource(id = R.string.continue_with_google),
+                            onClick = { /*TODO: Implement Google login*/ },
                             colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = color.primary,
-                                contentColor = color.onPrimary,
-                                disabledContainerColor = color.onSurface,
-                                disabledContentColor = color.surface
+                                containerColor = color!!.primary,
+                                contentColor = color!!.onPrimary,
+                                disabledContainerColor = color!!.onSurface,
+                                disabledContentColor = color!!.surface
                             ),
-                            wrapped = ButtonIsIconDecorator(
-                                isIcon = true,
-                                iconRes = R.drawable.ic_google,
-                                wrapped = ButtonModifierDecorator(
-                                    customModifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(48.dp)
-                                        .border(
-                                            width = 1.dp,
-                                            color = color.secondary,
-                                            shape = RoundedCornerShape(8.dp)
-                                        ),
-                                    wrapped = defaultButton
-                                )
-                            )
+                            imageRes = R.drawable.ic_google,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = color!!.secondary,
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
                         )
                     )
-                )
-                googleButton.Decorate {  }
+                    .build()
+                googleButton.BaseDecorate {  }
 
                 // Facebook Login Button
-                val facebookButton = ButtonComponentBuilder()
+                ButtonComponentBuilder()
                     .withConfig(
                         newConfig = googleButton.getConfig().copy(
                             text = stringResource(id = R.string.continue_with_facebook),
@@ -480,12 +411,11 @@ class LoginActivity : ComponentActivity() {
                                 /*TODO: Implement Google login*/
                                 Log.d("Message", "Success login with facebook!")
                             },
-                            isIcon = true,
-                            iconRes = R.drawable.ic_facebook,
+                            imageRes = R.drawable.ic_facebook,
                         )
                     )
                     .build()
-                facebookButton.Decorate {  }
+                    .BaseDecorate {  }
             }
             // endregion
         }
@@ -499,32 +429,43 @@ class LoginActivity : ComponentActivity() {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         ) {
-            val questionText = TextDecorator(
-                isParent = true,
-                text = stringResource(id = R.string.no_account),
-                wrapped = defaultText
-            )
-            questionText.Decorate {  }
-
-            val signUpButton = TextDecorator(
-                isParent = true,
-                text = stringResource(id = R.string.sign_up),
-                wrapped = ModifierDecorator(
-                    modifier = Modifier
-                        .padding(start = 2.dp)
-                        .clickable(
-                            onClick = { /*TODO: Implement Sign up*/ },
-                            role = Role.Button
-                        ),
-                    wrapped = ColorDecorator(
-                        color = color.secondary,
-                        wrapped = defaultText
+            TextComponentBuilder()
+                .withConfig(
+                    newConfig = textConfigDefault.copy(
+                        text = stringResource(id = R.string.no_account),
                     )
                 )
-            )
-            signUpButton.Decorate {  }
+                .build()
+                .BaseDecorate {  }
+
+            TextComponentBuilder()
+                .withConfig(
+                    newConfig = textConfigDefault.copy(
+                        text = stringResource(id = R.string.sign_up),
+                        modifier = Modifier
+                            .padding(start = 2.dp)
+                            .clickable(
+                                onClick = { /*TODO: Implement Sign up*/ },
+                                role = Role.Button
+                            ),
+                        color = color!!.secondary,
+                    )
+                )
+                .build()
+                .BaseDecorate {  }
         }
         // endregion
     }
+    // endregion
+
+    // region --- Fields ---
+
+    private var color: ColorScheme? = null
+    private var typography: Typography? = null
+
+    private val textConfigDefault: TextConfig by lazy { createDefaultText() }
+    private val buttonConfigDefault: ButtonConfig by lazy { createDefaultButton() }
+    private val inputFieldConfigDefault: InputFieldConfig by lazy { createDefaultInputField() }
+
     // endregion
 }
