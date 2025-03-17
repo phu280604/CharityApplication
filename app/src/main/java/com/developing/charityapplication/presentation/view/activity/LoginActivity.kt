@@ -117,6 +117,30 @@ class LoginActivity : ComponentActivity() {
             .getConfig()
     }
 
+    fun createDefaultOutlinedButton() : ButtonConfig{
+        return ButtonComponentBuilder()
+            .withConfig(
+                ButtonConfig(
+                    colors = ButtonColors(
+                        containerColor = color!!.primary,
+                        contentColor = color!!.onPrimary,
+                        disabledContainerColor = color!!.onSurface,
+                        disabledContentColor = color!!.surface
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .border(
+                            width = 1.dp,
+                            color = color!!.secondary,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+            )
+            .build()
+            .getConfig()
+    }
+
     fun createDefaultInputField() : InputFieldConfig{
         return InputFieldComponentBuilder()
             .withConfig(
@@ -289,7 +313,7 @@ class LoginActivity : ComponentActivity() {
             // Login
             ButtonComponentBuilder()
                 .withConfig(
-                    buttonConfigDefault.copy(
+                    filledButtonConfigDefault.copy(
                         text = stringResource(id = R.string.login),
                         onClick = { /*TODO: Implement login logic*/ },
                         modifier = Modifier
@@ -379,24 +403,16 @@ class LoginActivity : ComponentActivity() {
                 // Google Login Button
                 val googleButton = ButtonComponentBuilder()
                     .withConfig(
-                        buttonConfigDefault.copy(
+                        outlinedButtonConfigDefault.copy(
                             text = stringResource(id = R.string.continue_with_google),
                             onClick = { /*TODO: Implement Google login*/ },
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = color!!.primary,
-                                contentColor = color!!.onPrimary,
-                                disabledContainerColor = color!!.onSurface,
-                                disabledContentColor = color!!.surface
-                            ),
-                            imageRes = R.drawable.ic_google,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .border(
-                                    width = 1.dp,
-                                    color = color!!.secondary,
-                                    shape = RoundedCornerShape(8.dp)
-                                ),
+                            content = {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_google),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         )
                     )
                     .build()
@@ -411,7 +427,13 @@ class LoginActivity : ComponentActivity() {
                                 /*TODO: Implement Google login*/
                                 Log.d("Message", "Success login with facebook!")
                             },
-                            imageRes = R.drawable.ic_facebook,
+                            content = {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_facebook),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
                         )
                     )
                     .build()
@@ -464,7 +486,8 @@ class LoginActivity : ComponentActivity() {
     private var typography: Typography? = null
 
     private val textConfigDefault: TextConfig by lazy { createDefaultText() }
-    private val buttonConfigDefault: ButtonConfig by lazy { createDefaultButton() }
+    private val filledButtonConfigDefault: ButtonConfig by lazy { createDefaultButton() }
+    private val outlinedButtonConfigDefault: ButtonConfig by lazy { createDefaultOutlinedButton() }
     private val inputFieldConfigDefault: InputFieldConfig by lazy { createDefaultInputField() }
 
     // endregion

@@ -32,7 +32,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -112,7 +112,7 @@ class MainActivity : ComponentActivity() {
                         .size(
                             width = 64.dp,
                             height = 48.dp
-                        )
+                        ),
                 )
             )
             .build()
@@ -226,7 +226,7 @@ class MainActivity : ComponentActivity() {
     fun NotificationBadge(){
         val notificationButton = ButtonComponentBuilder()
             .withConfig(
-                newConfig = this.defaultButton.copy(
+                newConfig = defaultButton.copy(
                     onClick = { /*TODO: Implement notification logic*/ },
                     modifier = Modifier
                         .size(40.dp)
@@ -236,7 +236,14 @@ class MainActivity : ComponentActivity() {
                             color = MaterialTheme.colorScheme.onPrimary,
                             shape = RoundedCornerShape(8.dp)
                         ),
-                    iconRes = R.drawable.ic_bell
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_bell),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
                 )
             )
             .build()

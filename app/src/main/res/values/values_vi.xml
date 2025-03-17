@@ -19,4 +19,11 @@
     <string name="hour_ago">tiếng trước</string>
     <string name="minute_ago">phút trước</string>
     <string name="second_ago">giây trước</string>
+    <string name="bookmark">Lưu bài viết</string>
+    <string name="analysis">Thống kê quyên góp</string>
+    <string name="report">Báo cáo bài viết</string>
+    <string name="like_post">Yêu thích</string>
+    <string name="comment_post">Bình luận</string>
+    <string name="share_post">Chia sẻ</string>
+    <string name="donate_post">Quyên góp</string>
 </resources>

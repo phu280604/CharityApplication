@@ -5,4 +5,6 @@ import com.developing.charityapplication.presentation.view.component.baseCompone
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 
 interface IButtonComponentDecotator : IBaseDecorator<ButtonConfig> {
+    @Composable
+    fun VerticalAlignmentDecorate(content: @Composable (() -> Unit))
 }
