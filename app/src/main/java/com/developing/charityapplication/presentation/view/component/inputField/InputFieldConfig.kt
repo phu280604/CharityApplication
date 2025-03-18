@@ -1,5 +1,6 @@
 package com.developing.charityapplication.presentation.view.component.inputField
 
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.TextFieldColors
@@ -17,12 +18,13 @@ data class InputFieldConfig (
     var placeHolder: @Composable (() -> Unit)? = null,
     var supportText: @Composable (() -> Unit)? = null,
     var isError: Boolean = false,
-    var color: TextFieldColors? = null,
+    var color: Any? = null,
     var modifier: Modifier = Modifier,
     var shape: Shape = RectangleShape,
     var maxLine: Int = Int.MAX_VALUE,
     var minLine: Int = 1,
     var visualTransformation: VisualTransformation = VisualTransformation.None,
     var leadingIcon: @Composable (() -> Unit)? = null,
-    var keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    var keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    var keyboardActions: KeyboardActions = KeyboardActions.Default
 )

@@ -5,4 +5,6 @@ import com.developing.charityapplication.presentation.view.component.baseCompone
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 
 interface IInputFieldComponentDecorator : IBaseDecorator<InputFieldConfig> {
+    @Composable
+    fun BasicDecorate(content: @Composable (() -> Unit))
 }

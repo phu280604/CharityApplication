@@ -26,4 +26,9 @@
     <string name="comment_post">Bình luận</string>
     <string name="share_post">Chia sẻ</string>
     <string name="donate_post">Quyên góp</string>
+    <string name="title_authentication">Mã xác thực đã được gửi đến email</string>
+    <string name="the_authentication_code">Mã xác thực</string>
+    <string name="authentication_button">Xác thực</string>
+    <string name="question_authentication">Bạn không nhận được mã?</string>
+    <string name="resend">Gửi lại</string>
 </resources>

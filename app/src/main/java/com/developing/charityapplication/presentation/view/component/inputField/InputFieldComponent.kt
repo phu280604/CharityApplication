@@ -1,10 +1,12 @@
 package com.developing.charityapplication.presentation.view.component.inputField
 
 
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import com.developing.charityapplication.presentation.view.component.inputField.decorator.IInputFieldComponentDecorator
 
@@ -21,7 +23,7 @@ class InputFieldComponent(
             onValueChange = config.onValueChange ?: {},
             label = config.label,
             placeholder = config.placeHolder,
-            colors = config.color ?: OutlinedTextFieldDefaults.colors(),
+            colors = config.color as? TextFieldColors ?: OutlinedTextFieldDefaults.colors(),
             shape = config.shape,
             isError = config.isError,
             supportingText = config.supportText,
@@ -30,8 +32,26 @@ class InputFieldComponent(
             modifier = config.modifier,
             visualTransformation = config.visualTransformation,
             keyboardOptions = config.keyboardOptions,
+            keyboardActions = config.keyboardActions,
             trailingIcon = config.leadingIcon,
         )
+    }
+
+    @Composable
+    override fun BasicDecorate(content: @Composable (() -> Unit)) {
+        BasicTextField(
+            value = config.value,
+            onValueChange = config.onValueChange ?: {},
+            textStyle = config.valueStyle,
+
+            maxLines = config.maxLine,
+            minLines = config.minLine,
+            modifier = config.modifier,
+            visualTransformation = config.visualTransformation,
+            keyboardOptions = config.keyboardOptions,
+        ){
+            content
+        }
     }
 
     override fun getConfig(): InputFieldConfig {

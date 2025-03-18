@@ -54,6 +54,7 @@ import com.developing.charityapplication.presentation.view.component.button.buil
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.PostComponent
+import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,6 +80,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainUIOverview(){
         val scrollState = rememberScrollState()
+        val config = PostConfig()
         HeartBellTheme {
             Scaffold(
                 topBar = { Header() },
@@ -95,7 +97,8 @@ class MainActivity : ComponentActivity() {
                         .windowInsetsPadding(WindowInsets.navigationBars)
                         .verticalScroll(scrollState)
                 ) {
-                    repeat(2) { PostComponent().PostPreview() }
+                    repeat(2) { PostComponent(config)
+                        .PostPreview() }
                 }
             }
         }
@@ -122,7 +125,6 @@ class MainActivity : ComponentActivity() {
     // endregion
 
     // region -- Header Section --
-
 
     @Composable
     fun Header() {
