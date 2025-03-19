@@ -23,6 +23,7 @@ data class InputFieldConfig (
     var shape: Shape = RectangleShape,
     var maxLine: Int = Int.MAX_VALUE,
     var minLine: Int = 1,
+    val decorateBox: (@Composable () -> Unit)? = null,
     var visualTransformation: VisualTransformation = VisualTransformation.None,
     var leadingIcon: @Composable (() -> Unit)? = null,
     var keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
