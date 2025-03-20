@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.developing.charityapplication.presentation.view.component.inputField.decorator.IInputFieldComponentDecorator
+import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 
 class InputFieldComponent(
     private val config: InputFieldConfig
@@ -29,7 +31,20 @@ class InputFieldComponent(
             onValueChange = config.onValueChange ?: {},
             label = config.label,
             placeholder = config.placeHolder,
-            colors = config.color as? TextFieldColors ?: OutlinedTextFieldDefaults.colors(),
+            colors = config.color as? TextFieldColors ?: OutlinedTextFieldDefaults.colors(
+                cursorColor = AppColorTheme.onPrimary,
+                selectionColors = TextSelectionColors(
+                    handleColor = AppColorTheme.onBackground,
+                    backgroundColor = AppColorTheme.background
+                ),
+                unfocusedBorderColor = AppColorTheme.surface,
+                unfocusedTextColor = AppColorTheme.onPrimary,
+                focusedBorderColor = AppColorTheme.onPrimary,
+                focusedTextColor = AppColorTheme.onPrimary,
+                focusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
+                unfocusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
+                errorTextColor = AppColorTheme.onError
+            ),
             shape = config.shape,
             isError = config.isError,
             supportingText = config.supportText,

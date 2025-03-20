@@ -40,4 +40,6 @@
     <string name="length_condi">Mật khẩu có độ dài kí tự từ 8–16 kí tự</string>
     <string name="caplock_condi">Mật khẩu có ít nhất một chữ cái in hoa</string>
     <string name="special_condi">Mật khẩu có ít nhất một kí tự đặc biệt</string>
+    <string name="email_require">Xin vui lòng nhập email</string>
+    <string name="recovery_password">Khôi phục mật khẩu</string>
 </resources>
