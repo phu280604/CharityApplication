@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.developing.charityapplication.presentation.view.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -35,12 +38,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -81,6 +89,7 @@ import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
+import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 
 class AuthenticationActivity : ComponentActivity() {
 
@@ -89,6 +98,9 @@ class AuthenticationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        isForget = intent.getBooleanExtra("isForget", false)
+
         setContent{
             MainUIPreview()
         }
@@ -109,55 +121,49 @@ class AuthenticationActivity : ComponentActivity() {
                 containerColor = MaterialTheme.colorScheme.primary,
                 // Top app bar
                 topBar = {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .shadow(
-                                elevation = 8.dp,
-                                spotColor = MaterialTheme.colorScheme.onPrimary,
-                                ambientColor = MaterialTheme.colorScheme.onPrimary,
-                                shape = RoundedCornerShape(
-                                    bottomStart = 8.dp,
-                                    bottomEnd = 8.dp
-                                )
-                            ),
-                        shape = RoundedCornerShape(
-                            bottomStart = 8.dp,
-                            bottomEnd = 8.dp
-                        ),
-                        colors = CardDefaults.cardColors(
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        IconButton(
-                            onClick = { /*TODO: Implement navigation logic*/ },
-                            modifier = Modifier
-                                .width(96.dp)
-                                .fillMaxHeight()
-                                .padding(4.dp)
-                        ){
-                            Row(
-                                modifier = Modifier
-                                    .wrapContentWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                    CenterAlignedTopAppBar(
+                        title = {},
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    onNavToGmailActivity.putExtra("isForget", isForget)
+                                    startActivity(onNavToGmailActivity)
+                                    finish()
+                                    /*TODO: Implement navigate back*/
+                                },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = AppColorTheme.onSurface
+                                ),
+                                modifier = Modifier.padding(start = 16.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_back_arrow),
+                                    imageVector = Icons.Default.KeyboardArrowLeft,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    text = "Trở về",
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    style = AppTypography.titleMedium
+                                    tint = AppColorTheme.onPrimary,
+                                    modifier = Modifier.size(32.dp)
                                 )
                             }
-                        }
-                    }
+                        },
+                        actions = {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(40.dp)
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = AppColorTheme.primary
+                        ),
+                        modifier = Modifier
+                            .background(
+                                color = AppColorTheme.primary
+                            )
+                            .shadow(
+                                elevation = 4.dp
+                            )
+                    )
                 }
             ) { innerPadding ->
                 Box(
@@ -212,7 +218,7 @@ class AuthenticationActivity : ComponentActivity() {
                     TextComponentBuilder()
                         .withConfig(
                             textConfig.copy(
-                                text = stringResource(id = R.string.title_authentication)  /*TODO: Implement email*/,
+                                text = stringResource(id = R.string.subtitle_authentication),
                                 textStyle = AppTypography.titleMedium
                             )
                         )
@@ -299,6 +305,11 @@ class AuthenticationActivity : ComponentActivity() {
                     .withConfig(
                         buttonConfig.copy(
                             text = stringResource(id = R.string.authentication_button),
+                            onClick = {
+                                startActivity(onNavToNextActivity)
+                                finish()
+                                /*TODO: Implement Submit Logic*/
+                            },
                             textStyle = AppTypography.bodyMedium,
                             modifier = Modifier
                                 .padding(top = 24.dp)
@@ -416,7 +427,21 @@ class AuthenticationActivity : ComponentActivity() {
         }
     }
 
+    // endregion
 
+    // region --- Fields ---
+
+    private var isForget: Boolean = false
+
+    private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }
+    private val onNavToNextActivity: Intent by lazy {
+        var nextClass: Class<*>
+        if(isForget)
+            nextClass = RecoveryActivity::class.java
+        else
+            nextClass = UserAppActivity::class.java
+        Intent(this, nextClass)
+    }
 
     // endregion
 }

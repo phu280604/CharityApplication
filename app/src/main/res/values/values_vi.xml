@@ -26,8 +26,10 @@
     <string name="comment_post">Bình luận</string>
     <string name="share_post">Chia sẻ</string>
     <string name="donate_post">Quyên góp</string>
-    <string name="title_authentication">Mã xác thực đã được gửi đến email</string>
+    <string name="title_authentication">Xác thực qua Email</string>
+    <string name="subtitle_authentication">Mã xác thực đã được gửi đến Email</string>
     <string name="the_authentication_code">Mã xác thực</string>
+    <string name="continues">Tiếp tục</string>
     <string name="authentication_button">Xác thực</string>
     <string name="question_authentication">Bạn không nhận được mã?</string>
     <string name="resend">Gửi lại</string>
@@ -40,6 +42,8 @@
     <string name="length_condi">Mật khẩu có độ dài kí tự từ 8–16 kí tự</string>
     <string name="caplock_condi">Mật khẩu có ít nhất một chữ cái in hoa</string>
     <string name="special_condi">Mật khẩu có ít nhất một kí tự đặc biệt</string>
-    <string name="email_require">Xin vui lòng nhập email</string>
+    <string name="email_require">Xin vui lòng nhập Email</string>
     <string name="recovery_password">Khôi phục mật khẩu</string>
+    <string name="reset_password">Đặt lại mật khẩu mới</string>
+    <string name="update_password">Cập nhật mật khẩu</string>
 </resources>

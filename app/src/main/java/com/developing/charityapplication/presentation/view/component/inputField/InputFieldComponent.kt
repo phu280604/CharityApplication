@@ -83,11 +83,6 @@ class InputFieldComponent(
         )
     }
 
-    @Composable
-    fun ComposableEmty(){
-
-    }
-
     override fun getConfig(): InputFieldConfig {
         return config
     }

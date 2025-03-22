@@ -2,7 +2,9 @@
 
 package com.developing.charityapplication.presentation.view.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -50,6 +52,7 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 
 class GmailActivity : ComponentActivity() {
 
@@ -58,6 +61,9 @@ class GmailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        isForget = intent.getBooleanExtra("isForget", false)
+
         setContent{
             PreviewGmail()
         }
@@ -67,6 +73,139 @@ class GmailActivity : ComponentActivity() {
 
     // region --- Methods ---
 
+    // region - Component Default -
+    @Composable
+    fun createTextDefault() : TextConfig{
+        return remember {
+            TextConfig(
+                color = AppColorTheme.onPrimary,
+                textStyle = AppTypography.bodyMedium
+            )
+        }
+    }
+
+    // region -- Main UI --
+    @Composable
+    fun GmailForm(){
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .fillMaxSize(),
+            colors = CardDefaults.cardColors(
+                containerColor = AppColorTheme.primary
+            )
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Header()
+
+                Body()
+            }
+        }
+    }
+
+    // region -- UI Section --
+    // Header Section
+    @Composable
+    fun Header(){
+        val textConfig = createTextDefault()
+
+        // region - Title -
+        TextComponentBuilder()
+            .withConfig(
+                textConfig.copy(
+                    text =  stringResource(id = R.string.title_authentication),
+                    textStyle = AppTypography.headlineSmall.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+            )
+            .build()
+            .BaseDecorate {  }
+        // endregion
+
+        // region - Subtitle -
+        TextComponentBuilder()
+            .withConfig(
+                textConfig.copy(
+                    text =  stringResource(id = R.string.email_require),
+                    textStyle = AppTypography.bodyMedium,
+                    color = AppColorTheme.surface,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            )
+            .build()
+            .BaseDecorate {  }
+        // endregion
+    }
+
+    // Body Section
+    @Composable
+    fun Body(){
+        var inputValue by remember { mutableStateOf("") }
+
+        val textConfig = createTextDefault()
+
+        // region - Input Gmail -
+        InputFieldComponentBuilder()
+            .withConfig(
+                InputFieldConfig(
+                    value = inputValue,
+                    onValueChange = { inputValue = it },
+                    shape = RoundedCornerShape(8.dp),
+                    label = {
+                        TextComponentBuilder()
+                            .withConfig(
+                                textConfig.copy(
+                                    text = stringResource(id = R.string.email),
+                                    textStyle = AppTypography.titleMedium
+                                )
+                            )
+                            .build()
+                            .BaseDecorate {  }
+                    },
+                    maxLine = 1,
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .fillMaxWidth()
+                )
+            )
+            .build()
+            .BaseDecorate {  }
+        // endregion
+
+        // region - Next Form -
+        Button(
+            onClick = {
+                onNavToAuthentication.putExtra("isForget", isForget)
+                startActivity(onNavToAuthentication)
+                finish()
+            /*TODO: Implement next activity logic*/
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColorTheme.secondary,
+            ),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            TextComponentBuilder()
+                .withConfig(
+                    textConfig.copy(
+                        text = stringResource(id = R.string.continues),
+                        color = AppColorTheme.onSecondaryContainer
+                    )
+                )
+                .build()
+                .BaseDecorate {  }
+        }
+        // endregion
+    }
+
+    // region -- UI Preview --
     @Preview
     @Composable
     fun PreviewGmail(){
@@ -79,7 +218,11 @@ class GmailActivity : ComponentActivity() {
                         title = {},
                         navigationIcon = {
                             IconButton(
-                                onClick = { /*TODO: Implement navigate back*/ },
+                                onClick = {
+                                    startActivity(onNavToPreviousActivity)
+                                    finish()
+                                /*TODO: Implement navigate back*/
+                                },
                                 colors = IconButtonDefaults.iconButtonColors(
                                     containerColor = AppColorTheme.onSurface
                                 ),
@@ -125,123 +268,27 @@ class GmailActivity : ComponentActivity() {
             }
         }
     }
+    // endregion
+    // endregion
+    // endregion
+    // endregion
 
-    // Component Default
-    @Composable
-    fun createTextDefault() : TextConfig{
-        return remember {
-            TextConfig(
-                color = AppColorTheme.onPrimary,
-                textStyle = AppTypography.bodyMedium
-            )
-        }
+    // endregion
+
+    // region --- Fields ---
+    private var isForget: Boolean = false
+
+    private val onNavToPreviousActivity: Intent by lazy {
+        var previousActivity: Class<*>
+
+        if (isForget)
+            previousActivity = LoginActivity::class.java
+        else
+            previousActivity = RegisterFormActivity::class.java
+
+        Intent(this, previousActivity)
     }
-
-    @Composable
-    fun GmailForm(){
-        Card(
-            modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .fillMaxSize(),
-            colors = CardDefaults.cardColors(
-                containerColor = AppColorTheme.primary
-            )
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Header()
-
-                Body()
-            }
-        }
-    }
-
-    // Header Section
-    @Composable
-    fun Header(){
-        val textConfig = createTextDefault()
-
-        TextComponentBuilder()
-            .withConfig(
-                textConfig.copy(
-                    text =  stringResource(id = R.string.forgot_password).replace("?", ""),
-                    textStyle = AppTypography.headlineSmall.copy(
-                        fontWeight = FontWeight.SemiBold
-                    )
-                )
-            )
-            .build()
-            .BaseDecorate {  }
-
-        TextComponentBuilder()
-            .withConfig(
-                textConfig.copy(
-                    text =  stringResource(id = R.string.email_require),
-                    textStyle = AppTypography.bodyMedium,
-                    color = AppColorTheme.surface,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            )
-            .build()
-            .BaseDecorate {  }
-    }
-
-    // Body Section
-    @Composable
-    fun Body(){
-        var inputValue by remember { mutableStateOf("") }
-
-        val textConfig = createTextDefault()
-
-        InputFieldComponentBuilder()
-            .withConfig(
-                InputFieldConfig(
-                    value = inputValue,
-                    onValueChange = { inputValue = it },
-                    shape = RoundedCornerShape(8.dp),
-                    label = {
-                        TextComponentBuilder()
-                            .withConfig(
-                                textConfig.copy(
-                                    text = stringResource(id = R.string.email),
-                                    textStyle = AppTypography.titleMedium
-                                )
-                            )
-                            .build()
-                            .BaseDecorate {  }
-                    },
-                    maxLine = 1,
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .fillMaxWidth()
-                )
-            )
-            .build()
-            .BaseDecorate {  }
-
-        Button(
-            onClick = { /*TODO: Implement recovery password logic*/ },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = AppColorTheme.secondary,
-            ),
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            TextComponentBuilder()
-                .withConfig(
-                    textConfig.copy(
-                        text = stringResource(id = R.string.recovery_password),
-                        color = AppColorTheme.onSecondaryContainer
-                    )
-                )
-                .build()
-                .BaseDecorate {  }
-        }
-    }
+    private val onNavToAuthentication: Intent by lazy { Intent(this, AuthenticationActivity::class.java) }
 
     // endregion
 

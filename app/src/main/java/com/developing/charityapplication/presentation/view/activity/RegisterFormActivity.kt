@@ -2,6 +2,7 @@
 
 package com.developing.charityapplication.presentation.view.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -198,7 +199,11 @@ class RegisterFormActivity: ComponentActivity() {
                     .wrapContentHeight()
             ) {
                 Button(
-                    onClick = { /*TODO: Implement register logic*/ },
+                    onClick = {
+                        startActivity(onNavToGmailActivity)
+                        finish()
+                    /*TODO: Implement register logic*/
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppColorTheme.secondary,
                         contentColor = AppColorTheme.onSecondaryContainer
@@ -239,7 +244,11 @@ class RegisterFormActivity: ComponentActivity() {
                                 color = AppColorTheme.secondary,
                                 modifier = Modifier
                                     .clickable(
-                                        onClick = { /*TODO: Implement login logic*/ },
+                                        onClick = {
+                                            startActivity(onNavToLoginActivity)
+                                            finish()
+                                        /*TODO: Implement login logic*/
+                                        },
                                         role = Role.Button
                                     )
                             )
@@ -297,8 +306,10 @@ class RegisterFormActivity: ComponentActivity() {
         ){
         Row(
             modifier = Modifier
+                .padding(top = 4.dp)
                 .wrapContentSize(),
-            horizontalArrangement = Arrangement.Absolute.Right
+            horizontalArrangement = Arrangement.Absolute.Right,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = icon,
@@ -310,7 +321,8 @@ class RegisterFormActivity: ComponentActivity() {
                 color = color,
                 style = AppTypography.labelMedium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 4.dp)
+                modifier = Modifier
+                    .padding(start = 4.dp)
             )
         }
     }
@@ -359,7 +371,11 @@ class RegisterFormActivity: ComponentActivity() {
                         ),
                         navigationIcon = {
                             IconButton(
-                                onClick = { /*TODO: Implement navigation register logic*/ },
+                                onClick = {
+                                    startActivity(onNavToLoginActivity)
+                                    finish()
+                                /*TODO: Implement navigation register logic*/
+                                },
                                 colors = IconButtonDefaults.iconButtonColors(
                                     containerColor = AppColorTheme.onSurface
                                 ),
@@ -407,6 +423,13 @@ class RegisterFormActivity: ComponentActivity() {
             }
         }
     }
+
+    // endregion
+
+    // region --- Fields ---
+
+    private val onNavToLoginActivity: Intent by lazy { Intent(this, LoginActivity::class.java) }
+    private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }
 
     // endregion
 
