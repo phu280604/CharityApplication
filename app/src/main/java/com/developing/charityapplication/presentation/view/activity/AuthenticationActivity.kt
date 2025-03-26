@@ -108,77 +108,76 @@ class AuthenticationActivity : ComponentActivity() {
 
     // endregion
 
-    // region --- Fields ---
+    // region --- Methods ---
 
-    // Preview
-    @Preview
+    // region -- Config Default Section --
     @Composable
-    fun MainUIPreview(){
-        HeartBellTheme {
-            Scaffold(
-                modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.systemBars),
-                containerColor = MaterialTheme.colorScheme.primary,
-                // Top app bar
-                topBar = {
-                    CenterAlignedTopAppBar(
-                        title = {},
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    onNavToGmailActivity.putExtra("isForget", isForget)
-                                    startActivity(onNavToGmailActivity)
-                                    finish()
-                                    /*TODO: Implement navigate back*/
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = AppColorTheme.onSurface
-                                ),
-                                modifier = Modifier.padding(start = 16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowLeft,
-                                    contentDescription = null,
-                                    tint = AppColorTheme.onPrimary,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                        },
-                        actions = {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .size(40.dp)
-                            )
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = AppColorTheme.primary
-                        ),
-                        modifier = Modifier
-                            .background(
-                                color = AppColorTheme.primary
-                            )
-                            .shadow(
-                                elevation = 4.dp
-                            )
+    fun createConfigButton() : ButtonConfig {
+        val colors = ButtonDefaults.buttonColors(
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            containerColor = MaterialTheme.colorScheme.secondary,
+        )
+
+        return remember {
+            ButtonComponentBuilder()
+                .withConfig(
+                    ButtonConfig(
+                        textStyle = AppTypography.bodyMedium,
+                        colors = colors
                     )
-                }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PinEntryCard()
-                }
-            }
+                )
+                .build()
+                .getConfig()
         }
     }
 
+    @Composable
+    fun createConfigText() : TextConfig {
+        val color = MaterialTheme.colorScheme.onPrimary
+
+        return remember {
+            TextComponentBuilder()
+                .withConfig(
+                    TextConfig(
+                        textStyle = AppTypography.bodyMedium,
+                        color = color
+                    )
+                )
+                .build()
+                .getConfig()
+        }
+    }
+
+    @Composable
+    fun createConfigInputFields() : InputFieldConfig {
+        val color = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
+                alpha = 0.72f
+            ),
+            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+            cursorColor = MaterialTheme.colorScheme.onPrimary,
+            selectionColors = TextSelectionColors(
+                handleColor = MaterialTheme.colorScheme.onBackground,
+                backgroundColor = MaterialTheme.colorScheme.background
+            )
+        )
+
+        return remember {
+            InputFieldComponentBuilder()
+                .withConfig(
+                    InputFieldConfig(
+                        valueStyle = AppTypography.bodyMedium,
+                        color = color,
+                    )
+                )
+                .build()
+                .getConfig()
+        }
+    }
+
+    // region -- Main UI --
     @Composable
     fun PinEntryCard() {
         val textConfig =  createConfigText()
@@ -360,72 +359,77 @@ class AuthenticationActivity : ComponentActivity() {
         }
     }
 
-    // Config Default Section
+    // region -- Preview --
+    @Preview
     @Composable
-    fun createConfigButton() : ButtonConfig {
-        val colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            containerColor = MaterialTheme.colorScheme.secondary,
-        )
-
-        return remember {
-                ButtonComponentBuilder()
-                    .withConfig(
-                        ButtonConfig(
-                            textStyle = AppTypography.bodyMedium,
-                            colors = colors
-                        )
+    fun MainUIPreview(){
+        HeartBellTheme {
+            Scaffold(
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.systemBars),
+                containerColor = MaterialTheme.colorScheme.primary,
+                // Top app bar
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {},
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    onNavToGmailActivity.putExtra("isForget", isForget)
+                                    startActivity(onNavToGmailActivity)
+                                    finish()
+                                    /*TODO: Implement navigate back*/
+                                },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = AppColorTheme.onSurface
+                                ),
+                                modifier = Modifier.padding(start = 16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowLeft,
+                                    contentDescription = null,
+                                    tint = AppColorTheme.onPrimary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        },
+                        actions = {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(40.dp)
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = AppColorTheme.primary
+                        ),
+                        modifier = Modifier
+                            .background(
+                                color = AppColorTheme.primary
+                            )
+                            .shadow(
+                                elevation = 4.dp
+                            )
                     )
-                    .build()
-                    .getConfig()
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PinEntryCard()
+                }
+            }
         }
     }
-
-    @Composable
-    fun createConfigText() : TextConfig {
-        val color = MaterialTheme.colorScheme.onPrimary
-
-        return remember {
-            TextComponentBuilder()
-                .withConfig(
-                    TextConfig(
-                        textStyle = AppTypography.bodyMedium,
-                        color = color
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
-    @Composable
-    fun createConfigInputFields() : InputFieldConfig {
-        val color = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
-                alpha = 0.72f
-            ),
-            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-            cursorColor = MaterialTheme.colorScheme.onPrimary,
-            selectionColors = TextSelectionColors(
-                handleColor = MaterialTheme.colorScheme.onBackground,
-                backgroundColor = MaterialTheme.colorScheme.background
-            )
-        )
-
-        return remember {
-            InputFieldComponentBuilder()
-                .withConfig(
-                    InputFieldConfig(
-                        valueStyle = AppTypography.bodyMedium,
-                        color = color,
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
+    // endregion
+    // endregion
+    // endregion
 
     // endregion
 

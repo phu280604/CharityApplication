@@ -81,6 +81,7 @@ class RegisterFormActivity: ComponentActivity() {
 
     // region --- Methods ---
 
+    // region -- Main UI --
     @Composable
     fun RegisterForm() {
         // State for form fields
@@ -261,7 +262,7 @@ class RegisterFormActivity: ComponentActivity() {
         }
     }
 
-    // Checker Element
+    // region -- Checker Element --
     @Composable
     fun PasswordChecker(value: String){
         val elementCheckers = listOf(
@@ -298,6 +299,7 @@ class RegisterFormActivity: ComponentActivity() {
         }
     }
 
+    // region -- Password Checker --
     @Composable
     fun PasswordElementChecker(
         icon: ImageVector,
@@ -327,7 +329,7 @@ class RegisterFormActivity: ComponentActivity() {
         }
     }
 
-    // Condition Checker
+    // region -- Condition Checker --
     fun isValidLength(value: String): Boolean {
         return value.length in 8..16
     }
@@ -341,7 +343,7 @@ class RegisterFormActivity: ComponentActivity() {
         return value.any { it in specialChars }
     }
 
-    //  Component Default
+    // region -- Component Default --
     @Composable
     fun createTextDefault() : TextConfig {
         return remember {
@@ -357,7 +359,7 @@ class RegisterFormActivity: ComponentActivity() {
         }
     }
 
-    // Preview function for development
+    // region -- Preview --
     @Preview
     @Composable
     fun RegisterFormPreview() {
@@ -423,6 +425,12 @@ class RegisterFormActivity: ComponentActivity() {
             }
         }
     }
+    // endregion
+    // endregion
+    // endregion
+    // endregion
+    // endregion
+    // endregion
 
     // endregion
 
