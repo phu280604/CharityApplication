@@ -54,7 +54,9 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.*
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity() : ComponentActivity() {
     
     // region --- Overrides ---

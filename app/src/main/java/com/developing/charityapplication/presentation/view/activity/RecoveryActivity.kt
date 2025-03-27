@@ -64,7 +64,9 @@ import com.developing.charityapplication.presentation.view.component.text.builde
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RecoveryActivity : ComponentActivity() {
 
     // region --- Overrides ---

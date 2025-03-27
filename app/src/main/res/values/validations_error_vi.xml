@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_empty_field">không được phép để trống</string>
+    <string name="error_max_length_field">có độ dài tối thiểu</string>
+    <string name="error_not_contain_field">không được phép chứa</string>
+    <string name="word">ký tự</string>
+    <string name="number">số</string>
+    <string name="special_word">ký tự đặc biệt</string>
+</resources>

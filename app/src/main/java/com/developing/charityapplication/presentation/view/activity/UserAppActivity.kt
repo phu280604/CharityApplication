@@ -55,7 +55,9 @@ import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.PostComponent
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.theme.AppTypography
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserAppActivity : ComponentActivity() {
 
     // region --- Overrides ---

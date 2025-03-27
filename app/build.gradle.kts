@@ -70,7 +70,12 @@ dependencies {
     //noinspection UseTomlInstead
     val lasted_Version = "2.11.0"
     implementation ("com.squareup.retrofit2:retrofit:$lasted_Version")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     implementation ("com.squareup.retrofit2:converter-gson:$lasted_Version")
+
+    // coil
+    implementation ("io.coil-kt:coil-compose:1.3.2")
 }
 // endregion
 
@@ -81,7 +86,6 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.55")
     kapt("com.google.dagger:hilt-android-compiler:2.55")
 }
-
 // Allow references to generated code
 kapt {
     correctErrorTypes = true
@@ -110,6 +114,14 @@ dependencies {
 }
 // endregion
 
+// region -- Material --
 dependencies {
     implementation ("androidx.compose.material3:material3:1.3.1")
 }
+// endregion
+
+// region -- Kotlin Reflect --
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+}
+// endregion

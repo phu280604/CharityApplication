@@ -53,7 +53,9 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GmailActivity : ComponentActivity() {
 
     // region --- Overrides ---
