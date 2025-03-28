@@ -1,5 +1,6 @@
 package com.developing.charityapplication.infrastructure.utils
 
+import androidx.compose.ui.res.stringResource
 import com.developing.charityapplication.R
 
 object Checker {

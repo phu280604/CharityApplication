@@ -300,11 +300,13 @@ class RegisterFormActivity: ComponentActivity() {
     fun Body(
         modifier: Modifier,
         validationTrigger: Boolean
-    ){
+    ): Boolean{
         // region - Component Config -
         val textConfig = createTextDefault()
         val textFieldConfig = createTextFieldDefault()
         // endregion
+
+        var isValid: Boolean = true
 
         // region - Remember Value -
         var inputNameValues by remember { mutableStateOf(List(2) {""}) }
@@ -446,20 +448,16 @@ class RegisterFormActivity: ComponentActivity() {
             }
             // endregion
         }
+
+        return isValid
     }
 
     @Composable
     fun Footer(
-        onValidation: () -> Unit,
-        userVM: UserViewModel = hiltViewModel()
+        onValidation: () -> Unit
     ){
         // region - Component Config -
         val textConfig = createTextDefault()
-        // endregion
-
-        // region - State Value -
-        val userInfo by userVM.userInfo.collectAsState()
-        val isLoading by userVM.isLoading.collectAsState()
         // endregion
 
         Column(
@@ -469,10 +467,7 @@ class RegisterFormActivity: ComponentActivity() {
         ) {
             // region - Sign up Button -
             Button(
-                onClick = {
-                    onValidation()
-                    userVM.createAccountUser(requestUser)
-                          },
+                onClick = { onValidation() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColorTheme.secondary,
                     contentColor = AppColorTheme.onSecondaryContainer
@@ -487,55 +482,48 @@ class RegisterFormActivity: ComponentActivity() {
                     style = AppTypography.bodyMedium
                 )
             }
-        }
+            // endregion
 
-         LaunchedEffect(isLoading) {
-             if (!isLoading && userInfo != null) {
-                 startActivity(onNavToAuthenticationActivity)
-                 finish()
-             }
-         }
-        // endregion
-
-        // region - Question Login Button -
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
-        ) {
-            val question = TextComponentBuilder()
-                .withConfig(
-                    textConfig.copy(
-                        text = stringResource(id = R.string.regis_question),
-                        textStyle = AppTypography.bodyMedium,
-                        color = AppColorTheme.onPrimary
+            // region - Question Login Button -
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
+            ) {
+                val question = TextComponentBuilder()
+                    .withConfig(
+                        textConfig.copy(
+                            text = stringResource(id = R.string.regis_question),
+                            textStyle = AppTypography.bodyMedium,
+                            color = AppColorTheme.onPrimary
+                        )
                     )
-                )
-                .build()
+                    .build()
 
-            question.BaseDecorate {  }
-            TextComponentBuilder()
-                .withConfig(
-                    question.getConfig().copy(
-                        text = stringResource(id = R.string.login),
-                        color = AppColorTheme.secondary,
-                        modifier = Modifier
-                            .clickable(
-                                onClick = {
-                                    startActivity(onNavToLoginActivity)
-                                    finish()
-                                    /*TODO: Implement login logic*/
-                                },
-                                role = Role.Button
-                            )
+                question.BaseDecorate {  }
+                TextComponentBuilder()
+                    .withConfig(
+                        question.getConfig().copy(
+                            text = stringResource(id = R.string.login),
+                            color = AppColorTheme.secondary,
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = {
+                                        startActivity(onNavToLoginActivity)
+                                        finish()
+                                        /*TODO: Implement login logic*/
+                                    },
+                                    role = Role.Button
+                                )
+                        )
                     )
-                )
-                .build()
-                .BaseDecorate {  }
+                    .build()
+                    .BaseDecorate {  }
+            }
+            // endregion
         }
-        // endregion
     }
 
     // region -- Main UI --
@@ -543,6 +531,15 @@ class RegisterFormActivity: ComponentActivity() {
     fun RegisterForm() {
 
         var validationTrigger by remember { mutableStateOf(false) }
+
+        var validationResult by remember { mutableStateOf(false) }
+
+        val userVM: UserViewModel = hiltViewModel()
+
+        // region - State Value -
+        val userInfo by userVM.userInfo.collectAsState()
+        val isLoading by userVM.isLoading.collectAsState()
+        // endregion
 
         Column(
             modifier = Modifier
@@ -552,7 +549,7 @@ class RegisterFormActivity: ComponentActivity() {
         ) {
             Header()
 
-            Body(
+            validationResult = Body(
                 modifier = Modifier.weight(1f),
                 validationTrigger = validationTrigger
             )
@@ -560,6 +557,17 @@ class RegisterFormActivity: ComponentActivity() {
             Footer(
                 onValidation = { validationTrigger = true }
             )
+        }
+
+        if (validationResult)
+        {
+            userVM.createAccountUser(requestUser)
+            LaunchedEffect(isLoading) {
+                if (!isLoading && userInfo != null) {
+                    startActivity(onNavToAuthenticationActivity)
+                    finish()
+                }
+            }
         }
     }
 
