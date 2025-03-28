@@ -102,6 +102,8 @@ class AuthenticationActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         isForget = intent.getBooleanExtra("isForget", false)
+        email = intent.getStringExtra("email") ?: ""
+        Log.d("email", email)
 
         setContent{
             MainUIPreview()
@@ -437,6 +439,7 @@ class AuthenticationActivity : ComponentActivity() {
 
     // region --- Fields ---
 
+    private var email: String = ""
     private var isForget: Boolean = false
 
     private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }
@@ -450,4 +453,5 @@ class AuthenticationActivity : ComponentActivity() {
     }
 
     // endregion
+
 }

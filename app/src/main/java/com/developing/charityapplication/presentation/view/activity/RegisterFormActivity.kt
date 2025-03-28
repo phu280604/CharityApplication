@@ -4,6 +4,8 @@ package com.developing.charityapplication.presentation.view.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -49,13 +51,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -72,8 +79,12 @@ import com.developing.charityapplication.domain.model.RequestCreateUser
 import com.developing.charityapplication.domain.model.ResponseModel
 import com.developing.charityapplication.domain.model.UserModel
 import com.developing.charityapplication.infrastructure.utils.Checker
+import com.developing.charityapplication.presentation.event.activityEvent.RegisterFormEvent
+import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
+import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
 import com.developing.charityapplication.presentation.viewmodel.userViewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class RegisterFormActivity: ComponentActivity() {
@@ -266,48 +277,47 @@ class RegisterFormActivity: ComponentActivity() {
     }
 
     // region -- Setter Value --
-    fun setterValue(index: Int, value: String){
+    fun setUserValue(state: RegisterFormState){
+        requestUser.lastName = state.lastName
+        requestUser.firstName = state.firstName
+        requestUser.username = state.username
+        requestUser.email = state.email
+        requestUser.password = state.password
+    }
+
+    fun setStateValue(viewModel: RegisterFormViewModel, index: Int, value: String){
         when(index){
-            0 -> requestUser.lastName = value
-            1 -> requestUser.firstName = value
-            2 -> requestUser.username = value
-            3 -> requestUser.email = value
-            4 -> requestUser.password = value
-            else -> return
+            0 -> viewModel.onEvent(RegisterFormEvent.LastNameChange(value))
+            1 -> viewModel.onEvent(RegisterFormEvent.FirstNameChange(value))
+            2 -> viewModel.onEvent(RegisterFormEvent.UsernameChange(value))
+            3 -> viewModel.onEvent(RegisterFormEvent.EmailChange(value))
+            4 -> viewModel.onEvent(RegisterFormEvent.PasswordChange(value))
+            else -> viewModel.onEvent(RegisterFormEvent.RepeatedPasswordChange(value))
         }
     }
 
-    fun checkerValue(index: Int, value: String): Int{
-        var outOfRange: Int = 0
-        var emptyField: Int = 0
-        var emailFormat: Int = 0
+    fun getState(index: Int, state: RegisterFormState): String{
         when(index){
-            0 -> outOfRange = Checker.outOfRange(value = value, min = 3)
-            1 -> outOfRange = Checker.outOfRange(value = value, min = 3)
-            2 -> emptyField = Checker.containsBlank(value)
-            3 -> {
-                emptyField = Checker.containsBlank(value)
-                emailFormat = Checker.isValidEmail(value)
-            }
-            4 -> {
-                outOfRange = Checker.outOfRange(
-                    value = value,
-                    min = 8,
-                    max = 16
-                )
+            0 -> return state.lastName
+            1 -> return state.firstName
+            2 -> return state.username
+            3 -> return state.email
+            4 -> return state.password
+            else -> return state.repeatedPassword
 
-                if (!hasUpperCase(value)) return R.string.caplock_condi
-                if (!hasSpecialCharacter(value)) return R.string.special_condi
-
-            }
-            5 -> if (value != requestUser.password) return R.string.error_not_match_field
-            else -> return 0
         }
-        if (outOfRange != 0) return outOfRange
-        if (emptyField != 0) return emptyField
-        if (emailFormat != 0) return emailFormat
+    }
 
-        return 0
+    fun getErrorState(index: Int, state: RegisterFormState): String?{
+        when(index){
+            0 -> return state.lastNameError
+            1 -> return state.firstNameError
+            2 -> return state.usernameError
+            3 -> return state.emailError
+            4 -> return state.passwordError
+            else -> return state.repeatedPasswordError
+
+        }
     }
 
     // region -- UI Section --
@@ -333,20 +343,18 @@ class RegisterFormActivity: ComponentActivity() {
     @Composable
     fun Body(
         modifier: Modifier,
-        validationTrigger: Boolean
-    ): Boolean{
+        regisVM: RegisterFormViewModel
+    ){
         // region - Component Config -
         val textConfig = createTextDefault()
         val textFieldConfig = createTextFieldDefault()
         // endregion
 
-        var isValid: Boolean = true
-
         // region - Remember Value -
-        var inputNameValues by remember { mutableStateOf(List(2) {""}) }
-        var inputValues by remember { mutableStateOf(List(4) {""}) }
         var passwordVisible by remember { mutableStateOf(List(2) {false}) }
         // endregion
+
+        val state = regisVM.state
 
         // region - List of Label -
         val labelNameValues = listOf(
@@ -364,7 +372,7 @@ class RegisterFormActivity: ComponentActivity() {
         Column(
             modifier = modifier
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // region - Name Section -
@@ -375,29 +383,51 @@ class RegisterFormActivity: ComponentActivity() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                inputNameValues.forEachIndexed{
+                labelNameValues.forEachIndexed{
                         index, item ->
+                    val errorText = getErrorState(index, state)
+                    val isError = errorText != null
                     InputFieldComponentBuilder()
                         .withConfig(
                             textFieldConfig.copy(
-                                value = item,
+                                value = getState(index, state),
                                 onValueChange = {
-                                    inputNameValues = inputNameValues
-                                        .toMutableList()
-                                        .apply {
-                                            set(index, it)
-                                        }
-                                    setterValue(index, it)
+                                    setStateValue(regisVM, index, it)
                                 },
                                 label = {
                                     TextComponentBuilder()
                                         .withConfig(
                                             textConfig.copy(
-                                                text = stringResource(id = labelNameValues[index])
+                                                text = buildAnnotatedString {
+                                                    withStyle(style = SpanStyle(color = Color.Black)) {
+                                                        append(stringResource(id = item))
+                                                    }
+                                                    withStyle(style = SpanStyle(color = Color.Red)) {
+                                                        append(" *")
+                                                    }
+                                                }.toString(),
+                                                maxLine = 1
                                             )
                                         )
                                         .build()
                                         .BaseDecorate { }
+                                },
+                                isError = isError,
+                                supportText = {
+                                    if(isError){
+                                        TextComponentBuilder()
+                                            .withConfig(
+                                                textConfig.copy(
+                                                    text = "${stringResource(id = item)} ${errorText}",
+                                                    textStyle = AppTypography.labelMedium.copy(
+                                                        fontWeight = FontWeight.Light
+                                                    ),
+                                                    color = AppColorTheme.onError
+                                                )
+                                            )
+                                            .build()
+                                            .BaseDecorate {  }
+                                    }
                                 },
                                 modifier = Modifier
                                     .weight(1f)
@@ -415,33 +445,56 @@ class RegisterFormActivity: ComponentActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                itemsIndexed(inputValues){
+                itemsIndexed(labelValues){
                         index, item ->
                     val countHidePassword = index - (labelValues.count() - 2)
+                    val countIndex = index + labelNameValues.count()
+                    val errorText = getErrorState(countIndex, state)
+                    val isError = errorText != null
                     InputFieldComponentBuilder()
                         .withConfig(
                             textFieldConfig.copy(
-                                value = item,
+                                value = getState(countIndex, state),
                                 onValueChange = {
-                                    inputValues = inputValues
-                                        .toMutableList()
-                                        .apply {
-                                            set(index, it)
-                                        }
-                                    setterValue(index + labelNameValues.count(), it)
+                                    setStateValue(regisVM, countIndex, it)
                                 },
                                 label = {
                                     TextComponentBuilder()
                                         .withConfig(
                                             textConfig.copy(
-                                                text = stringResource(id = labelValues[index])
+                                                text = buildAnnotatedString {
+                                                    withStyle(style = SpanStyle(color = Color.Black)) {
+                                                        append(stringResource(id = item))
+                                                    }
+                                                    withStyle(style = SpanStyle(color = Color.Red)) {
+                                                        append(" *")
+                                                    }
+                                                }.toString(),
+                                                maxLine = 1
                                             )
                                         )
                                         .build()
                                         .BaseDecorate {  }
+                                },
+                                isError = isError,
+                                supportText = {
+                                    if(isError && item != R.string.password){
+                                        TextComponentBuilder()
+                                            .withConfig(
+                                                textConfig.copy(
+                                                    text = "${stringResource(id = item)} ${errorText}",
+                                                    textStyle = AppTypography.labelMedium.copy(
+                                                        fontWeight = FontWeight.Light
+                                                    ),
+                                                    color = AppColorTheme.onError
+                                                )
+                                            )
+                                            .build()
+                                            .BaseDecorate {  }
+                                    }
                                 },
                                 visualTransformation =
                                 if (countHidePassword >= 0 && !passwordVisible[countHidePassword])
@@ -477,18 +530,16 @@ class RegisterFormActivity: ComponentActivity() {
                         .BaseDecorate {  }
 
                     if (index == labelValues.indexOf(R.string.password))
-                        PasswordChecker(inputValues[index])
+                        PasswordChecker(state.password)
                 }
             }
             // endregion
         }
-
-        return isValid
     }
 
     @Composable
     fun Footer(
-        onValidation: () -> Unit
+        regisVM: RegisterFormViewModel
     ){
         // region - Component Config -
         val textConfig = createTextDefault()
@@ -497,11 +548,12 @@ class RegisterFormActivity: ComponentActivity() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .height(64.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top)
         ) {
             // region - Sign up Button -
             Button(
-                onClick = { onValidation() },
+                onClick = { regisVM.onEvent(RegisterFormEvent.Submit) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColorTheme.secondary,
                     contentColor = AppColorTheme.onSecondaryContainer
@@ -509,7 +561,7 @@ class RegisterFormActivity: ComponentActivity() {
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .height(40.dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.sign_up),
@@ -547,7 +599,6 @@ class RegisterFormActivity: ComponentActivity() {
                                     onClick = {
                                         startActivity(onNavToLoginActivity)
                                         finish()
-                                        /*TODO: Implement login logic*/
                                     },
                                     role = Role.Button
                                 )
@@ -564,58 +615,69 @@ class RegisterFormActivity: ComponentActivity() {
     @Composable
     fun RegisterForm() {
 
-        var validationTrigger by remember { mutableStateOf(false) }
-
-        var validationResult by remember { mutableStateOf(false) }
-
+        // region -- ViewModel --
         val userVM: UserViewModel = hiltViewModel()
+        val registerVM: RegisterFormViewModel = hiltViewModel()
+        // endregion
 
         // region - State Value -
         val userInfo by userVM.userInfo.collectAsState()
         val isLoading by userVM.isLoading.collectAsState()
+
+        val context = LocalContext.current
         // endregion
+
+        val regisSuccessful = stringResource(id = R.string.registration_successful)
+        LaunchedEffect(key1 = context) {
+            registerVM.validationEvents.collect { event ->
+                when(event){
+                    is RegisterFormViewModel.ValidationEvent.Success -> {
+                        setUserValue(registerVM.state)
+                        userVM.createAccountUser(requestUser)
+
+                        Toast.makeText(
+                            context,
+                            regisSuccessful,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+
+        LaunchedEffect(isLoading) {
+            if (!isLoading && userInfo != null) {
+                onNavToAuthenticationActivity.putExtra("email", requestUser.email)
+                startActivity(onNavToAuthenticationActivity)
+                finish()
+            }
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
+                .padding(horizontal = 24.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
         ) {
             Header()
 
-            validationResult = Body(
+
+            Body(
                 modifier = Modifier.weight(1f),
-                validationTrigger = validationTrigger
+                regisVM = registerVM
             )
 
             Footer(
-                onValidation = { validationTrigger = true }
+                regisVM = registerVM
             )
         }
-
-        if (validationResult)
-        {
-            userVM.createAccountUser(requestUser)
-            LaunchedEffect(isLoading) {
-                if (!isLoading && userInfo != null) {
-                    startActivity(onNavToAuthenticationActivity)
-                    finish()
-                }
-            }
-        }
-    }
-
-    // region -- Preview --
-    @Preview(showBackground = true)
-    @Composable
-    fun RegisterFormPreview() {
-        RegisterForm()
     }
     // endregion
     // endregion
     // endregion
     // endregion
     // endregion
+
     // endregion
 
     // endregion

@@ -125,3 +125,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 }
 // endregion
+
+// region -- Life Cycle --
+dependencies{
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+
+}
+// endregion
