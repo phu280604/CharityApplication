@@ -71,6 +71,7 @@ import com.developing.charityapplication.R
 import com.developing.charityapplication.domain.model.RequestCreateUser
 import com.developing.charityapplication.domain.model.ResponseModel
 import com.developing.charityapplication.domain.model.UserModel
+import com.developing.charityapplication.infrastructure.utils.Checker
 import com.developing.charityapplication.presentation.viewmodel.userViewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -274,6 +275,39 @@ class RegisterFormActivity: ComponentActivity() {
             4 -> requestUser.password = value
             else -> return
         }
+    }
+
+    fun checkerValue(index: Int, value: String): Int{
+        var outOfRange: Int = 0
+        var emptyField: Int = 0
+        var emailFormat: Int = 0
+        when(index){
+            0 -> outOfRange = Checker.outOfRange(value = value, min = 3)
+            1 -> outOfRange = Checker.outOfRange(value = value, min = 3)
+            2 -> emptyField = Checker.containsBlank(value)
+            3 -> {
+                emptyField = Checker.containsBlank(value)
+                emailFormat = Checker.isValidEmail(value)
+            }
+            4 -> {
+                outOfRange = Checker.outOfRange(
+                    value = value,
+                    min = 8,
+                    max = 16
+                )
+
+                if (!hasUpperCase(value)) return R.string.caplock_condi
+                if (!hasSpecialCharacter(value)) return R.string.special_condi
+
+            }
+            5 -> if (value != requestUser.password) return R.string.error_not_match_field
+            else -> return 0
+        }
+        if (outOfRange != 0) return outOfRange
+        if (emptyField != 0) return emptyField
+        if (emailFormat != 0) return emailFormat
+
+        return 0
     }
 
     // region -- UI Section --

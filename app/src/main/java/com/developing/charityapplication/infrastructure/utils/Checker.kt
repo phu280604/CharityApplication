@@ -15,7 +15,7 @@ object Checker {
 
     fun outOfRange(
         value: String,
-        max: Int,
+        max: Int = Int.MAX_VALUE,
         min: Int = 1) : Int{
         val length = value.length
         if (min <= length  && length <= max )
@@ -39,6 +39,11 @@ object Checker {
         val regex = Regex("^[a-zA-Z]+$")
         if(regex.matches(input)) return R.string.word
         return 0
+    }
+
+    fun isValidEmail(email: String): Int {
+        val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")
+        return if(!emailRegex.matches(email)) return R.string.error_email_field else return 0
     }
 
     // endregion
