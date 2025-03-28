@@ -450,7 +450,6 @@ class RegisterFormActivity: ComponentActivity() {
 
     @Composable
     fun Footer(
-        modifier: Modifier,
         onValidation: () -> Unit,
         userVM: UserViewModel = hiltViewModel()
     ){
@@ -464,7 +463,7 @@ class RegisterFormActivity: ComponentActivity() {
         // endregion
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
@@ -502,7 +501,7 @@ class RegisterFormActivity: ComponentActivity() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp),
+                .wrapContentHeight(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
         ) {
@@ -559,7 +558,6 @@ class RegisterFormActivity: ComponentActivity() {
             )
 
             Footer(
-                modifier = Modifier.weight(0.08f),
                 onValidation = { validationTrigger = true }
             )
         }
