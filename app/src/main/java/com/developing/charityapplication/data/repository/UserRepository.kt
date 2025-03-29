@@ -3,6 +3,7 @@ package com.developing.charityapplication.data.repository
 import android.util.Log
 import com.developing.charityapplication.data.api.APIUserService
 import com.developing.charityapplication.domain.model.*
+import com.developing.charityapplication.domain.model.requirement.RequirementM
 import com.developing.charityapplication.domain.model.user.RequestCreateUser
 import com.developing.charityapplication.domain.model.user.UserM
 import com.developing.charityapplication.domain.repository.IUserRepo
@@ -43,6 +44,9 @@ class UserRepository @Inject constructor(
     // endregion
 
     // region --- Properties ---
+    var responseError: ResponseM<RequirementM> = ResponseM<RequirementM>()
+        get() = field
+        private set(value) { field = value }
     // endregion
 
 }
