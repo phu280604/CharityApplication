@@ -34,7 +34,8 @@
     <string name="question_authentication">Bạn không nhận được mã?</string>
     <string name="resend">Gửi lại</string>
     <string name="regis_form">Đăng ký tài khoản</string>
-    <string name="name">Họ và tên</string>
+    <string name="last_name">Họ</string>
+    <string name="first_name">Tên</string>
     <string name="email">Email</string>
     <string name="username">Tên đăng nhập</string>
     <string name="repassword">Xác nhận mật khẩu</string>
