@@ -41,8 +41,11 @@ class InputFieldComponent(
                 unfocusedTextColor = AppColorTheme.onPrimary,
                 focusedBorderColor = AppColorTheme.onPrimary,
                 focusedTextColor = AppColorTheme.onPrimary,
-                focusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
-                unfocusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
+                //focusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
+              // unfocusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
+                errorBorderColor = AppColorTheme.onError,
+                errorLabelColor = AppColorTheme.onError,
+                errorSupportingTextColor = AppColorTheme.onError,
                 errorTextColor = AppColorTheme.onError
             ),
             shape = config.shape,
@@ -60,10 +63,6 @@ class InputFieldComponent(
 
     @Composable
     override fun BasicDecorate(content: @Composable (() -> Unit)) {
-        BasicTextField(
-            value = "",
-            onValueChange = {}
-        )
         BasicTextField(
             value = config.value,
             onValueChange = config.onValueChange ?: {},

@@ -55,7 +55,9 @@ import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.PostComponent
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.theme.AppTypography
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserAppActivity : ComponentActivity() {
 
     // region --- Overrides ---
@@ -64,43 +66,33 @@ class UserAppActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent{
-            MainUIOverview()
+            val scrollState = rememberScrollState()
+            HeartBellTheme {
+                Scaffold(
+                    topBar = { Header() },
+                    bottomBar = { Footer() },
+                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                ){ innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .background(
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .verticalScroll(scrollState)
+                    ) {
+
+                    }
+                }
+            }
         }
     }
     
     // endregion
 
     // region --- Methods ---
-
-    // region -- Main UI Overview --
-    @Preview
-    @Composable
-    fun MainUIOverview(){
-        val scrollState = rememberScrollState()
-        val config = PostConfig()
-        HeartBellTheme {
-            Scaffold(
-                topBar = { Header() },
-                bottomBar = { Footer() },
-                modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
-            ){ innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .background(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .verticalScroll(scrollState)
-                ) {
-                    repeat(2) { PostComponent(config)
-                        .PostPreview() }
-                }
-            }
-        }
-    }
-    // endregion
 
     // region -- Component Section --
 
@@ -118,40 +110,6 @@ class UserAppActivity : ComponentActivity() {
             .build()
             .getConfig()
     }
-
-    // endregion
-
-    // region -- Header Section --
-
-    @Composable
-    fun Header() {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(64.dp, 80.dp),
-            shadowElevation = 4.dp,
-            color = MaterialTheme.colorScheme.primary
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp, 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    SearchBar()
-                    NotificationBadge()
-                }
-            }
-        }
-    }
-
-    // region - Header Component -
 
     @Composable
     fun SearchBar() {
@@ -262,63 +220,6 @@ class UserAppActivity : ComponentActivity() {
         }
     }
 
-    // endregion
-
-    // endregion
-
-    // region -- Footer Section --
-
-    @Composable
-    fun Footer(){
-
-        val navOptions = listOf(
-            Pair(R.string.nav_home, R.drawable.ic_nav_home),
-            Pair(R.string.nav_following, R.drawable.ic_nav_users),
-            Pair(-1, R.drawable.ic_nav_plus),
-            Pair(R.string.nav_chatting, R.drawable.ic_nav_chattting),
-            Pair(R.string.nav_profile, -1),
-        )
-        val (selectedOption, onOptionSelected) = remember { mutableStateOf(navOptions[0]) }
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shadowElevation = 8.dp,
-            color = MaterialTheme.colorScheme.primary
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .selectableGroup(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                navOptions.forEach {
-                    item ->
-                    var isSelected = item == selectedOption
-                    var isIcon = item.second >= 0
-
-                    NavigateItem(
-                        isSelected = isSelected,
-                        text = item.first,
-                        isIcon = isIcon,
-                        iconRes = item.second,
-                        modifier = Modifier
-                            .selectable(
-                                selected = (item.first == selectedOption.first),
-                                onClick = {
-                                    /*TODO: Implement nav home logic*/
-                                    onOptionSelected(item)
-                                },
-                                role = Role.RadioButton
-                            )
-                    )
-                }
-            }
-        }
-    }
-
     @Composable
     fun NavigateItem(
         modifier: Modifier = Modifier,
@@ -327,7 +228,7 @@ class UserAppActivity : ComponentActivity() {
         isIcon: Boolean = true,
         iconRes: Int = -1,
         imageRes: Int = R.drawable.avt_young_girl
-        ){
+    ){
         val color = if (isSelected && text >= 0) MaterialTheme.colorScheme.secondary
         else if (text < 0) MaterialTheme.colorScheme.onSecondary
         else MaterialTheme.colorScheme.onPrimary
@@ -386,6 +287,114 @@ class UserAppActivity : ComponentActivity() {
         }
     }
 
+    // region -- UI Section --
+    @Composable
+    fun Header() {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(64.dp, 80.dp),
+            shadowElevation = 4.dp,
+            color = MaterialTheme.colorScheme.primary
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp, 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    SearchBar()
+                    NotificationBadge()
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun Footer(){
+
+        val navOptions = listOf(
+            Pair(R.string.nav_home, R.drawable.ic_nav_home),
+            Pair(R.string.nav_following, R.drawable.ic_nav_users),
+            Pair(-1, R.drawable.ic_nav_plus),
+            Pair(R.string.nav_chatting, R.drawable.ic_nav_chattting),
+            Pair(R.string.nav_profile, -1),
+        )
+        val (selectedOption, onOptionSelected) = remember { mutableStateOf(navOptions[0]) }
+
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shadowElevation = 8.dp,
+            color = MaterialTheme.colorScheme.primary
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .selectableGroup(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                navOptions.forEach {
+                    item ->
+                    var isSelected = item == selectedOption
+                    var isIcon = item.second >= 0
+
+                    NavigateItem(
+                        isSelected = isSelected,
+                        text = item.first,
+                        isIcon = isIcon,
+                        iconRes = item.second,
+                        modifier = Modifier
+                            .selectable(
+                                selected = (item.first == selectedOption.first),
+                                onClick = {
+                                    /*TODO: Implement nav home logic*/
+                                    onOptionSelected(item)
+                                },
+                                role = Role.RadioButton
+                            )
+                    )
+                }
+            }
+        }
+    }
+
+    // region -- Main UI Overview --
+    @Preview
+    @Composable
+    fun MainUIOverview(){
+        val scrollState = rememberScrollState()
+        HeartBellTheme {
+            Scaffold(
+                topBar = { Header() },
+                bottomBar = { Footer() },
+                modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
+            ){ innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .background(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .verticalScroll(scrollState)
+                ) {
+
+                }
+            }
+        }
+    }
+    // endregion
+    // endregion
     // endregion
 
     // endregion
