@@ -3,6 +3,7 @@ package com.developing.charityapplication.di.module
 import android.content.Context
 import com.developing.charityapplication.data.authentication.AuthInterceptor
 import com.developing.charityapplication.data.authentication.TokenProvider
+import com.developing.charityapplication.di.cert.getOkHttpClientWithCertificate
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,7 +48,8 @@ object NetworkModule{
         loggingInterceptor: HttpLoggingInterceptor,
         authInterceptor: AuthInterceptor
     ): OkHttpClient {
-        return OkHttpClient.Builder()
+        val sslClient = getOkHttpClientWithCertificate()
+        return sslClient.newBuilder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
@@ -57,7 +59,7 @@ object NetworkModule{
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(LOCAL_BASE_URL)
+            .baseUrl(REMOTE_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -67,7 +69,8 @@ object NetworkModule{
 
     // region --- Fields ---
 
-    private const val LOCAL_BASE_URL = "http://192.168.68.108:80/identity/"
+    private const val LOCAL_BASE_URL = "https://192.168.3.228:80/"
+    private const val REMOTE_BASE_URL = "https://baodungkhoaphu.online/"
 
     // endregion
 

@@ -1,15 +1,16 @@
-package com.developing.charityapplication.domain.model
+package com.developing.charityapplication.domain.model.user
 
+import com.developing.charityapplication.domain.model.role.RoleM
 import java.util.Date
 
-data class UserModel(
+data class UserM(
     var id: String = "",
     var firstName: String = "",
     var lastName: String = "",
     var username: String = "",
     var email: String = "",
     var dob: Date? = null,
-    var roles: List<RoleModel>? = null,
+    var roles: List<RoleM>? = null,
     var provider: String = "",
     var blocked: Boolean = false,
 )

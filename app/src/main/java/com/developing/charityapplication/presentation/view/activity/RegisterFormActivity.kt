@@ -4,7 +4,6 @@ package com.developing.charityapplication.presentation.view.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,7 +35,6 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +53,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -63,10 +60,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
@@ -75,16 +70,12 @@ import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
-import com.developing.charityapplication.domain.model.RequestCreateUser
-import com.developing.charityapplication.domain.model.ResponseModel
-import com.developing.charityapplication.domain.model.UserModel
-import com.developing.charityapplication.infrastructure.utils.Checker
+import com.developing.charityapplication.domain.model.user.RequestCreateUser
 import com.developing.charityapplication.presentation.event.activityEvent.RegisterFormEvent
 import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
 import com.developing.charityapplication.presentation.viewmodel.userViewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class RegisterFormActivity: ComponentActivity() {
@@ -647,7 +638,9 @@ class RegisterFormActivity: ComponentActivity() {
 
         LaunchedEffect(isLoading) {
             if (!isLoading && userInfo != null) {
+                onNavToAuthenticationActivity.putExtra("username", requestUser.username)
                 onNavToAuthenticationActivity.putExtra("email", requestUser.email)
+                onNavToAuthenticationActivity.putExtra("password", requestUser.password)
                 startActivity(onNavToAuthenticationActivity)
                 finish()
             }

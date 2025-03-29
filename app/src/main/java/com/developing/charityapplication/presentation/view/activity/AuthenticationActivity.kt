@@ -25,22 +25,16 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,41 +46,30 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
-import com.developing.charityapplication.presentation.view.component.text.TextComponent
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
+import com.developing.charityapplication.domain.model.auth.RequestLoginAuthM
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
@@ -102,8 +85,11 @@ class AuthenticationActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         isForget = intent.getBooleanExtra("isForget", false)
-        email = intent.getStringExtra("email") ?: ""
-        Log.d("email", email)
+        val userInfo = RequestLoginAuthM()
+        userInfo.username = intent.getStringExtra("username") ?: ""
+        userInfo.password = intent.getStringExtra("password") ?: ""
+        Log.d("UserInfo", userInfo.username)
+        Log.d("UserInfo", userInfo.password)
 
         setContent{
             MainUIPreview()
@@ -114,73 +100,6 @@ class AuthenticationActivity : ComponentActivity() {
 
     // region --- Methods ---
 
-    // region -- Config Default Section --
-    @Composable
-    fun createConfigButton() : ButtonConfig {
-        val colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            containerColor = MaterialTheme.colorScheme.secondary,
-        )
-
-        return remember {
-            ButtonComponentBuilder()
-                .withConfig(
-                    ButtonConfig(
-                        textStyle = AppTypography.bodyMedium,
-                        colors = colors
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
-    @Composable
-    fun createConfigText() : TextConfig {
-        val color = MaterialTheme.colorScheme.onPrimary
-
-        return remember {
-            TextComponentBuilder()
-                .withConfig(
-                    TextConfig(
-                        textStyle = AppTypography.bodyMedium,
-                        color = color
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
-    @Composable
-    fun createConfigInputFields() : InputFieldConfig {
-        val color = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
-                alpha = 0.72f
-            ),
-            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-            cursorColor = MaterialTheme.colorScheme.onPrimary,
-            selectionColors = TextSelectionColors(
-                handleColor = MaterialTheme.colorScheme.onBackground,
-                backgroundColor = MaterialTheme.colorScheme.background
-            )
-        )
-
-        return remember {
-            InputFieldComponentBuilder()
-                .withConfig(
-                    InputFieldConfig(
-                        valueStyle = AppTypography.bodyMedium,
-                        color = color,
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
     // region -- Main UI --
     @Composable
     fun PinEntryCard() {
@@ -190,6 +109,70 @@ class AuthenticationActivity : ComponentActivity() {
 
         var pinValues by remember { mutableStateOf(List(5) { "" }) }
         val focusRequesters = remember { List(5) { FocusRequester() } }
+
+        HeartBellTheme {
+            Scaffold(
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.systemBars),
+                containerColor = MaterialTheme.colorScheme.primary,
+                // Top app bar
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {},
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    onNavToGmailActivity.putExtra("isForget", isForget)
+                                    startActivity(onNavToGmailActivity)
+                                    finish()
+                                    /*TODO: Implement navigate back*/
+                                },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = AppColorTheme.onSurface
+                                ),
+                                modifier = Modifier.padding(start = 16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowLeft,
+                                    contentDescription = null,
+                                    tint = AppColorTheme.onPrimary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        },
+                        actions = {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(40.dp)
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = AppColorTheme.primary
+                        ),
+                        modifier = Modifier
+                            .background(
+                                color = AppColorTheme.primary
+                            )
+                            .shadow(
+                                elevation = 4.dp
+                            )
+                    )
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PinEntryCard()
+                }
+            }
+        }
 
         Card(
             modifier = Modifier
@@ -367,68 +350,73 @@ class AuthenticationActivity : ComponentActivity() {
     @Preview
     @Composable
     fun MainUIPreview(){
-        HeartBellTheme {
-            Scaffold(
-                modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.systemBars),
-                containerColor = MaterialTheme.colorScheme.primary,
-                // Top app bar
-                topBar = {
-                    CenterAlignedTopAppBar(
-                        title = {},
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    onNavToGmailActivity.putExtra("isForget", isForget)
-                                    startActivity(onNavToGmailActivity)
-                                    finish()
-                                    /*TODO: Implement navigate back*/
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = AppColorTheme.onSurface
-                                ),
-                                modifier = Modifier.padding(start = 16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowLeft,
-                                    contentDescription = null,
-                                    tint = AppColorTheme.onPrimary,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                        },
-                        actions = {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .size(40.dp)
-                            )
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = AppColorTheme.primary
-                        ),
-                        modifier = Modifier
-                            .background(
-                                color = AppColorTheme.primary
-                            )
-                            .shadow(
-                                elevation = 4.dp
-                            )
+        PinEntryCard()
+    }
+
+    // region -- Config Default Section --
+    @Composable
+    fun createConfigButton() : ButtonConfig {
+        val colors = ButtonDefaults.buttonColors(
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            containerColor = MaterialTheme.colorScheme.secondary,
+        )
+
+        return remember {
+            ButtonComponentBuilder()
+                .withConfig(
+                    ButtonConfig(
+                        textStyle = AppTypography.bodyMedium,
+                        colors = colors
                     )
-                }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PinEntryCard()
-                }
-            }
+                )
+                .build()
+                .getConfig()
+        }
+    }
+
+    @Composable
+    fun createConfigText() : TextConfig {
+        val color = MaterialTheme.colorScheme.onPrimary
+
+        return remember {
+            TextComponentBuilder()
+                .withConfig(
+                    TextConfig(
+                        textStyle = AppTypography.bodyMedium,
+                        color = color
+                    )
+                )
+                .build()
+                .getConfig()
+        }
+    }
+
+    @Composable
+    fun createConfigInputFields() : InputFieldConfig {
+        val color = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
+                alpha = 0.72f
+            ),
+            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+            cursorColor = MaterialTheme.colorScheme.onPrimary,
+            selectionColors = TextSelectionColors(
+                handleColor = MaterialTheme.colorScheme.onBackground,
+                backgroundColor = MaterialTheme.colorScheme.background
+            )
+        )
+
+        return remember {
+            InputFieldComponentBuilder()
+                .withConfig(
+                    InputFieldConfig(
+                        valueStyle = AppTypography.bodyMedium,
+                        color = color,
+                    )
+                )
+                .build()
+                .getConfig()
         }
     }
     // endregion
@@ -439,7 +427,6 @@ class AuthenticationActivity : ComponentActivity() {
 
     // region --- Fields ---
 
-    private var email: String = ""
     private var isForget: Boolean = false
 
     private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }

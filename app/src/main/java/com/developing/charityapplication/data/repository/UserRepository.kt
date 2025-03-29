@@ -3,6 +3,8 @@ package com.developing.charityapplication.data.repository
 import android.util.Log
 import com.developing.charityapplication.data.api.APIUserService
 import com.developing.charityapplication.domain.model.*
+import com.developing.charityapplication.domain.model.user.RequestCreateUser
+import com.developing.charityapplication.domain.model.user.UserM
 import com.developing.charityapplication.domain.repository.IUserRepo
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
@@ -14,7 +16,7 @@ class UserRepository @Inject constructor(
 
     // region --- Methods ---
 
-    override suspend fun createAccount(userInfo: RequestCreateUser): ResponseModel<UserModel>?{
+    override suspend fun createAccount(userInfo: RequestCreateUser): ResponseM<UserM>?{
         try {
             val response = apiUser.createUser(userInfo)
             if (response.isSuccessful)
@@ -38,6 +40,9 @@ class UserRepository @Inject constructor(
 
     }
 
+    // endregion
+
+    // region --- Properties ---
     // endregion
 
 }
