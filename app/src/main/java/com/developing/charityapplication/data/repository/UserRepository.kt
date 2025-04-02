@@ -3,13 +3,14 @@ package com.developing.charityapplication.data.repository
 import android.util.Log
 import com.developing.charityapplication.data.api.APIUserService
 import com.developing.charityapplication.domain.model.*
-import com.developing.charityapplication.domain.model.requirement.RequirementM
 import com.developing.charityapplication.domain.model.user.RequestCreateUser
 import com.developing.charityapplication.domain.model.user.UserM
 import com.developing.charityapplication.domain.repository.IUserRepo
+import com.developing.charityapplication.infrastructure.utils.JsonConverter
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
 import javax.inject.Inject
+import kotlin.math.log
 
 class UserRepository @Inject constructor(
     private val apiUser : APIUserService
@@ -23,16 +24,15 @@ class UserRepository @Inject constructor(
             if (response.isSuccessful)
             {
                 val result = response.body()!!
-                val json = Gson().toJson(result)
-                Logger.logJson(json)
-                Logger.log(response)
 
                 return result
             }
 
-            Logger.log(response)
 
-            return null
+            val errorString = response.errorBody()?.string() ?: "{}"
+            val result: ResponseM<UserM>  = JsonConverter.fromJson(errorString)
+
+            return result
         }
         catch (ex: Exception){
             Log.d("CreateAccountUser", "Error: $ex")
@@ -41,12 +41,6 @@ class UserRepository @Inject constructor(
 
     }
 
-    // endregion
-
-    // region --- Properties ---
-    var responseError: ResponseM<RequirementM> = ResponseM<RequirementM>()
-        get() = field
-        private set(value) { field = value }
     // endregion
 
 }
