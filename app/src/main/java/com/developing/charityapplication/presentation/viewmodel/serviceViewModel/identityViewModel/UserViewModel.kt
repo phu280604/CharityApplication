@@ -1,12 +1,12 @@
-package com.developing.charityapplication.presentation.viewmodel.userViewModel
+package com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.developing.charityapplication.domain.model.user.RequestCreateUser
-import com.developing.charityapplication.domain.model.ResponseM
-import com.developing.charityapplication.domain.model.user.UserM
-import com.developing.charityapplication.domain.repository.IUserRepo
+import com.developing.charityapplication.domain.model.identityModel.RequestCreateUser
+import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
+import com.developing.charityapplication.domain.model.identityModel.UserM
+import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

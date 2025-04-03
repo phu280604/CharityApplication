@@ -40,7 +40,7 @@ class RegisterFormViewModel @Inject constructor(): ViewModel() {
                 _state = _state.copy(lastNameError = null)
             }
             is RegisterFormEvent.UsernameChange -> {
-                _state = _state.copy(username = event.Username)
+                _state = _state.copy(username = event.username)
                 _state = _state.copy(usernameError = null)
             }
             is RegisterFormEvent.EmailChange -> {

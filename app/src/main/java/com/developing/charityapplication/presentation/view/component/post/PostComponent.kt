@@ -54,7 +54,7 @@ import com.developing.charityapplication.presentation.view.component.post.decora
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppTypography
-import com.developing.charityapplication.presentation.viewmodel.postState.PostState
+import com.developing.charityapplication.presentation.viewmodel.componentViewModel.postState.PostState
 
 
 class PostComponent(
@@ -72,27 +72,6 @@ class PostComponent(
     // endregion
 
     // region --- Methods ---
-
-    // Review
-    @Composable
-    fun PostPreview() {
-        HeartBellTheme {
-            /*  val config = PostConfig(
-                userbackground = R.drawable.avt_young_girl,
-                username = "HopeFoundation",
-                timeAgo = 2,
-                content = "✨ Một bữa ăn - Ngàn nụ cười! ✨" +
-                        "\n\nHôm nay, chúng tôi đã trao hơn 500 suất ăn miễn phí cho những " +
-                        "người vô gia cư tại trung tâm thành phố.",
-                donationValue = "2.5tr VND",
-                dateRange = "12/01/2025 - 12/02/2025",
-                likeCount = "234",
-                commentCount = "234K",
-                shareCount = "23K"
-            )*/
-            Post()
-        }
-    }
 
     // Main UI
     @Composable

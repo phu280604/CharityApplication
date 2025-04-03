@@ -70,11 +70,12 @@ import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
-import com.developing.charityapplication.domain.model.user.RequestCreateUser
+import com.developing.charityapplication.domain.model.identityModel.RequestCreateUser
+import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.event.activityEvent.RegisterFormEvent
 import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
-import com.developing.charityapplication.presentation.viewmodel.userViewModel.UserViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -618,19 +619,13 @@ class RegisterFormActivity: ComponentActivity() {
         val context = LocalContext.current
         // endregion
 
-        val regisSuccessful = stringResource(id = R.string.registration_successful)
+        val regisSuccessful: String = stringResource(id = R.string.sign_up)
         LaunchedEffect(key1 = context) {
             registerVM.validationEvents.collect { event ->
                 when(event){
                     is RegisterFormViewModel.ValidationEvent.Success -> {
                         setUserValue(registerVM.state)
                         userVM.createAccountUser(requestUser)
-
-                        Toast.makeText(
-                            context,
-                            regisSuccessful,
-                            Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
             }
@@ -638,11 +633,30 @@ class RegisterFormActivity: ComponentActivity() {
 
         LaunchedEffect(isLoading) {
             if (!isLoading && userInfo != null) {
-                onNavToAuthenticationActivity.putExtra("username", requestUser.username)
-                onNavToAuthenticationActivity.putExtra("email", requestUser.email)
-                onNavToAuthenticationActivity.putExtra("password", requestUser.password)
-                startActivity(onNavToAuthenticationActivity)
-                finish()
+                val status = StatusCode.fromCode(userInfo?.code ?: 0)
+                val text: String = StatusCode.fromStatusResId(status.statusResId)
+
+                when(userInfo!!.code){
+                    1000 -> {
+                        Toast.makeText(
+                            context,
+                            regisSuccessful + " " + text,
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        onNavToAuthenticationActivity.putExtra("username", requestUser.username)
+                        onNavToAuthenticationActivity.putExtra("password", requestUser.password)
+                        startActivity(onNavToAuthenticationActivity)
+                        finish()
+                    }
+                    else -> {
+                        Toast.makeText(
+                            context,
+                            text,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
         }
 

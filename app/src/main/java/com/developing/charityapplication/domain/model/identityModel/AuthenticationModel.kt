@@ -1,4 +1,4 @@
-package com.developing.charityapplication.domain.model.auth
+package com.developing.charityapplication.domain.model.identityModel
 
 data class AuthenticationM(
     val token: String? = null,

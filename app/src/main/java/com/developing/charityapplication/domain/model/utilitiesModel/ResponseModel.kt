@@ -1,4 +1,4 @@
-package com.developing.charityapplication.domain.model
+package com.developing.charityapplication.domain.model.utilitiesModel
 
 data class ResponseM<T>(
     var code: Int = 0,

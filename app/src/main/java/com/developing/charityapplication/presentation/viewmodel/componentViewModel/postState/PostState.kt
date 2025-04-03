@@ -1,4 +1,4 @@
-package com.developing.charityapplication.presentation.viewmodel.postState
+package com.developing.charityapplication.presentation.viewmodel.componentViewModel.postState
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.*

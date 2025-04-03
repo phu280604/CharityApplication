@@ -1,4 +1,4 @@
-package com.developing.charityapplication.di.module
+package com.developing.charityapplication.di.module.network
 
 import android.content.Context
 import com.developing.charityapplication.data.authentication.AuthInterceptor
@@ -70,7 +70,7 @@ object NetworkModule{
     // region --- Fields ---
 
     private const val LOCAL_BASE_URL = "https://192.168.3.228:80/"
-    private const val REMOTE_BASE_URL = "https://baodungkhoaphu.online/"
+    private const val REMOTE_BASE_URL = "https://baodungkhoaphu.online/api/v1.0.0/"
 
     // endregion
 

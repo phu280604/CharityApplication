@@ -69,9 +69,10 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
-import com.developing.charityapplication.domain.model.auth.RequestLoginAuthM
+import com.developing.charityapplication.domain.model.identityModel.RequestLoginAuthM
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
+import com.developing.charityapplication.presentation.view.screen.authenticationScr.AuthScreen
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -92,7 +93,7 @@ class AuthenticationActivity : ComponentActivity() {
         Log.d("UserInfo", userInfo.password)
 
         setContent{
-            MainUIPreview()
+            PinEntryCard()
         }
     }
 
@@ -103,13 +104,6 @@ class AuthenticationActivity : ComponentActivity() {
     // region -- Main UI --
     @Composable
     fun PinEntryCard() {
-        val textConfig =  createConfigText()
-        val textFieldConfig = createConfigInputFields()
-        val buttonConfig = createConfigButton()
-
-        var pinValues by remember { mutableStateOf(List(5) { "" }) }
-        val focusRequesters = remember { List(5) { FocusRequester() } }
-
         HeartBellTheme {
             Scaffold(
                 modifier = Modifier
@@ -169,179 +163,8 @@ class AuthenticationActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
-                    PinEntryCard()
+                    AuthScreen(isForget)
                 }
-            }
-        }
-
-        Card(
-            modifier = Modifier
-                .offset(y = (-56).dp)
-                .padding(horizontal = 24.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .border(
-                    width = 0.72f.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // region - Information -
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    TextComponentBuilder()
-                        .withConfig(
-                            textConfig.copy(
-                                text = stringResource(id = R.string.subtitle_authentication),
-                                textStyle = AppTypography.titleMedium
-                            )
-                        )
-                        .build()
-                        .BaseDecorate {  }
-                }
-                // endregion
-
-                // region - Pin Input -
-                Column(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                ) {
-
-                    TextComponentBuilder()
-                        .withConfig(
-                            textConfig.copy(
-                                text = stringResource(id = R.string.the_authentication_code),
-                                textStyle = AppTypography.headlineSmall,
-                                modifier = Modifier.padding()
-                            )
-                        )
-                        .build()
-                        .BaseDecorate {  }
-
-                    LazyRow(
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        itemsIndexed(pinValues) {
-                            index, item ->
-
-                            var countRequest = 1
-                            if (index >= pinValues.count() - 1)
-                                countRequest = 0
-
-                            InputFieldComponentBuilder()
-                                .withConfig(
-                                    textFieldConfig.copy(
-                                        value = item,
-                                        onValueChange = { newValue ->
-                                            if (newValue.length <= 1 && newValue.isDigitsOnly()) {
-                                                val newPinValues = pinValues.toMutableList()
-                                                newPinValues[index] = newValue
-                                                pinValues = newPinValues
-
-                                                if (newValue.isNotEmpty() && index < (pinValues.count() - 1)) {
-                                                    focusRequesters[index + 1].requestFocus()
-                                                }
-
-                                                if(newValue.isEmpty() && index - 1 >= 0){
-                                                    focusRequesters[index - 1].requestFocus()
-                                                }
-                                            }
-                                        },
-                                        shape = RoundedCornerShape(8.dp),
-                                        maxLine = 1,
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .width(40.dp)
-                                            .focusRequester(focusRequesters[index])
-                                            .focusProperties { next = focusRequesters[index + countRequest] },
-                                        keyboardOptions = KeyboardOptions.Default.copy(
-                                            keyboardType = KeyboardType.Number
-                                        )
-                                    )
-                                )
-                                .build()
-                                .BaseDecorate {  }
-
-                        }
-                    }
-                }
-                // endregion
-
-                // region - Submit -
-                ButtonComponentBuilder()
-                    .withConfig(
-                        buttonConfig.copy(
-                            text = stringResource(id = R.string.authentication_button),
-                            onClick = {
-                                startActivity(onNavToNextActivity)
-                                finish()
-                                /*TODO: Implement Submit Logic*/
-                            },
-                            textStyle = AppTypography.bodyMedium,
-                            modifier = Modifier
-                                .padding(top = 24.dp)
-                                .height(40.dp)
-                                .fillMaxWidth(0.8f)
-                        )
-                    )
-                    .build()
-                    .BaseDecorate {  }
-                // endregion
-
-                // region - Resend -
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                    verticalAlignment = Alignment.CenterVertically
-
-                ) {
-                    TextComponentBuilder()
-                        .withConfig(
-                            textConfig.copy(
-                                text = stringResource(id = R.string.question_authentication),
-                            )
-                        )
-                        .build()
-                        .BaseDecorate {  }
-
-                    TextComponentBuilder()
-                        .withConfig(
-                            textConfig.copy(
-                                text = stringResource(id = R.string.resend),
-                                color = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier
-                                    .clickable(
-                                        onClick = { /*TODO: Implements resend pin logic*/ },
-                                        role = Role.Button
-                                    )
-                            )
-                        )
-                        .build()
-                        .BaseDecorate {  }
-                }
-                // endregion
             }
         }
     }
@@ -352,74 +175,6 @@ class AuthenticationActivity : ComponentActivity() {
     fun MainUIPreview(){
         PinEntryCard()
     }
-
-    // region -- Config Default Section --
-    @Composable
-    fun createConfigButton() : ButtonConfig {
-        val colors = ButtonDefaults.buttonColors(
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            containerColor = MaterialTheme.colorScheme.secondary,
-        )
-
-        return remember {
-            ButtonComponentBuilder()
-                .withConfig(
-                    ButtonConfig(
-                        textStyle = AppTypography.bodyMedium,
-                        colors = colors
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
-    @Composable
-    fun createConfigText() : TextConfig {
-        val color = MaterialTheme.colorScheme.onPrimary
-
-        return remember {
-            TextComponentBuilder()
-                .withConfig(
-                    TextConfig(
-                        textStyle = AppTypography.bodyMedium,
-                        color = color
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
-    @Composable
-    fun createConfigInputFields() : InputFieldConfig {
-        val color = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
-                alpha = 0.72f
-            ),
-            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-            cursorColor = MaterialTheme.colorScheme.onPrimary,
-            selectionColors = TextSelectionColors(
-                handleColor = MaterialTheme.colorScheme.onBackground,
-                backgroundColor = MaterialTheme.colorScheme.background
-            )
-        )
-
-        return remember {
-            InputFieldComponentBuilder()
-                .withConfig(
-                    InputFieldConfig(
-                        valueStyle = AppTypography.bodyMedium,
-                        color = color,
-                    )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-    // endregion
     // endregion
     // endregion
 
@@ -430,14 +185,6 @@ class AuthenticationActivity : ComponentActivity() {
     private var isForget: Boolean = false
 
     private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }
-    private val onNavToNextActivity: Intent by lazy {
-        var nextClass: Class<*>
-        if(isForget)
-            nextClass = RecoveryActivity::class.java
-        else
-            nextClass = UserAppActivity::class.java
-        Intent(this, nextClass)
-    }
 
     // endregion
 
