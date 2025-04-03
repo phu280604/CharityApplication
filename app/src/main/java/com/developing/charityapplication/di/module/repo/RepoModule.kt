@@ -1,4 +1,4 @@
-package com.developing.charityapplication.di.module.viewModel
+package com.developing.charityapplication.di.module.repo
 
 import com.developing.charityapplication.data.repository.identityRepo.UsersRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
@@ -9,7 +9,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class ViewModelModule {
+class RepoModule {
 
     // region --- Methods ---
 

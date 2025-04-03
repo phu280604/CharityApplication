@@ -8,5 +8,5 @@ import com.developing.charityapplication.presentation.view.component.post.PostCo
 fun HomePageScreen(){
     val config = PostConfig()
     repeat(2) { PostComponent(config)
-        .PostPreview() }
+        .BaseDecorate {  } }
 }
