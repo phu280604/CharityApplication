@@ -1,4 +1,4 @@
-package com.developing.charityapplication.domain.model.requirement
+package com.developing.charityapplication.domain.model.utilitiesModel
 
 data class RequirementM(
     var code: Int = 0,

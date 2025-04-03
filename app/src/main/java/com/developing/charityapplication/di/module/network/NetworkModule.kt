@@ -1,4 +1,4 @@
-package com.developing.charityapplication.di.module
+package com.developing.charityapplication.di.module.network
 
 import android.content.Context
 import com.developing.charityapplication.data.authentication.AuthInterceptor

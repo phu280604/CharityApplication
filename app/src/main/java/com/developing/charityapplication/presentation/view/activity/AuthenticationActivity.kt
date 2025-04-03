@@ -69,7 +69,7 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
-import com.developing.charityapplication.domain.model.auth.RequestLoginAuthM
+import com.developing.charityapplication.domain.model.identityModel.RequestLoginAuthM
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme

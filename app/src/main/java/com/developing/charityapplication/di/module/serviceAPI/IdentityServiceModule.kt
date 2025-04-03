@@ -1,6 +1,6 @@
-package com.developing.charityapplication.di.module
+package com.developing.charityapplication.di.module.serviceAPI
 
-import com.developing.charityapplication.data.api.APIUserService
+import com.developing.charityapplication.data.api.identityService.UsersAPI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,14 +10,14 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object APIServiceModule {
+object IdentityServiceModule {
 
     // region --- Methods ---
 
     @Provides
     @Singleton
-    fun provideUserAPI(retrofit: Retrofit) : APIUserService{
-        return retrofit.create(APIUserService::class.java)
+    fun provideUserAPI(retrofit: Retrofit) : UsersAPI{
+        return retrofit.create(UsersAPI::class.java)
     }
 
     // endregion

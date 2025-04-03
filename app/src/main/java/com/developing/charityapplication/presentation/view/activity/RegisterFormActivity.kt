@@ -4,7 +4,6 @@ package com.developing.charityapplication.presentation.view.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -71,12 +70,12 @@ import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
-import com.developing.charityapplication.domain.model.user.RequestCreateUser
+import com.developing.charityapplication.domain.model.identityModel.RequestCreateUser
 import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.event.activityEvent.RegisterFormEvent
 import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
-import com.developing.charityapplication.presentation.viewmodel.userViewModel.UserViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

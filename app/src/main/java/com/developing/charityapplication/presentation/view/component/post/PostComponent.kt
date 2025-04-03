@@ -54,7 +54,7 @@ import com.developing.charityapplication.presentation.view.component.post.decora
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppTypography
-import com.developing.charityapplication.presentation.viewmodel.postState.PostState
+import com.developing.charityapplication.presentation.viewmodel.componentViewModel.postState.PostState
 
 
 class PostComponent(

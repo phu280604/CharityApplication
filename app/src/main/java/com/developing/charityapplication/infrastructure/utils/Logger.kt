@@ -5,7 +5,6 @@ import retrofit2.Response
 
 object Logger {
     fun <T> log(response: Response<T>, sms: String){
-        Log.d("Response_Value", "Success: ${response.isSuccessful}")
         Log.d("Response_Value", "Code: ${response.code()}")
         Log.d("Response_Value", "Sms: ${sms}")
     }
