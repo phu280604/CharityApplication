@@ -9,7 +9,7 @@ import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 
 
 @Composable
-fun FollowerPage(){
+fun FollowerPageScreen(){
     Box(
         modifier = Modifier
             .fillMaxSize()

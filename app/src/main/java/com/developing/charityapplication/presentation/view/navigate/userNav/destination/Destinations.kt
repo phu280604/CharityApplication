@@ -10,4 +10,13 @@ object HomePage
 @Serializable
 object FollowerPage
 
+@Serializable
+object CreatePostPage
+
+@Serializable
+object MessagerPage
+
+@Serializable
+object ProfilePage
+
 // endregion

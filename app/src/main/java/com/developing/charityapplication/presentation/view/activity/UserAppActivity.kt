@@ -76,7 +76,7 @@ class UserAppActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent{
-            UserAppUI()
+
         }
     }
     
@@ -85,7 +85,10 @@ class UserAppActivity : ComponentActivity() {
     // region --- Methods ---
 
     @Composable
-    fun UserAppUI(){
+    fun UserAppUI (
+        idTitle: Int,
+        onNavClick: @Composable () -> Unit,
+    ){
         val scrollState = rememberScrollState()
         HeartBellTheme {
             Scaffold(
@@ -136,6 +139,9 @@ class UserAppActivity : ComponentActivity() {
                                     navItem[selectedItemIndex].isSelected = false
                                     selectedItemIndex = index
                                     item.isSelected = true
+                                    if (idTitle == item.title){
+                                        onNavClick
+                                    }
                                     /*TODO: Navigation Implement*/
                                 },
                                 colors = NavigationBarItemDefaults.colors().copy(
@@ -343,14 +349,6 @@ class UserAppActivity : ComponentActivity() {
             .build()
             .getConfig()
     }
-
-    // region -- Main UI Overview --
-    @Preview
-    @Composable
-    fun MainUIOverview(){
-        UserAppUI()
-    }
-    // endregion
     // endregion
     // endregion
 
