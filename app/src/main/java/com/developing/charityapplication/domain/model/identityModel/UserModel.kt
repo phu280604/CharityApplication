@@ -1,6 +1,5 @@
-package com.developing.charityapplication.domain.model.user
+package com.developing.charityapplication.domain.model.identityModel
 
-import com.developing.charityapplication.domain.model.role.RoleM
 import java.util.Date
 
 data class UserM(

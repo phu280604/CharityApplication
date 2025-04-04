@@ -1,0 +1,2 @@
+API Flow
+Đăng kí: Tạo người dung mới -> Gửi email xác thực 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="status_1000">thành công!</string>
+
+    <string name="status_1001">Khóa được cung cấp không hợp lệ!</string>
+    <string name="status_1002">Tài khoản đã tồn tại!</string>
+    <string name="status_1003">Người dùng không tồn tại!</string>
+
+    <string name="status_9999">Lỗi hệ thống nội bộ không xác định!</string>
+</resources>

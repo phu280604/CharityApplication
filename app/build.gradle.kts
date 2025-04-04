@@ -8,7 +8,8 @@ plugins {
 
     kotlin("plugin.serialization") version "2.0.21"
     alias(libs.plugins.google.firebase.appdistribution)
-    alias(libs.plugins.google.gms.google.services)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -128,7 +129,12 @@ dependencies {
 
 // region -- Life Cycle --
 dependencies{
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1")
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
 
+    // Add the dependencies for the Firebase Cloud Messaging and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-analytics")
 }
 // endregion
