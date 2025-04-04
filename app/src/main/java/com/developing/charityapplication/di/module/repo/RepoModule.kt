@@ -14,7 +14,7 @@ class RepoModule {
     // region --- Methods ---
 
     @Provides
-    fun providesUserVM(repo: UsersRepo): IUserRepo = repo
+    fun providesUsersRepo(repo: UsersRepo): IUserRepo = repo
 
     // endregion
 

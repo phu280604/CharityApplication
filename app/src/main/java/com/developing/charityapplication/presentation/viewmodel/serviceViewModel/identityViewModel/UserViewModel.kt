@@ -36,9 +36,6 @@ class UserViewModel @Inject constructor(
 
     // endregion
 
-
-
-
     // region --- Properties ---
 
     val userInfo: StateFlow<ResponseM<UserM>?>

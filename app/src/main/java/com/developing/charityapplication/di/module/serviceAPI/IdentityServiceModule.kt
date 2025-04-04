@@ -1,5 +1,6 @@
 package com.developing.charityapplication.di.module.serviceAPI
 
+import com.developing.charityapplication.data.api.identityService.AuthAPI
 import com.developing.charityapplication.data.api.identityService.UsersAPI
 import dagger.Module
 import dagger.Provides
