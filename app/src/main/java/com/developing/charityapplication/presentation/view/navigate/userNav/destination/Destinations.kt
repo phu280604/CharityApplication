@@ -5,18 +5,33 @@ import kotlinx.serialization.Serializable
 // region --- User Pages ---
 
 @Serializable
-object HomePage
+object HomeDestinations{
+    @Serializable
+    object HomePage
+}
 
 @Serializable
-object FollowerPage
+object FollowerDestinations{
+    @Serializable
+    object FollowerPage
+}
 
 @Serializable
-object CreatePostPage
+object PostDestinations{
+    @Serializable
+    object CreatePostPage
+}
 
 @Serializable
-object MessagerPage
+object MessageDestinations{
+    @Serializable
+    object MessagerPage
+}
 
 @Serializable
-object ProfilePage
+object ProfileDestinations{
+    @Serializable
+    object ProfilePage
+}
 
 // endregion
