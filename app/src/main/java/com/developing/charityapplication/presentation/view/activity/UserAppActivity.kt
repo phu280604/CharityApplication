@@ -38,8 +38,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -60,6 +62,7 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.MessageDestinations.MessagerPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
+import com.developing.charityapplication.presentation.view.screen.user.HeaderCreatingPost
 import com.developing.charityapplication.presentation.view.screen.user.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
@@ -93,11 +96,25 @@ class UserAppActivity : ComponentActivity() {
             Scaffold(
                 topBar = { Header(navController, selectedState) },
                 bottomBar = {
-                    Footer(
-                        navController,
-                        selectedState,
-                        onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
-                    )
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp)
+                            .background(color = AppColorTheme.primary)
+                            .shadow(
+                                elevation = 16.dp, // độ đổ bóng
+                                shape = RectangleShape,
+                                clip = false
+                            ),
+                        color = AppColorTheme.primary,
+                        contentColor = AppColorTheme.secondary
+                    ) {
+                        Footer(
+                            navController,
+                            selectedState,
+                            onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
+                        )
+                    }
                 },
                 modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
             ){ innerPadding ->
@@ -112,18 +129,23 @@ class UserAppActivity : ComponentActivity() {
         navController: NavHostController,
         selectedIndex: Int
     ) {
-        when (selectedIndex) {
-            4 -> {
-                HeaderProfile(navController)
-            }
-            0 -> {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp),
-                    shadowElevation = 4.dp,
-                    color = AppColorTheme.primary
-                ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .background(color = AppColorTheme.primary),
+            shadowElevation = 4.dp,
+            color = AppColorTheme.primary,
+            contentColor = AppColorTheme.secondary
+        ){
+            when (selectedIndex) {
+                2 -> {
+                    HeaderCreatingPost(navController)
+                }
+                4 -> {
+                    HeaderProfile(navController)
+                }
+                else -> {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -253,10 +275,8 @@ class UserAppActivity : ComponentActivity() {
 
         NavigationBar(
             containerColor = AppColorTheme.primary,
-            tonalElevation = 4.dp,
             modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(56.dp)
+                .fillMaxSize()
         ) {
             navItem.forEachIndexed { index, item ->
                 var color = if (item.title == 0) AppColorTheme.primary
@@ -264,7 +284,7 @@ class UserAppActivity : ComponentActivity() {
                 else AppColorTheme.onPrimary
 
                 val modifier = if (item.title == 0) Modifier
-                    .size(56.dp)
+                    .size(40.dp)
                     .background(
                         color = AppColorTheme.secondary,
                         shape = RoundedCornerShape(8.dp)

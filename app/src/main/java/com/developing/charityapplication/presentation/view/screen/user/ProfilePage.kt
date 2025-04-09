@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,13 +23,11 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,29 +45,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
-import com.developing.charityapplication.presentation.view.theme.AppColorTheme
-import com.developing.charityapplication.presentation.view.theme.AppTypography
+import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
 import kotlinx.coroutines.launch
 
-@Composable
-fun ProfilePageScreen(){
-    val fakePostProfile = fakeDataPostProfile()
-    val scrollState = rememberScrollState()
-
-    BodyProfile(
-        fakePostProfile,
-        Modifier
-            .background(color = AppColorTheme.surface)
-            .verticalScroll(scrollState))
-}
-
+// region --- Methods ---
 @Composable
 fun HeaderProfile(navController: NavHostController){
     val listProfile = listOf(
@@ -85,62 +69,67 @@ fun HeaderProfile(navController: NavHostController){
     val state by userAppVM.selectedIndexState.asIntState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    Surface(
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp),
-        shadowElevation = 4.dp,
-        color = AppColorTheme.primary
+            .fillMaxSize()
+            .padding(12.dp, 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp, 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(listProfile[state].first),
-                        style = AppTypography.titleMedium
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppColorTheme.primary,
-                    titleContentColor = AppColorTheme.secondary.copy(alpha = 0.8f),
-                    navigationIconContentColor = AppColorTheme.secondary.copy(alpha = 0.8f),
-                ),
-                navigationIcon = {
+        TopAppBar(
+            title = {
+                Text(
+                    text = stringResource(listProfile[state].first),
+                    style = AppTypography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+                )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = AppColorTheme.primary,
+                titleContentColor = AppColorTheme.secondary.copy(alpha = 0.8f),
+                navigationIconContentColor = AppColorTheme.secondary.copy(alpha = 0.8f),
+            ),
+            navigationIcon = {
+                Icon(
+                    imageVector = listProfile[state].second,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+            },
+            actions = {
+                IconButton(
+                    onClick = {
+                        showBottomSheet = true
+                    }) {
                     Icon(
-                        imageVector = listProfile[state].second,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = null
                     )
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            showBottomSheet = true
-                        }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = null
+                    if (showBottomSheet)
+                        MenuOpitionProfile(
+                            listProfile,
+                            onChangeState = { showBottomSheet = false },
+                            onNavigate = { navItem -> /*TODO: Implement option profile navigate*/ }
                         )
-                        if (showBottomSheet)
-                            MenuOpitionProfile(
-                                listProfile,
-                                onChangeState = { showBottomSheet = false },
-                                onNavigate = { navItem -> /*TODO: Implement option profile navigate*/ }
-                            )
-                    }
-                },
-            )
+                }
+            },
+        )
 
-        }
     }
 }
 
+@Composable
+fun ProfilePageScreen(){
+    val fakePostProfile = fakeDataPostProfile()
+    val scrollState = rememberScrollState()
+
+    BodyProfile(
+        fakePostProfile,
+        Modifier
+            .background(color = AppColorTheme.surface)
+            .verticalScroll(scrollState))
+}
+
+// region -- Body Section
 @Composable
 fun BodyProfile(posts: List<PostConfig>, modifier: Modifier){
     Column(
@@ -243,6 +232,7 @@ fun DetailsProfile(
     }
 }
 
+// region -- Profile Component --
 @Composable
 fun CategoryPost(
     onClick: () -> Unit
@@ -373,6 +363,7 @@ fun MenuOpitionProfile(
 
 }
 
+// region -- Fake Data --
 @Composable
 fun fakeDataPostProfile(): List<PostConfig>{
     return remember {
@@ -424,3 +415,8 @@ fun fakeDataPostProfile(): List<PostConfig>{
         )
     }
 }
+// endregion
+// endregion
+// endregion
+
+// endregion
