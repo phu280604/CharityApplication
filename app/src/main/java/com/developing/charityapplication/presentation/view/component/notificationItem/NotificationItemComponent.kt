@@ -33,6 +33,8 @@ class NotificationItemComponent(
     private val config: NotificationConfig
 ) : INotificationItemComponentDecorator {
 
+    // region --- Overrides ---
+
     @Composable
     override fun BaseDecorate(content: @Composable (() -> Unit)) {
         Row(
@@ -48,6 +50,7 @@ class NotificationItemComponent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
+            // region -- Avatar User --
             Image(
                 painter = if(config.background != -1)
                     painterResource(id = config.background)
@@ -55,6 +58,8 @@ class NotificationItemComponent(
                 contentDescription = null,
                 modifier = Modifier.weight(0.3f)
             )
+            // endregion
+
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -62,6 +67,7 @@ class NotificationItemComponent(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
+                // region - Title -
                 val hightText = AppTypography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
                 Text(
                     text = buildAnnotatedString {
@@ -87,12 +93,16 @@ class NotificationItemComponent(
                         .weight(1f)
                         .fillMaxSize()
                 )
+                // endregion
+
+                // region - TimeStamp -
                 Text(
                     text = config.timeStamp,
                     style = AppTypography.labelMedium,
                     color = AppColorTheme.onPrimary.copy(alpha = 0.2f),
                     modifier = Modifier.weight(0.3f)
                 )
+                // endregion
             }
         }
     }
@@ -100,4 +110,6 @@ class NotificationItemComponent(
     override fun getConfig(): NotificationConfig {
         return config
     }
+
+    // endregion
 }

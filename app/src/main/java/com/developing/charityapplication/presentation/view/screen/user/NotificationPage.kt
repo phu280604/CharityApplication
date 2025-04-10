@@ -13,27 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.asIntState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -47,8 +36,8 @@ import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.notificationItem.builder.NotificationItemComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
-import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
 
+// region --- Methods ---
 @Composable
 fun HeaderNotification(navController: NavHostController){
     Column(
@@ -90,6 +79,7 @@ fun NotificationPageScreen(){
         modifier = Modifier
             .fillMaxSize()
     ) {
+        // region -- Button Mark Read --
         Box(
             modifier = Modifier
                 .weight(0.1f)
@@ -121,12 +111,14 @@ fun NotificationPageScreen(){
                     .fillMaxWidth(0.8f)
             )
         }
+        // endregion
 
         HorizontalDivider(
             thickness = 1.dp,
             color = AppColorTheme.onPrimary
         )
 
+        // region -- Notification Items --
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -141,9 +133,11 @@ fun NotificationPageScreen(){
                     .BaseDecorate {  }
             }
         }
+        // endregion
     }
 }
 
+// region --- Create Notification Config ---
 fun createNotification(
     username: String = "",
     background: Int = -1,
@@ -163,7 +157,7 @@ fun createNotification(
     )
 }
 
-
+// region --- Fake Datas --
 fun fakeDatas(): List<NotificationConfig>{
     return listOf(
                 createNotification(
@@ -228,3 +222,7 @@ fun fakeDatas(): List<NotificationConfig>{
                 )
             )
 }
+// endregion
+// endregion
+
+// endregion

@@ -14,6 +14,8 @@ import com.developing.charityapplication.presentation.view.component.post.PostCo
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
 
+// region --- Methods ---
+
 @Composable
 fun HomePageScreen(){
     val scrollState = rememberScrollState()
@@ -36,6 +38,7 @@ fun HomePageScreen(){
     }
 }
 
+// region --- Fake Datas ---
 @Composable
 fun fakeDataPost(): List<PostConfig>{
     return remember {
@@ -87,3 +90,4 @@ fun fakeDataPost(): List<PostConfig>{
         )
     }
 }
+// endregion
