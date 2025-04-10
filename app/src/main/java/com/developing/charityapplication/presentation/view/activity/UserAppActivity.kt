@@ -63,6 +63,7 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
 import com.developing.charityapplication.presentation.view.screen.user.HeaderCreatingPost
+import com.developing.charityapplication.presentation.view.screen.user.HeaderFollower
 import com.developing.charityapplication.presentation.view.screen.user.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
@@ -139,6 +140,9 @@ class UserAppActivity : ComponentActivity() {
             contentColor = AppColorTheme.secondary
         ){
             when (selectedIndex) {
+                1 -> {
+                    HeaderFollower(navController)
+                }
                 2 -> {
                     HeaderCreatingPost(navController)
                 }
