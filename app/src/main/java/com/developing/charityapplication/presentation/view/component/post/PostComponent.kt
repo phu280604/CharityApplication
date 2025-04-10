@@ -1,12 +1,12 @@
 package com.developing.charityapplication.presentation.view.component.post
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,14 +25,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +43,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
@@ -53,8 +51,8 @@ import com.developing.charityapplication.presentation.view.component.image.build
 import com.developing.charityapplication.presentation.view.component.post.decorator.IPostComponentDecorator
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
-import com.developing.charityapplication.presentation.view.theme.AppTypography
-import com.developing.charityapplication.presentation.viewmodel.componentViewModel.postState.PostState
+import com.developing.charityapplication.presentation.view.theme.*
+import com.developing.charityapplication.presentation.viewmodel.componentViewModel.postState.DropDownMenuState
 
 
 class PostComponent(
@@ -76,9 +74,6 @@ class PostComponent(
     // Main UI
     @Composable
     fun Post() {
-        this.color = MaterialTheme.colorScheme
-        this.typography = AppTypography
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,7 +82,7 @@ class PostComponent(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RectangleShape
         ) {
             Column {
                 // Post header
@@ -98,6 +93,11 @@ class PostComponent(
 
                 // Post actions
                 PostFooter()
+
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = AppColorTheme.surface
+                )
             }
         }
     }
@@ -142,7 +142,7 @@ class PostComponent(
                         .withConfig(
                             textConfigDefault.copy(
                                 text = config.username,
-                                textStyle = typography!!.titleMedium.copy(
+                                textStyle = AppTypography.titleMedium.copy(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             )
@@ -154,9 +154,9 @@ class PostComponent(
                         .withConfig(
                             textConfigDefault.copy(
                                 text = "${config.timeAgo} ${stringResource(id = R.string.hour_ago)}",
-                                textStyle = typography!!.labelMedium.copy(
+                                textStyle = AppTypography.labelMedium.copy(
                                     fontWeight = FontWeight.Light,
-                                    color = color!!.onPrimary.copy(
+                                    color = AppColorTheme.onPrimary.copy(
                                         alpha = 0.32f
                                     )
                                 )
@@ -350,8 +350,6 @@ class PostComponent(
 
     // Config Default
     fun createImageDefault(): ImageConfig {
-        if (this.color == null) return ImageConfig()
-        Log.d("DEBUG", "Drawable ID: ${R.drawable.avt_young_girl}")
         return ImageComponentBuilder()
             .withConfig(newConfig = ImageConfig(
                 painter = R.drawable.avt_young_girl,
@@ -361,7 +359,7 @@ class PostComponent(
                     .clip(CircleShape)
                     .border(
                         width = 1.dp,
-                        color = this.color!!.secondary,
+                        color = AppColorTheme.secondary,
                         shape = CircleShape
                     )
             ))
@@ -370,13 +368,11 @@ class PostComponent(
     }
 
     fun createTextDefault(): TextConfig {
-        if (this.color == null || this.typography == null)
-            return TextConfig()
         return TextComponentBuilder()
             .withConfig(
                 newConfig = TextConfig(
-                    textStyle = this.typography!!.bodyMedium,
-                    color = this.color!!.onPrimary
+                    textStyle = AppTypography.bodyMedium,
+                    color = AppColorTheme.onPrimary
                 )
             )
             .build()
@@ -384,17 +380,15 @@ class PostComponent(
     }
 
     fun createButtonDefault(): ButtonConfig {
-        if (this.color == null || this.typography == null)
-            return ButtonConfig()
         return ButtonComponentBuilder()
             .withConfig(
                 newConfig = ButtonConfig(
-                    textStyle = this.typography!!.bodyMedium,
+                    textStyle = AppTypography.bodyMedium,
                     colors = ButtonColors(
-                        containerColor = color!!.primary,
-                        contentColor = color!!.onPrimary,
-                        disabledContainerColor = color!!.surface,
-                        disabledContentColor = color!!.onSurface
+                        containerColor = AppColorTheme.primary,
+                        contentColor = AppColorTheme.onPrimary,
+                        disabledContainerColor = AppColorTheme.surface,
+                        disabledContentColor = AppColorTheme.onSurface
                     )
                 )
             )
@@ -406,8 +400,8 @@ class PostComponent(
     @Composable
     fun OptionMenuLayout(){
         DropdownMenu(
-            expanded = postState._expended,
-            onDismissRequest = { if (postState._expended) postState.toggleExpendState() },
+            expanded = postState.expended,
+            onDismissRequest = { if (postState.expended) postState.toggleExpendState() },
             modifier = Modifier
                 .widthIn(80.dp, 192.dp)
                 .heightIn(80.dp, 192.dp)
@@ -433,15 +427,15 @@ class PostComponent(
                         text = {
                             Text(
                                 text = stringResource(id = item.second),
-                                style = typography!!.bodyMedium,
-                                color = color!!.onPrimary
+                                style = AppTypography.bodyMedium,
+                                color = AppColorTheme.onPrimary
                             )
                         },
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(id = item.first),
                                 contentDescription = null,
-                                tint = color!!.onPrimary,
+                                tint = AppColorTheme.onPrimary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -452,7 +446,7 @@ class PostComponent(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             thickness = 1.dp,
-                            color = color!!.surface
+                            color = AppColorTheme.surface
                         )
                 }
             }
@@ -463,10 +457,7 @@ class PostComponent(
 
     // region --- Fields ---
 
-    private val postState: PostState = PostState()
-
-    private var color: ColorScheme? = null
-    private var typography: Typography? = null
+    private val postState: DropDownMenuState = DropDownMenuState()
 
     private val listItemMenu = listOf(
         Pair(R.drawable.ic_bookmark, R.string.bookmark),

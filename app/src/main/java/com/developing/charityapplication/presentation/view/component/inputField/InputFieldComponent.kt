@@ -41,8 +41,6 @@ class InputFieldComponent(
                 unfocusedTextColor = AppColorTheme.onPrimary,
                 focusedBorderColor = AppColorTheme.onPrimary,
                 focusedTextColor = AppColorTheme.onPrimary,
-                //focusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
-              // unfocusedLabelColor = AppColorTheme.onPrimary.copy(alpha = 0.8f),
                 errorBorderColor = AppColorTheme.onError,
                 errorLabelColor = AppColorTheme.onError,
                 errorSupportingTextColor = AppColorTheme.onError,
@@ -63,22 +61,37 @@ class InputFieldComponent(
 
     @Composable
     override fun BasicDecorate(content: @Composable (() -> Unit)) {
-        BasicTextField(
+        TextField(
             value = config.value,
-            onValueChange = config.onValueChange ?: {},
             textStyle = config.valueStyle,
+            onValueChange = config.onValueChange ?: {},
+            label = config.label,
+            placeholder = config.placeHolder,
+            colors = config.color as? TextFieldColors ?: TextFieldDefaults.colors(
+                cursorColor = AppColorTheme.onPrimary,
+                selectionColors = TextSelectionColors(
+                    handleColor = AppColorTheme.onBackground,
+                    backgroundColor = AppColorTheme.background
+                ),
+                unfocusedContainerColor = AppColorTheme.primary,
+                focusedContainerColor = AppColorTheme.primary,
+                unfocusedIndicatorColor = AppColorTheme.primary,
+                unfocusedTextColor = AppColorTheme.onPrimary,
+                focusedTextColor = AppColorTheme.onPrimary,
+                errorLabelColor = AppColorTheme.onError,
+                errorSupportingTextColor = AppColorTheme.onError,
+                errorTextColor = AppColorTheme.onError
+            ),
+            shape = config.shape,
+            isError = config.isError,
+            supportingText = config.supportText,
             maxLines = config.maxLine,
             minLines = config.minLine,
             modifier = config.modifier,
             visualTransformation = config.visualTransformation,
             keyboardOptions = config.keyboardOptions,
             keyboardActions = config.keyboardActions,
-        ){
-            content
-        }
-        TextField(
-            value = "",
-            onValueChange = {}
+            trailingIcon = config.leadingIcon,
         )
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="creating_page">Đăng bài viết mới</string>
+    <string name="timeline_title">Đặt lịch quyên góp</string>
+    <string name="timeline_date">ngày</string>
+    <string name="timeline_from">Từ</string>
+    <string name="timeline_to">Đến</string>
+    <string name="media_title">Tải ảnh hoặc video</string>
+    <string name="upload_media">Bấm để tải lên hoặc kéo và thả</string>
+    <string name="media_condi">JPG, PNG hoặc VIDEO (tối đa 5MB)</string>
+    <string name="media_button">Chọn tệp</string>
+    <string name="content_area">Nội dung</string>
+    <string name="creating_post">Đăng</string>
+</resources>

@@ -1,20 +1,38 @@
 package com.developing.charityapplication.presentation.view.screen.user
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.developing.charityapplication.presentation.view.component.post.PostComponent
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.R
+import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
 
 @Composable
 fun HomePageScreen(){
-    val config = fakeDataPost()
+    val scrollState = rememberScrollState()
     Column(
-        //modifier = Modifier.f
-    ) {
-
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .verticalScroll(scrollState)
+    ){
+        val postConfig = fakeDataPost()
+        postConfig.forEachIndexed{
+                index, item ->
+            PostComponentBuilder()
+                .withConfig(
+                    item
+                )
+                .build()
+                .BaseDecorate {  }
+        }
     }
 }
 

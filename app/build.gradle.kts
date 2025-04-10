@@ -138,3 +138,13 @@ dependencies{
     implementation("com.google.firebase:firebase-analytics")
 }
 // endregion
+
+// region -- Coil --
+
+dependencies {
+    //noinspection UseTomlInstead
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+}
+
+// endregion

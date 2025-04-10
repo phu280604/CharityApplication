@@ -1,50 +1,64 @@
 package com.developing.charityapplication.presentation.view.navigate.userNav
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.developing.charityapplication.presentation.view.activity.UserAppActivity
+import androidx.navigation.navigation
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.*
-import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.screen.user.*
 
 @Composable
-fun NavigationUsersApplication(){
-    val navController = rememberNavController()
+fun NavigationUsersApplication(modifier: Modifier, navController: NavHostController){
     NavHost(
         navController = navController,
-        startDestination = HomePage
+        startDestination = HomeDestinations,
+        modifier = modifier
     ){
-        composable<HomePage>{
-            UserAppActivity().UserAppUI(
-                idTitle = R.string.nav_home,
-                onNavClick = { HomePageScreen() }
-            )
+        // region -- HomePage --
+        navigation<HomeDestinations>(startDestination = HomeDestinations.HomePage){
+            composable<HomeDestinations.HomePage>{
+                HomePageScreen()
+            }
         }
-        composable<FollowerPage>{
-            UserAppActivity().UserAppUI(
-                idTitle = R.string.nav_following,
-                onNavClick = { FollowerPageScreen() }
-            )
+        // endregion
+
+        // region -- FollowerPage --
+        navigation<FollowerDestinations>(startDestination = FollowerDestinations.FollowerPage){
+            composable<FollowerDestinations.FollowerPage>{
+                Log.d("Screen", "FollowerPage")
+                FollowerPageScreen()
+            }
         }
-        composable<CreatePostPage>{
-            UserAppActivity().UserAppUI(
-                idTitle = 0,
-                onNavClick = { CreatingPostPageScreen() }
-            )
+        // endregion
+
+        // region -- PostPage --
+        navigation<PostDestinations>(startDestination = PostDestinations.CreatePostPage){
+            composable<PostDestinations.CreatePostPage>{
+                Log.d("Screen", "CreatingPostPage")
+                CreatingPostPageScreen()
+            }
         }
-        composable<MessagerPage>{
-            UserAppActivity().UserAppUI(
-                idTitle = R.string.nav_chatting,
-                onNavClick = { MessagePageScreen() }
-            )
+        // endregion
+
+        // region -- MessagePage --
+        navigation<MessageDestinations>(startDestination = MessageDestinations.MessagerPage){
+            composable<MessageDestinations.MessagerPage>{
+                Log.d("Screen", "SMSPage")
+                MessagePageScreen()
+            }
         }
-        composable<ProfilePage>{
-            UserAppActivity().UserAppUI(
-                idTitle = R.string.nav_profile,
-                onNavClick = { ProfilePageScreen() }
-            )
+        // endregion
+
+        // region -- ProfilePage --
+        navigation<ProfileDestinations>(startDestination = ProfileDestinations.ProfilePage){
+            composable<ProfileDestinations.ProfilePage>{
+                Log.d("Screen", "ProfilePage")
+                ProfilePageScreen()
+            }
         }
+        // endregion
     }
 }

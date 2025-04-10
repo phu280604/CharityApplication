@@ -1,5 +1,7 @@
 package com.developing.charityapplication.infrastructure.utils
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.ui.res.stringResource
 import com.developing.charityapplication.R
 
@@ -45,6 +47,16 @@ object Checker {
     fun isValidEmail(email: String): Int {
         val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")
         return if(!emailRegex.matches(email)) return R.string.error_email_field else return 0
+    }
+
+    fun isImage(uri: Uri, context: Context): Boolean {
+        val type = context.contentResolver.getType(uri) ?: return false
+        return type.startsWith("image/")
+    }
+
+    fun isVideo(uri: Uri, context: Context): Boolean {
+        val type = context.contentResolver.getType(uri) ?: return false
+        return type.startsWith("video/")
     }
 
     // endregion

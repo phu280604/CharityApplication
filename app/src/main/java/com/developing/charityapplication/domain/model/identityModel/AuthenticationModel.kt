@@ -7,7 +7,7 @@ data class AuthenticationM(
     val otpRequired: String = ""
 )
 
-data class RequestLoginAuthM(
+data class RequestLoginM(
     var username: String = "",
     var password: String = "",
 )
