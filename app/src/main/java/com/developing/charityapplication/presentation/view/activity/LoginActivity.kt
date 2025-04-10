@@ -483,7 +483,7 @@ class LoginActivity() : ComponentActivity() {
 
     // region --- Fields ---
 
-    private val onNavToHomePage: Intent by lazy { Intent(this, UserAppActivity::class.java) }
+    private val onNavToHomePage: Intent by lazy { Intent(this, AdminAppActivity::class.java) }
     private val onNavToForgetPassword: Intent by lazy { Intent(this, GmailActivity::class.java) }
     private val onNavToRegister: Intent by lazy { Intent(this, RegisterFormActivity::class.java) }
 
