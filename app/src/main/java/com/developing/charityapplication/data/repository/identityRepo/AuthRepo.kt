@@ -1,26 +1,26 @@
 package com.developing.charityapplication.data.repository.identityRepo
 
 import android.util.Log
-import com.developing.charityapplication.data.api.identityService.UsersAPI
-import com.developing.charityapplication.domain.model.identityModel.RequestCreateUser
-import com.developing.charityapplication.domain.model.identityModel.UserM
+import com.developing.charityapplication.data.api.identityService.AuthAPI
+import com.developing.charityapplication.domain.model.identityModel.RequestLoginAuthM
+import com.developing.charityapplication.domain.model.identityModel.ResultLoginM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
-import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
+import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.infrastructure.utils.JsonConverter
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
 import javax.inject.Inject
 
-class UsersRepo @Inject constructor(
-    private val apiUser : UsersAPI
-): IUserRepo {
+class AuthRepo @Inject constructor(
+    private val apiAuth : AuthAPI
+): IAuthRepo {
 
     // region --- Methods ---
 
-    override suspend fun createAccount(userInfo: RequestCreateUser): ResponseM<UserM>?{
+    override suspend fun login(loginInfo: RequestLoginAuthM): ResponseM<ResultLoginM>? {
         try {
-            Log.d("Json", Gson().toJson(userInfo))
-            val response = apiUser.createUser(userInfo)
+            Log.d("Json", Gson().toJson(loginInfo))
+            val response = apiAuth.loginService(loginInfo)
             if (response.isSuccessful)
             {
 
@@ -32,18 +32,14 @@ class UsersRepo @Inject constructor(
 
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<UserM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<ResultLoginM> = JsonConverter.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
         }
         catch (ex: Exception){
-            Log.d("CreateAccountUser", "Error: $ex")
+            Log.d("Login", "Error: $ex")
             return null
         }
-
     }
-
-    // endregion
-
 }

@@ -12,7 +12,7 @@ import com.developing.charityapplication.R
 fun HomePageScreen(){
     val config = fakeDataPost()
     Column(
-        modifier = Modifier.f
+        //modifier = Modifier.f
     ) {
 
     }
