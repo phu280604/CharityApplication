@@ -25,7 +25,7 @@ class UsersRepo @Inject constructor(
             {
 
                 val result = response.body()!!
-                Log.d("Json", Gson().toJson(userInfo))
+                Log.d("Json", Gson().toJson(result))
                 Logger.log(response, result.message)
                 return result
             }

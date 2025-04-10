@@ -7,28 +7,41 @@ data class AuthenticationM(
     val otpRequired: String = ""
 )
 
-data class RequestLoginAuthM(
+data class RequestLoginM(
     var username: String = "",
     var password: String = "",
 )
 
-data class EmailM(
+data class ResultLoginM(
+    val code: String = "",
+    val message: String = "",
+    val result: Result
+)
+
+data class Result(
+    val authenticated: String = "",
+    val message: String = "",
+    val otpRequired: String = "",
+    val token: String = ""
+)
+
+data class RequestEmailM(
     val email: String = ""
 )
 
-data class OTPLoginM(
+data class RequestOTPLoginM(
     val otp: String = ""
 )
 
-data class ResetPasswordM(
+data class RequestResetPasswordM(
     val newPassword: String = "",
     val token: String = ""
 )
 
-data class RequestLogoutAuthM(
+data class RequestLogoutM(
     val token: String = ""
 )
 
-data class TokenM(
+data class RequestTokenM(
     val token: String = ""
 )
