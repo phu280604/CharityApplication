@@ -17,6 +17,14 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
         startDestination = HomeDestinations,
         modifier = modifier
     ){
+        // region -- NotificationPage --
+        navigation<NotificationDestinations>(startDestination = NotificationDestinations.NotificationPage){
+            composable<NotificationDestinations.NotificationPage>{
+                NotificationPageScreen()
+            }
+        }
+        // endregion
+
         // region -- HomePage --
         navigation<HomeDestinations>(startDestination = HomeDestinations.HomePage){
             composable<HomeDestinations.HomePage>{

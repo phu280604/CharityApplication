@@ -60,10 +60,13 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.Navi
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.FollowerDestinations.FollowerPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.HomeDestinations.HomePage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.MessageDestinations.MessagerPage
+import com.developing.charityapplication.presentation.view.navigate.userNav.destination.NotificationDestinations
+import com.developing.charityapplication.presentation.view.navigate.userNav.destination.NotificationDestinations.NotificationPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
 import com.developing.charityapplication.presentation.view.screen.user.HeaderCreatingPost
 import com.developing.charityapplication.presentation.view.screen.user.HeaderFollower
+import com.developing.charityapplication.presentation.view.screen.user.HeaderNotification
 import com.developing.charityapplication.presentation.view.screen.user.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
@@ -95,7 +98,13 @@ class UserAppActivity : ComponentActivity() {
 
         HeartBellTheme {
             Scaffold(
-                topBar = { Header(navController, selectedState) },
+                topBar = {
+                    Header(
+                        navController = navController,
+                        selectedIndex = selectedState,
+                        onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
+                    )
+                },
                 bottomBar = {
                     Surface(
                         modifier = Modifier
@@ -128,7 +137,8 @@ class UserAppActivity : ComponentActivity() {
     @Composable
     fun Header(
         navController: NavHostController,
-        selectedIndex: Int
+        selectedIndex: Int,
+        onChangeState: (Int) -> Unit
     ) {
         Surface(
             modifier = Modifier
@@ -140,16 +150,7 @@ class UserAppActivity : ComponentActivity() {
             contentColor = AppColorTheme.secondary
         ){
             when (selectedIndex) {
-                1 -> {
-                    HeaderFollower(navController)
-                }
-                2 -> {
-                    HeaderCreatingPost(navController)
-                }
-                4 -> {
-                    HeaderProfile(navController)
-                }
-                else -> {
+                0 -> {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -228,7 +229,18 @@ class UserAppActivity : ComponentActivity() {
                         val notificationButton = ButtonComponentBuilder()
                             .withConfig(
                                 newConfig = defaultButton.copy(
-                                    onClick = { /*TODO: Implement notification logic*/ },
+                                    onClick = {
+                                        onChangeState(-1)
+                                        navController.navigate(route = NotificationPage, navOptions {
+                                            popUpTo(navController.graph.findStartDestination().id){
+                                                saveState = true
+                                            }
+
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        })
+                                        /*TODO: Implement notification logic*/
+                                    },
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .clip(RoundedCornerShape(8.dp))
@@ -264,6 +276,18 @@ class UserAppActivity : ComponentActivity() {
                         }
                         // endregion
                     }
+                }
+                1 -> {
+                    HeaderFollower(navController)
+                }
+                2 -> {
+                    HeaderCreatingPost(navController)
+                }
+                4 -> {
+                    HeaderProfile(navController)
+                }
+                else -> {
+                    HeaderNotification(navController)
                 }
             }
         }

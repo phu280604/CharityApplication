@@ -11,6 +11,13 @@ object HomeDestinations{
 }
 
 @Serializable
+object NotificationDestinations{
+    @Serializable
+    object NotificationPage
+}
+
+
+@Serializable
 object FollowerDestinations{
     @Serializable
     object FollowerPage
