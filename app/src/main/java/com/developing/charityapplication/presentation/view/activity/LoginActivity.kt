@@ -217,8 +217,6 @@ class LoginActivity() : ComponentActivity() {
         val context = LocalContext.current
         // endregion
 
-        //var username by remember { mutableStateOf("") }
-        //var password by remember { mutableStateOf("") }
         var passwordVisible by remember { mutableStateOf(false) }
 
         val loginSuccessful: String = stringResource(id = R.string.login)
@@ -242,10 +240,19 @@ class LoginActivity() : ComponentActivity() {
 
                 if (!isLoading) {
                     if (it.code == 1000) {
-                        Toast.makeText(context, "$loginSuccessful: $message", Toast.LENGTH_LONG).show()
-                        context.startActivity(Intent(context, UserAppActivity::class.java))
+                        Toast.makeText(
+                            context,
+                            "$loginSuccessful: $message",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        startActivity(onNavToHomePage)
+                        finish()
                     } else {
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            message,
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -268,7 +275,8 @@ class LoginActivity() : ComponentActivity() {
                         label = {
                             Text(
                                 text = stringResource(id = R.string.username_email),
-                                style = AppTypography.titleMedium
+                                style = AppTypography.titleMedium,
+                                color = AppColorTheme.onPrimary
                             )
                         },
                         leadingIcon = {
@@ -295,7 +303,8 @@ class LoginActivity() : ComponentActivity() {
                         label = {
                             Text(
                                 text = stringResource(id = R.string.password),
-                                style = AppTypography.titleMedium
+                                style = AppTypography.titleMedium,
+                                color = AppColorTheme.onPrimary
                             )
                         },
                         modifier = Modifier
@@ -331,8 +340,6 @@ class LoginActivity() : ComponentActivity() {
                         text = stringResource(id = R.string.login),
                         onClick = {
                             loginVM.onEvent(LoginFormEvent.Submit)
-//                            startActivity(onNavToHomePage)
-//                            finish()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
