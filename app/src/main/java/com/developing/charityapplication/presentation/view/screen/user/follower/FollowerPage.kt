@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.developing.charityapplication.presentation.view.screen.user
+package com.developing.charityapplication.presentation.view.screen.user.follower
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.developing.charityapplication.presentation.view.screen.user
+package com.developing.charityapplication.presentation.view.screen.user.creatingPost
 
 import android.app.DatePickerDialog
 import android.net.Uri

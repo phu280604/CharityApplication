@@ -18,6 +18,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CharityApplication"
         tools:targetApi="31">
+
+        <!-- UCrop Activity: Phải nằm trong <application> -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
         <activity
             android:name=".presentation.view.activity.LoginActivity"
             android:exported="true"
@@ -25,15 +32,16 @@
             android:theme="@style/Theme.CharityApplication">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".presentation.view.activity.UserAppActivity" />
         <activity android:name=".presentation.view.activity.GmailActivity" />
         <activity android:name=".presentation.view.activity.RegisterFormActivity" />
         <activity android:name=".presentation.view.activity.AuthenticationActivity" />
         <activity android:name=".presentation.view.activity.RecoveryActivity" />
     </application>
+
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.developing.charityapplication.presentation.view.screen.user
+package com.developing.charityapplication.presentation.view.screen.user.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
