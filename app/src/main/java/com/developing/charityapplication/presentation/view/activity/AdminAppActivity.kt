@@ -61,9 +61,9 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.MessageDestinations.MessagerPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
-import com.developing.charityapplication.presentation.view.screen.user.HeaderCreatingPost
-import com.developing.charityapplication.presentation.view.screen.user.HeaderFollower
-import com.developing.charityapplication.presentation.view.screen.user.HeaderProfile
+import com.developing.charityapplication.presentation.view.screen.user.creatingPost.HeaderCreatingPost
+import com.developing.charityapplication.presentation.view.screen.user.follower.HeaderFollower
+import com.developing.charityapplication.presentation.view.screen.user.profile.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
 import dagger.hilt.android.AndroidEntryPoint

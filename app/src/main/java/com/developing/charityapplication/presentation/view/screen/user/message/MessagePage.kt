@@ -1,4 +1,4 @@
-package com.developing.charityapplication.presentation.view.screen.user
+package com.developing.charityapplication.presentation.view.screen.user.message
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

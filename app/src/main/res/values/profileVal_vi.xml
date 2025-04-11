@@ -6,4 +6,5 @@
     <string name="logout">Đăng xuất</string>
     <string name="following_users">Theo dõi</string>
     <string name="follower">Người theo dõi</string>
+    <string name="save_change">Lưu thay đổi</string>
 </resources>

@@ -1,70 +1,111 @@
 package com.developing.charityapplication.presentation.view.navigate.userNav
 
-import android.util.Log
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.*
-import com.developing.charityapplication.presentation.view.screen.user.*
+import com.developing.charityapplication.presentation.view.screen.user.creatingPost.*
+import com.developing.charityapplication.presentation.view.screen.user.follower.*
+import com.developing.charityapplication.presentation.view.screen.user.home.*
+import com.developing.charityapplication.presentation.view.screen.user.message.*
+import com.developing.charityapplication.presentation.view.screen.user.profile.*
+import androidx.compose.animation.*
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun NavigationUsersApplication(modifier: Modifier, navController: NavHostController){
-    NavHost(
+fun NavigationUsersApplication(modifier: Modifier, navController: NavHostController) {
+    AnimatedNavHost(
         navController = navController,
-        startDestination = HomeDestinations,
-        modifier = modifier
-    ){
-        // region -- NotificationPage --
-        navigation<NotificationDestinations>(startDestination = NotificationDestinations.NotificationPage){
-            composable<NotificationDestinations.NotificationPage>{
+        startDestination = HomeDestinations.Destination.route,
+        modifier = modifier,
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { it }, // slide from right
+                animationSpec = tween(300)
+            )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { -it }, // slide to left
+                animationSpec = tween(300)
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { -it }, // slide back from left
+                animationSpec = tween(300)
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { it }, // slide out to right
+                animationSpec = tween(300)
+            )
+        }
+    ) {
+        // region -- HomePage --
+        navigation(
+            startDestination = HomeDestinations.HomePage.route,
+            route = HomeDestinations.Destination.route
+        ) {
+            composable(HomeDestinations.HomePage.route) {
+                HomePageScreen()
+            }
+            composable(HomeDestinations.NotificationPage.route) {
                 NotificationPageScreen()
             }
         }
         // endregion
 
-        // region -- HomePage --
-        navigation<HomeDestinations>(startDestination = HomeDestinations.HomePage){
-            composable<HomeDestinations.HomePage>{
-                HomePageScreen()
-            }
-        }
-        // endregion
-
         // region -- FollowerPage --
-        navigation<FollowerDestinations>(startDestination = FollowerDestinations.FollowerPage){
-            composable<FollowerDestinations.FollowerPage>{
-                Log.d("Screen", "FollowerPage")
+        navigation(
+            startDestination = FollowerDestinations.FollowerPage.route,
+            route = FollowerDestinations.Destination.route
+        ) {
+            composable(FollowerDestinations.FollowerPage.route) {
                 FollowerPageScreen()
             }
         }
         // endregion
 
         // region -- PostPage --
-        navigation<PostDestinations>(startDestination = PostDestinations.CreatePostPage){
-            composable<PostDestinations.CreatePostPage>{
-                Log.d("Screen", "CreatingPostPage")
+        navigation(
+            startDestination = PostDestinations.CreatePostPage.route,
+            route = PostDestinations.Destination.route
+        ) {
+            composable(PostDestinations.CreatePostPage.route) {
                 CreatingPostPageScreen()
             }
         }
         // endregion
 
         // region -- MessagePage --
-        navigation<MessageDestinations>(startDestination = MessageDestinations.MessagerPage){
-            composable<MessageDestinations.MessagerPage>{
-                Log.d("Screen", "SMSPage")
+        navigation(
+            startDestination = MessageDestinations.MessagerPage.route,
+            route = MessageDestinations.Destination.route
+        ) {
+            composable(MessageDestinations.MessagerPage.route) {
                 MessagePageScreen()
             }
         }
         // endregion
 
         // region -- ProfilePage --
-        navigation<ProfileDestinations>(startDestination = ProfileDestinations.ProfilePage){
-            composable<ProfileDestinations.ProfilePage>{
-                Log.d("Screen", "ProfilePage")
+        navigation(
+            startDestination = ProfileDestinations.ProfilePage.route,
+            route = ProfileDestinations.Destination.route
+        ) {
+            composable(ProfileDestinations.ProfilePage.route) {
                 ProfilePageScreen()
+            }
+            composable(ProfileDestinations.EditProfilePage.route) {
+                EditProfileScreen(navController)
             }
         }
         // endregion

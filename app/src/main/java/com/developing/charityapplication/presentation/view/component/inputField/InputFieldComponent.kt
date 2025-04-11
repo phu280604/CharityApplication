@@ -15,6 +15,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.developing.charityapplication.presentation.view.component.inputField.decorator.IInputFieldComponentDecorator
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 
@@ -37,6 +38,8 @@ class InputFieldComponent(
                     handleColor = AppColorTheme.onBackground,
                     backgroundColor = AppColorTheme.background
                 ),
+                unfocusedLabelColor = Color.Unspecified,
+                focusedLabelColor = Color.Unspecified,
                 unfocusedBorderColor = AppColorTheme.surface,
                 unfocusedTextColor = AppColorTheme.onPrimary,
                 focusedBorderColor = AppColorTheme.onPrimary,

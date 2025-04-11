@@ -1,44 +1,39 @@
 package com.developing.charityapplication.presentation.view.navigate.userNav.destination
 
-import kotlinx.serialization.Serializable
-
 // region --- User Pages ---
 
-@Serializable
-object HomeDestinations{
-    @Serializable
-    object HomePage
+sealed class HomeDestinations(val route: String ){
+    object Destination: HomeDestinations(route = "HomeDes")
+
+    object HomePage: HomeDestinations(route = "HomePage")
+
+    object NotificationPage: HomeDestinations(route = "NotificationPage")
 }
 
-@Serializable
-object NotificationDestinations{
-    @Serializable
-    object NotificationPage
+sealed class FollowerDestinations(val route: String){
+    object Destination: HomeDestinations(route = "FollowerDes")
+
+    object FollowerPage: FollowerDestinations(route = "FollowerPage")
 }
 
+sealed class PostDestinations(val route: String){
+    object Destination: HomeDestinations(route = "PostDes")
 
-@Serializable
-object FollowerDestinations{
-    @Serializable
-    object FollowerPage
+    object CreatePostPage: PostDestinations(route = "CreatePostPage")
 }
 
-@Serializable
-object PostDestinations{
-    @Serializable
-    object CreatePostPage
+sealed class MessageDestinations(val route: String){
+    object Destination: HomeDestinations(route = "MessageDes")
+
+    object MessagerPage: MessageDestinations(route = "MessagerPage")
 }
 
-@Serializable
-object MessageDestinations{
-    @Serializable
-    object MessagerPage
-}
+sealed class ProfileDestinations(val route: String){
+    object Destination: HomeDestinations(route = "ProfileDes")
 
-@Serializable
-object ProfileDestinations{
-    @Serializable
-    object ProfilePage
+    object ProfilePage: ProfileDestinations(route = "ProfilePage")
+
+    object EditProfilePage: ProfileDestinations(route = "EditProfilePage")
 }
 
 // endregion

@@ -1,7 +1,9 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.developing.charityapplication.presentation.view.screen.user
+package com.developing.charityapplication.presentation.view.screen.user.profile
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,28 +48,61 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
+import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
+import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.EditProfilePage
 import com.developing.charityapplication.presentation.view.theme.*
-import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.ProfileScreenViewModel
 import kotlinx.coroutines.launch
 
 // region --- Methods ---
+
 @Composable
 fun HeaderProfile(navController: NavHostController){
+    // region -- List Title Top App Bar --
     val listProfile = listOf(
         Pair(R.string.profile_page, Icons.Default.AccountCircle),
         Pair(R.string.edit_prodile, Icons.Default.Edit),
         Pair(R.string.more_option_profile, Icons.Default.List),
         Pair(R.string.logout, Icons.Default.ExitToApp),
     )
+    // endregion
 
-    val userAppVM: UserAppViewModel = UserAppViewModel()
+    // region -- Value ViewModel --
+    val profileScreenVM: ProfileScreenViewModel = hiltViewModel()
 
-    val state by userAppVM.selectedIndexState.asIntState()
+    val state by profileScreenVM.selectedIndexState.asIntState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    // endregion
+
+    // region -- Value Navigatetion --
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    // endregion
+
+    // region -- Back Navigate Handle --
+    BackHandler(enabled = currentRoute != ProfilePage.route) {
+        profileScreenVM.changeSelectedIndex(0)
+        navController.popBackStack()
+        Log.d("backHandler", "profile")
+    }
+    // endregion
+
+    // region -- Update Selected Index When PopBackStack --
+    LaunchedEffect(navBackStackEntry) {
+        navBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedIndex")?.observeForever { index ->
+            index?.let {
+                profileScreenVM.changeSelectedIndex(it)
+                navBackStackEntry?.savedStateHandle?.remove<Int>("selectedIndex")
+            }
+        }
+    }
+    // endregion
 
     Column(
         modifier = Modifier
@@ -107,8 +142,27 @@ fun HeaderProfile(navController: NavHostController){
                     if (showBottomSheet)
                         MenuOpitionProfile(
                             listProfile,
-                            onChangeState = { showBottomSheet = false },
-                            onNavigate = { navItem -> /*TODO: Implement option profile navigate*/ }
+                            onChangeState = {
+                                showBottomSheet = false
+                            },
+                            onNavigate = {
+                                indexItem ->
+                                profileScreenVM.changeSelectedIndex(indexItem)
+
+                                val route = when(listProfile.get(indexItem).first){
+                                    R.string.edit_prodile -> EditProfilePage.route
+                                    else -> ProfilePage.route
+                                }
+
+                                navController.navigate(route){
+                                    popUpTo(ProfilePage.route){
+                                        inclusive = false
+                                    }
+
+                                    launchSingleTop = true
+                                }
+                                /*TODO: Implement option profile navigate*/
+                            }
                         )
                 }
             },
@@ -314,14 +368,14 @@ fun DetailItems(amount: Int, title: String, modifier: Modifier){
 fun MenuOpitionProfile(
     listItems: List<Pair<Int, ImageVector>>,
     onChangeState: () -> Unit,
-    onNavigate: (index: Int) -> Unit
+    onNavigate: (Int) -> Unit
 ){
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
         sheetState = sheetState,
-        onDismissRequest = { onChangeState() },
+        onDismissRequest = { onChangeState },
         containerColor = AppColorTheme.primary
     ) {
         listItems.forEachIndexed {
@@ -335,7 +389,7 @@ fun MenuOpitionProfile(
                     .clickable(
                         role = Role.Button,
                         onClick = {
-                            onNavigate(item.first)
+                            onNavigate(index)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {
                                     onChangeState()

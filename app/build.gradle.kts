@@ -145,6 +145,13 @@ dependencies {
     implementation(libs.androidx.room.runtime.android)//noinspection UseTomlInstead
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+    implementation ("com.github.yalantis:ucrop:2.2.8")
 }
 
+// endregion
+
+// region -- Animation --
+dependencies {
+    implementation ("com.google.accompanist:accompanist-navigation-animation:0.34.0")
+}
 // endregion

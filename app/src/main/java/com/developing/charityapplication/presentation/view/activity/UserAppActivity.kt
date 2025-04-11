@@ -1,9 +1,14 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.developing.charityapplication.presentation.view.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +19,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -59,17 +63,17 @@ import com.developing.charityapplication.presentation.view.component.navItem.Nav
 import com.developing.charityapplication.presentation.view.navigate.userNav.NavigationUsersApplication
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.FollowerDestinations.FollowerPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.HomeDestinations.HomePage
+import com.developing.charityapplication.presentation.view.navigate.userNav.destination.HomeDestinations.NotificationPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.MessageDestinations.MessagerPage
-import com.developing.charityapplication.presentation.view.navigate.userNav.destination.NotificationDestinations
-import com.developing.charityapplication.presentation.view.navigate.userNav.destination.NotificationDestinations.NotificationPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
-import com.developing.charityapplication.presentation.view.screen.user.HeaderCreatingPost
-import com.developing.charityapplication.presentation.view.screen.user.HeaderFollower
-import com.developing.charityapplication.presentation.view.screen.user.HeaderNotification
-import com.developing.charityapplication.presentation.view.screen.user.HeaderProfile
+import com.developing.charityapplication.presentation.view.screen.user.creatingPost.HeaderCreatingPost
+import com.developing.charityapplication.presentation.view.screen.user.follower.HeaderFollower
+import com.developing.charityapplication.presentation.view.screen.user.home.HeaderNotification
+import com.developing.charityapplication.presentation.view.screen.user.profile.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -91,7 +95,7 @@ class UserAppActivity : ComponentActivity() {
 
     @Composable
     fun UserAppUI (){
-        val navController = rememberNavController()
+        val navController = rememberAnimatedNavController()
         val userAppVM: UserAppViewModel = hiltViewModel()
 
         val selectedState by userAppVM.selectedIndexState.asIntState()
@@ -231,14 +235,13 @@ class UserAppActivity : ComponentActivity() {
                                 newConfig = defaultButton.copy(
                                     onClick = {
                                         onChangeState(-1)
-                                        navController.navigate(route = NotificationPage, navOptions {
-                                            popUpTo(navController.graph.findStartDestination().id){
-                                                saveState = true
+                                        navController.navigate(route = NotificationPage.route){
+                                            popUpTo(route = HomePage.route){
+                                                inclusive = false
                                             }
 
                                             launchSingleTop = true
-                                            restoreState = true
-                                        })
+                                        }
                                         /*TODO: Implement notification logic*/
                                     },
                                     modifier = Modifier
@@ -278,15 +281,39 @@ class UserAppActivity : ComponentActivity() {
                     }
                 }
                 1 -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        onChangeState(0)
+                        navController.popBackStack()
+                    }
+
                     HeaderFollower(navController)
                 }
                 2 -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        onChangeState(0)
+                        navController.popBackStack()
+                    }
+
                     HeaderCreatingPost(navController)
                 }
                 4 -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        onChangeState(0)
+                        navController.popBackStack()
+                    }
+
                     HeaderProfile(navController)
                 }
                 else -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        onChangeState(0)
+                        navController.popBackStack()
+                    }
+
                     HeaderNotification(navController)
                 }
             }
@@ -297,7 +324,7 @@ class UserAppActivity : ComponentActivity() {
     fun Footer(
         navController: NavController,
         selectedIndex: Int,
-        onChangeState: (index: Int) -> Unit
+        onChangeState: (Int) -> Unit
     ) {
         var navItem = navItems()
 
@@ -340,20 +367,19 @@ class UserAppActivity : ComponentActivity() {
                     selected = selectedIndex == index,
                     onClick = {
                         val route = when (item.title) {
-                            R.string.nav_home -> HomePage
-                            R.string.nav_following -> FollowerPage
-                            R.string.nav_chatting -> MessagerPage
-                            R.string.nav_profile -> ProfilePage
-                            else -> CreatePostPage
+                            R.string.nav_home -> HomePage.route
+                            R.string.nav_following -> FollowerPage.route
+                            R.string.nav_chatting -> MessagerPage.route
+                            R.string.nav_profile -> ProfilePage.route
+                            else -> CreatePostPage.route
                         }
-                        navController.navigate(route = route, navOptions {
-                            popUpTo(navController.graph.findStartDestination().id){
-                                saveState = true
+                        navController.navigate(route){
+                            popUpTo(HomePage.route){
+                                inclusive = false
                             }
 
                             launchSingleTop = true
-                            restoreState = true
-                        })
+                        }
                         onChangeState(index)
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
