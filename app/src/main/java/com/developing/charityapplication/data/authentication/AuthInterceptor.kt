@@ -7,17 +7,19 @@ class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        // Danh sách API cần Bearer Token
-        val authRequiredEndpoints = listOf("/auth")
+        // Những endpoint không cần Bearer token
+        val excludedEndpoints = listOf("/auth/token")
 
-        // Nếu API cần Bearer Token, thêm vào header
-        val newRequest = if (authRequiredEndpoints.any { request.url.encodedPath.contains(it) }) {
+        // Nếu URL KHÔNG nằm trong danh sách loại trừ => thêm token
+        val shouldAddToken = excludedEndpoints.none { request.url.encodedPath.contains(it) }
+
+        val newRequest = if (shouldAddToken) {
             val token = tokenProvider.getToken() ?: ""
             request.newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
         } else {
-            request // Giữ nguyên nếu API không cần auth
+            request // Không thêm token nếu URL là auth/token
         }
 
         return chain.proceed(newRequest)

@@ -1,8 +1,8 @@
 package com.developing.charityapplication.di.module.repo
 
-//import com.developing.charityapplication.data.repository.identityRepo.AuthRepo
+import com.developing.charityapplication.data.repository.identityRepo.AuthRepo
 import com.developing.charityapplication.data.repository.identityRepo.UsersRepo
-//import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
+import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
 import dagger.Module
 import dagger.Provides
@@ -18,8 +18,8 @@ class RepoModule {
     @Provides
     fun providesUsersRepo(repo: UsersRepo): IUserRepo = repo
 
-//    @Provides
-//    fun providesAuthRepo(repo: AuthRepo): IAuthRepo = repo
+    @Provides
+    fun providesAuthRepo(repo: AuthRepo): IAuthRepo = repo
 
     // endregion
 

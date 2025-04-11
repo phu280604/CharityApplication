@@ -3,6 +3,7 @@ package com.developing.charityapplication.presentation.view.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -46,7 +48,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.R
+import com.developing.charityapplication.domain.model.identityModel.RequestLoginM
+import com.developing.charityapplication.infrastructure.utils.StatusCode
+import com.developing.charityapplication.presentation.event.activityEvent.LoginFormEvent
+import com.developing.charityapplication.presentation.state.activityState.LoginFormState
+import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
@@ -54,7 +62,10 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.*
+import com.developing.charityapplication.presentation.viewmodel.activityViewModel.LoginFormViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @AndroidEntryPoint
 class LoginActivity() : ComponentActivity() {
@@ -193,9 +204,52 @@ class LoginActivity() : ComponentActivity() {
         val textDefault = createDefaultText()
         val buttonDefault = createDefaultButton()
 
-        var username by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+        // region - View Model -
+        val loginVM: LoginFormViewModel = hiltViewModel()
+        val authVM: AuthViewModel = hiltViewModel()
+        // endregion
+
+        // region - State value -
+        val loginInfo by authVM.loginResponse.collectAsState()
+        val isLoading by authVM.isLoading.collectAsState()
+
+        val loginState = loginVM.state
+        val context = LocalContext.current
+        // endregion
+
+        //var username by remember { mutableStateOf("") }
+        //var password by remember { mutableStateOf("") }
         var passwordVisible by remember { mutableStateOf(false) }
+
+        val loginSuccessful: String = stringResource(id = R.string.login)
+
+        LaunchedEffect(Unit) {
+            loginVM.validationEvents.collect { event ->
+                if (event is LoginFormViewModel.ValidationEvent.Success) {
+                    val request = RequestLoginM(
+                        username = loginVM.state.username,
+                        password = loginVM.state.password
+                    )
+                    authVM.defaultLogin(request)
+                }
+            }
+        }
+
+        LaunchedEffect(isLoading) {
+            loginInfo?.let {
+                val status = StatusCode.fromCode(it.code)
+                val message = StatusCode.fromStatusResId(status.statusResId)
+
+                if (!isLoading) {
+                    if (it.code == 1000) {
+                        Toast.makeText(context, "$loginSuccessful: $message", Toast.LENGTH_LONG).show()
+                        context.startActivity(Intent(context, UserAppActivity::class.java))
+                    } else {
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -207,8 +261,10 @@ class LoginActivity() : ComponentActivity() {
             val usernameInputField = InputFieldComponentBuilder()
                 .withConfig(
                     inputFieldDefault.copy(
-                        value = username,
-                        onValueChange = { username = it },
+                        value = loginState.username,
+                        onValueChange = {
+                            loginVM.onEvent(LoginFormEvent.usernameChange(it))
+                        },
                         label = {
                             Text(
                                 text = stringResource(id = R.string.username_email),
@@ -232,8 +288,10 @@ class LoginActivity() : ComponentActivity() {
             val passwordInputField = InputFieldComponentBuilder()
                 .withConfig(
                     usernameInputField.getConfig().copy(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = loginState.password,
+                        onValueChange = {
+                            loginVM.onEvent(LoginFormEvent.passwordChange(it))
+                        },
                         label = {
                             Text(
                                 text = stringResource(id = R.string.password),
@@ -272,9 +330,9 @@ class LoginActivity() : ComponentActivity() {
                     buttonDefault.copy(
                         text = stringResource(id = R.string.login),
                         onClick = {
-                            startActivity(onNavToHomePage)
-                            finish()
-                        /*TODO: Implement login logic*/
+                            loginVM.onEvent(LoginFormEvent.Submit)
+//                            startActivity(onNavToHomePage)
+//                            finish()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -478,7 +536,37 @@ class LoginActivity() : ComponentActivity() {
     // endregion
     // endregion
     // endregion
-    
+
+    // region -- Setter Value --
+
+    fun setLoginValue(state: LoginFormState){
+        requestManualLogin.username = state.username
+        requestManualLogin.password = state.password
+    }
+
+    fun setStateValue(viewModel: LoginFormViewModel, index: Int, value: String){
+        when(index){
+            0 -> viewModel.onEvent(LoginFormEvent.usernameChange(value))
+            else -> viewModel.onEvent(LoginFormEvent.passwordChange(value))
+        }
+    }
+
+    fun getState(index: Int, state: LoginFormState): String{
+        when(index){
+            0 -> return state.username
+            else -> return state.password
+        }
+    }
+
+    fun setErrorState(index: Int, state: LoginFormState): String?{
+        when(index){
+            0 -> return state.usernameError
+            else -> return state.passwordError
+        }
+    }
+
+    // endregion
+
     // endregion
 
     // region --- Fields ---
@@ -487,6 +575,7 @@ class LoginActivity() : ComponentActivity() {
     private val onNavToForgetPassword: Intent by lazy { Intent(this, GmailActivity::class.java) }
     private val onNavToRegister: Intent by lazy { Intent(this, RegisterFormActivity::class.java) }
 
+    private val requestManualLogin: RequestLoginM = RequestLoginM()
     // endregion
 
 }

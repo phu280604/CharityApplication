@@ -1,6 +1,6 @@
 package com.developing.charityapplication.di.module.serviceAPI
 
-//import com.developing.charityapplication.data.api.identityService.AuthAPI
+import com.developing.charityapplication.data.api.identityService.AuthAPI
 import com.developing.charityapplication.data.api.identityService.UsersAPI
 import dagger.Module
 import dagger.Provides
@@ -20,6 +20,13 @@ object IdentityServiceModule {
     fun provideUserAPI(retrofit: Retrofit) : UsersAPI{
         return retrofit.create(UsersAPI::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideAuthAPI(retrofit: Retrofit): AuthAPI {
+        return retrofit.create(AuthAPI::class.java)
+    }
+
 
     // endregion
 

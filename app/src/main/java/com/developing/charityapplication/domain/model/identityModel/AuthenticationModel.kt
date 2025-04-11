@@ -14,7 +14,6 @@ data class RequestLoginM(
 
 data class ResultLoginM(
     val code: String = "",
-    val message: String = "",
     val result: Result
 )
 
