@@ -105,6 +105,7 @@ class LoginActivity() : ComponentActivity() {
 
         // region -- Show Notification --
         var showSms = remember { mutableStateOf(false) }
+        var funcTitle by remember { mutableIntStateOf(0) }
 
         val loginSuccessful: String = stringResource(id = R.string.login)
         // endregion
@@ -189,9 +190,11 @@ class LoginActivity() : ComponentActivity() {
                         FooterSection(
                             onClickGoogle = {
                                 showSms.value = true
+                                funcTitle = R.string.login_with_google
                             },
                             onClickFacebook = {
                                 showSms.value = true
+                                funcTitle = R.string.login_with_facebook
                             }
                         )
                     }
@@ -200,6 +203,7 @@ class LoginActivity() : ComponentActivity() {
         }
 
         ShowSMS(
+            funcTitle = if(funcTitle != 0) stringResource(funcTitle) else null,
             visible = showSms.value,
             onDismiss = { showSms.value = false }
         )
@@ -246,7 +250,7 @@ class LoginActivity() : ComponentActivity() {
             Pair(R.string.password, R.drawable.ic_eye_open)
         )
 
-        var passwordVisible by remember { mutableStateOf(false) }
+        var passwordVisible by remember { mutableStateOf(true) }
         // endregion
 
         Column(
@@ -273,12 +277,17 @@ class LoginActivity() : ComponentActivity() {
                                     color = AppColorTheme.onPrimary
                                 )
                             },
+                            visualTransformation =
+                                if (passwordVisible)
+                                    PasswordVisualTransformation()
+                                else
+                                    VisualTransformation.None,
                             leadingIcon = {
                                 if (item.first == R.string.password){
                                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                         Icon(
                                             painter = painterResource(
-                                                id = if (passwordVisible) item.second else R.drawable.ic_eye_closed
+                                                id = if (!passwordVisible) item.second else R.drawable.ic_eye_closed
                                             ),
                                             contentDescription = if (passwordVisible) "Hide Password" else "Show Password",
                                             tint = AppColorTheme.onPrimary

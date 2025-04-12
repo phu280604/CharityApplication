@@ -59,6 +59,7 @@ import com.developing.charityapplication.presentation.view.component.button.Butt
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
+import com.developing.charityapplication.infrastructure.utils.ShowSMS
 import com.developing.charityapplication.presentation.view.component.navItem.NavItemConfig
 import com.developing.charityapplication.presentation.view.navigate.userNav.NavigationUsersApplication
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.FollowerDestinations.FollowerPage
@@ -100,6 +101,9 @@ class UserAppActivity : ComponentActivity() {
 
         val selectedState by userAppVM.selectedIndexState.asIntState()
 
+        var showMessage = remember { mutableStateOf(false) }
+        var funcTitle by remember { mutableIntStateOf(0) }
+
         HeartBellTheme {
             Scaffold(
                 topBar = {
@@ -126,13 +130,24 @@ class UserAppActivity : ComponentActivity() {
                         Footer(
                             navController,
                             selectedState,
-                            onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
+                            onChangeState = { index -> userAppVM.changeSelectedIndex(index) },
+                            onShowMessage = {
+                                index ->
+                                showMessage.value = true
+                                funcTitle = index
+                            }
                         )
                     }
                 },
                 modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
             ){ innerPadding ->
                 NavigationUsersApplication(Modifier.padding(innerPadding), navController)
+
+                ShowSMS(
+                    funcTitle = if (funcTitle != 0) stringResource(funcTitle) else null,
+                    visible = showMessage.value,
+                    onDismiss = { showMessage.value = false }
+                )
             }
         }
     }
@@ -324,7 +339,8 @@ class UserAppActivity : ComponentActivity() {
     fun Footer(
         navController: NavController,
         selectedIndex: Int,
-        onChangeState: (Int) -> Unit
+        onChangeState: (Int) -> Unit,
+        onShowMessage: (Int) -> Unit
     ) {
         var navItem = navItems()
 
@@ -368,8 +384,16 @@ class UserAppActivity : ComponentActivity() {
                     onClick = {
                         val route = when (item.title) {
                             R.string.nav_home -> HomePage.route
-                            R.string.nav_following -> FollowerPage.route
-                            R.string.nav_chatting -> MessagerPage.route
+                            R.string.nav_friend -> {
+                                onShowMessage(item.title)
+                                return@NavigationBarItem
+                                FollowerPage.route
+                            }
+                            R.string.nav_chatting -> {
+                                onShowMessage(item.title)
+                                return@NavigationBarItem
+                                MessagerPage.route
+                            }
                             R.string.nav_profile -> ProfilePage.route
                             else -> CreatePostPage.route
                         }
@@ -388,7 +412,6 @@ class UserAppActivity : ComponentActivity() {
                     )
                 )
             }
-
         }
     }
 
@@ -399,7 +422,7 @@ class UserAppActivity : ComponentActivity() {
                 icon = R.drawable.ic_nav_home,
             ),
             NavItemConfig(
-                title = R.string.nav_following,
+                title = R.string.nav_friend,
                 icon = R.drawable.ic_nav_users,
             ),
             NavItemConfig(

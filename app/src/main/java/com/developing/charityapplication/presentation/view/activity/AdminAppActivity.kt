@@ -316,7 +316,7 @@ class AdminAppActivity : ComponentActivity() {
                     onClick = {
                         val route = when (item.title) {
                             R.string.nav_home -> HomePage
-                            R.string.nav_following -> FollowerPage
+                            R.string.nav_friend -> FollowerPage
                             R.string.nav_chatting -> MessagerPage
                             R.string.nav_profile -> ProfilePage
                             else -> CreatePostPage
@@ -348,7 +348,7 @@ class AdminAppActivity : ComponentActivity() {
                 icon = R.drawable.ic_nav_home,
             ),
             NavItemConfig(
-                title = R.string.nav_following,
+                title = R.string.nav_friend,
                 icon = R.drawable.ic_nav_users,
             ),
             NavItemConfig(

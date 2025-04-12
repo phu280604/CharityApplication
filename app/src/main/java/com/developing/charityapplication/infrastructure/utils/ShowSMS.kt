@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Warning
@@ -33,10 +35,11 @@ import kotlinx.coroutines.delay
 fun ShowSMS(
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Outlined.Warning,
-    message: String = stringResource(id = R.string.in_progress_sms),
+    funcTitle: String? = null,
+    message: String = "",
     visible: Boolean,
     onDismiss: () -> Unit,
-    durationMillis: Long = 1500,
+    durationMillis: Long = 3000,
 ){
     if (visible) {
 
@@ -59,7 +62,8 @@ fun ShowSMS(
             // region - Content Notification -
             Column(
                 modifier = modifier
-                    .size(height = 176.dp, width = 288.dp)
+                    .width(288.dp)
+                    .wrapContentHeight()
                     .align(Alignment.Center)
                     .background(AppColorTheme.primary, RoundedCornerShape(16.dp))
                     .padding(horizontal = 24.dp, vertical = 32.dp),
@@ -73,7 +77,13 @@ fun ShowSMS(
                     modifier = Modifier.size(64.dp)
                 )
                 Text(
-                    text = message,
+                    text = if(!funcTitle.isNullOrEmpty() && message.isEmpty()) {
+                        val notify = stringResource(R.string.in_progress_sms_first) +
+                                " '${funcTitle.replaceFirstChar { it.lowercase() }}' " +
+                                stringResource(R.string.in_progress_sms_last)
+                        notify
+                    }
+                    else message,
                     style = AppTypography.titleMedium,
                     textAlign = TextAlign.Center,
                     color = AppColorTheme.onPrimary
