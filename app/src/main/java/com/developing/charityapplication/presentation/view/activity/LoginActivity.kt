@@ -278,7 +278,7 @@ class LoginActivity() : ComponentActivity() {
                                 )
                             },
                             visualTransformation =
-                                if (passwordVisible)
+                                if (passwordVisible && item.first == R.string.password)
                                     PasswordVisualTransformation()
                                 else
                                     VisualTransformation.None,
