@@ -40,7 +40,7 @@
     <string name="username">Tên đăng nhập</string>
     <string name="repassword">Xác nhận mật khẩu</string>
     <string name="regis_question">Đã có tài khoản?</string>
-    <string name="length_condi">Mật khẩu có độ dài kí tự từ 8–16 kí tự</string>
+    <string name="length_condi">Mật khẩu có độ dài kí tự từ 8–50 kí tự</string>
     <string name="caplock_condi">Mật khẩu có ít nhất một chữ cái in hoa</string>
     <string name="special_condi">Mật khẩu có ít nhất một kí tự đặc biệt</string>
     <string name="email_require">Xin vui lòng nhập Email</string>

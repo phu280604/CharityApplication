@@ -1,2 +1,3 @@
 API Flow
-Đăng kí: Tạo người dung mới -> Gửi email xác thực 
+Đăng kí: Tạo người dung mới -> Gửi email xác thực -> Xác nhận email
+Bật xác thực: HomePage -> [ Bật/tắt xác thực hai lớp (2FA) ]

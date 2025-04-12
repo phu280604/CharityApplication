@@ -8,7 +8,10 @@ class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
         val request = chain.request()
 
         // Những endpoint không cần Bearer token
-        val excludedEndpoints = listOf("/auth/token")
+        val excludedEndpoints = listOf(
+            "/auth/token",
+            "identity/users/registration"
+        )
 
         // Nếu URL KHÔNG nằm trong danh sách loại trừ => thêm token
         val shouldAddToken = excludedEndpoints.none { request.url.encodedPath.contains(it) }

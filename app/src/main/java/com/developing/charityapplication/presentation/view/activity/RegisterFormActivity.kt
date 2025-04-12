@@ -87,67 +87,7 @@ class RegisterFormActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent{
-            HeartBellTheme {
-                Scaffold(
-                    topBar = {
-                        CenterAlignedTopAppBar(
-                            title = {},
-                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                containerColor = AppColorTheme.primary
-                            ),
-                            navigationIcon = {
-                                IconButton(
-                                    onClick = {
-                                        startActivity(onNavToLoginActivity)
-                                        finish()
-                                        /*TODO: Implement navigation register logic*/
-                                    },
-                                    colors = IconButtonDefaults.iconButtonColors(
-                                        containerColor = AppColorTheme.onSurface
-                                    ),
-                                    modifier = Modifier
-                                        .padding(start = 16.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowLeft,
-                                        contentDescription = null,
-                                        tint = AppColorTheme.onPrimary,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                            },
-                            actions = {
-                                Image(
-                                    painter = painterResource(id = R.drawable.logo),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(end = 16.dp)
-                                        .size(40.dp)
-                                )
-                            },
-                            modifier = Modifier
-                                .background(
-                                    color = AppColorTheme.primary
-                                )
-                                .shadow(
-                                    elevation = 4.dp
-                                )
-                        )
-                    },
-                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
-                ) { innerPadding ->
-                    Box(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                            .background(
-                                color = AppColorTheme.primary
-                            )
-                    ){
-                        RegisterForm()
-                    }
-                }
-            }
+            RegisterScreen()
         }
     }
 
@@ -155,164 +95,153 @@ class RegisterFormActivity: ComponentActivity() {
 
     // region --- Methods ---
 
-    // region -- Component Default --
+    // region --- Register Screen ---
     @Composable
-    fun createTextDefault() : TextConfig {
-        return remember {
-            TextComponentBuilder()
-                .withConfig(
-                    TextConfig(
-                        color = AppColorTheme.onPrimary,
-                        textStyle = AppTypography.titleMedium
+    fun RegisterScreen(){
+        HeartBellTheme {
+            Scaffold(
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {},
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = AppColorTheme.primary
+                        ),
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    startActivity(onNavToLoginActivity)
+                                    finish()
+                                    /*TODO: Implement navigation register logic*/
+                                },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = AppColorTheme.onSurface
+                                ),
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowLeft,
+                                    contentDescription = null,
+                                    tint = AppColorTheme.onPrimary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        },
+                        actions = {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(40.dp)
+                            )
+                        },
+                        modifier = Modifier
+                            .background(
+                                color = AppColorTheme.primary
+                            )
+                            .shadow(
+                                elevation = 4.dp
+                            )
                     )
-                )
-                .build()
-                .getConfig()
-        }
-    }
-
-    @Composable
-    fun createTextFieldDefault(
-        modifier: Modifier = Modifier
-    ) : InputFieldConfig{
-        return remember {
-            InputFieldConfig(
-                supportText = { /*TODO: Implement supportText*/ },
-                maxLine = 1,
-                shape = RoundedCornerShape(4.dp),
-                modifier = modifier
-                    .fillMaxWidth()
-            )
-        }
-    }
-
-    // region -- Condition Checker --
-    fun isValidLength(value: String): Boolean {
-        return value.length in 8..16
-    }
-
-    fun hasUpperCase(value: String): Boolean {
-        return value.any { it.isUpperCase() }
-    }
-
-    fun hasSpecialCharacter(value: String): Boolean {
-        val specialChars = "!@#\$%^&*(),.?\":{}|<>"
-        return value.any { it in specialChars }
-    }
-
-    // region -- Password Checker --
-    @Composable
-    fun PasswordElementChecker(
-        icon: ImageVector,
-        label: Int,
-        color: Color
-    ){
-        Row(
-            modifier = Modifier
-                .padding(top = 4.dp)
-                .wrapContentSize(),
-            horizontalArrangement = Arrangement.Absolute.Right,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color
-            )
-            Text(
-                text = stringResource(id = label),
-                color = color,
-                style = AppTypography.labelMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(start = 4.dp)
-            )
-        }
-    }
-
-    // region -- Checker Element --
-    @Composable
-    fun PasswordChecker(value: String){
-        val elementCheckers = listOf(
-            R.string.length_condi,
-            R.string.caplock_condi,
-            R.string.special_condi
-        )
-
-        Column (
-            modifier = Modifier
-                .offset(y = (-12).dp)
-                .fillMaxWidth()
-                .padding(start = 16.dp)
-        ) {
-            elementCheckers.forEachIndexed{
-                    index, item ->
-
-                var isCheck: Boolean = false
-
-                when (index){
-                    0 -> isCheck = isValidLength(value)
-                    1 -> isCheck = hasUpperCase(value)
-                    2 -> isCheck = hasSpecialCharacter(value)
+                },
+                modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                        .background(
+                            color = AppColorTheme.primary
+                        )
+                ){
+                    RegisterForm()
                 }
-
-                val color = if (isCheck) AppColorTheme.secondary else AppColorTheme.onError
-                val icon = Icons.Outlined.CheckCircle
-
-                PasswordElementChecker(
-                    icon = icon,
-                    label = item,
-                    color = color
-                )
             }
         }
     }
 
-    // region -- Setter Value --
-    fun setUserValue(state: RegisterFormState){
-        requestUser.lastName = state.lastName
-        requestUser.firstName = state.firstName
-        requestUser.username = state.username
-        requestUser.email = state.email
-        requestUser.password = state.password
-    }
+    // region --- Register UI Form ---
+    @Composable
+    fun RegisterForm() {
+        // region -- ViewModel --
+        val userVM: UserViewModel = hiltViewModel()
+        val registerVM: RegisterFormViewModel = hiltViewModel()
+        // endregion
 
-    fun setStateValue(viewModel: RegisterFormViewModel, index: Int, value: String){
-        when(index){
-            0 -> viewModel.onEvent(RegisterFormEvent.LastNameChange(value))
-            1 -> viewModel.onEvent(RegisterFormEvent.FirstNameChange(value))
-            2 -> viewModel.onEvent(RegisterFormEvent.UsernameChange(value))
-            3 -> viewModel.onEvent(RegisterFormEvent.EmailChange(value))
-            4 -> viewModel.onEvent(RegisterFormEvent.PasswordChange(value))
-            else -> viewModel.onEvent(RegisterFormEvent.RepeatedPasswordChange(value))
+        // region - State Value -
+        val userInfo by userVM.userInfo.collectAsState()
+        val isLoading by userVM.isLoading.collectAsState()
+
+        val context = LocalContext.current
+        // endregion
+
+        val regisSuccessful: String = stringResource(id = R.string.sign_up)
+
+        // region -- Calling API --
+        LaunchedEffect(key1 = context) {
+            registerVM.validationEvents.collect { event ->
+                when(event){
+                    is RegisterFormViewModel.ValidationEvent.Success -> {
+                        setUserValue(registerVM.state)
+                        userVM.createAccountUser(requestUser)
+                    }
+                }
+            }
+        }
+        // endregion
+
+        // region -- Loading Result --
+        LaunchedEffect(isLoading) {
+            if (!isLoading && userInfo != null) {
+                val status = StatusCode.fromCode(userInfo?.code ?: 0)
+                val text: String = StatusCode.fromStatusResId(status.statusResId)
+
+                if(userInfo!!.code == StatusCode.SUCCESS.code) {
+                    Toast.makeText(
+                        context,
+                        regisSuccessful + " " + text,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    onNavToAuthenticationActivity.putExtra("username", requestUser.username)
+                    onNavToAuthenticationActivity.putExtra("password", requestUser.password)
+
+                    startActivity(onNavToAuthenticationActivity)
+                    finish()
+                }
+                else{
+                    Toast.makeText(
+                        context,
+                        text,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+        // endregion
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 4.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+        ) {
+            Header()
+
+
+            Body(
+                modifier = Modifier.weight(1f),
+                regisVM = registerVM
+            )
+
+            Footer(
+                regisVM = registerVM
+            )
         }
     }
 
-    fun getState(index: Int, state: RegisterFormState): String{
-        when(index){
-            0 -> return state.lastName
-            1 -> return state.firstName
-            2 -> return state.username
-            3 -> return state.email
-            4 -> return state.password
-            else -> return state.repeatedPassword
-
-        }
-    }
-
-    fun getErrorState(index: Int, state: RegisterFormState): String?{
-        when(index){
-            0 -> return state.lastNameError
-            1 -> return state.firstNameError
-            2 -> return state.usernameError
-            3 -> return state.emailError
-            4 -> return state.passwordError
-            else -> return state.repeatedPasswordError
-
-        }
-    }
-
-    // region -- UI Section --
+    // region --- Register UI Section ---
     @Composable
     fun Header(){
         val textConfig = createTextDefault()
@@ -603,79 +532,159 @@ class RegisterFormActivity: ComponentActivity() {
         }
     }
 
-    // region -- Main UI --
+    // region -- Setter Value --
+    fun setUserValue(state: RegisterFormState){
+        requestUser.lastName = state.lastName
+        requestUser.firstName = state.firstName
+        requestUser.username = state.username
+        requestUser.email = state.email
+        requestUser.password = state.password
+    }
+
+    fun setStateValue(viewModel: RegisterFormViewModel, index: Int, value: String){
+        when(index){
+            0 -> viewModel.onEvent(RegisterFormEvent.LastNameChange(value))
+            1 -> viewModel.onEvent(RegisterFormEvent.FirstNameChange(value))
+            2 -> viewModel.onEvent(RegisterFormEvent.UsernameChange(value))
+            3 -> viewModel.onEvent(RegisterFormEvent.EmailChange(value))
+            4 -> viewModel.onEvent(RegisterFormEvent.PasswordChange(value))
+            else -> viewModel.onEvent(RegisterFormEvent.RepeatedPasswordChange(value))
+        }
+    }
+
+    fun getState(index: Int, state: RegisterFormState): String{
+        when(index){
+            0 -> return state.lastName
+            1 -> return state.firstName
+            2 -> return state.username
+            3 -> return state.email
+            4 -> return state.password
+            else -> return state.repeatedPassword
+
+        }
+    }
+
+    fun getErrorState(index: Int, state: RegisterFormState): String?{
+        when(index){
+            0 -> return state.lastNameError
+            1 -> return state.firstNameError
+            2 -> return state.usernameError
+            3 -> return state.emailError
+            4 -> return state.passwordError
+            else -> return state.repeatedPasswordError
+
+        }
+    }
+
+    // region -- Password Checker --
     @Composable
-    fun RegisterForm() {
-
-        // region -- ViewModel --
-        val userVM: UserViewModel = hiltViewModel()
-        val registerVM: RegisterFormViewModel = hiltViewModel()
-        // endregion
-
-        // region - State Value -
-        val userInfo by userVM.userInfo.collectAsState()
-        val isLoading by userVM.isLoading.collectAsState()
-
-        val context = LocalContext.current
-        // endregion
-
-        val regisSuccessful: String = stringResource(id = R.string.sign_up)
-        LaunchedEffect(key1 = context) {
-            registerVM.validationEvents.collect { event ->
-                when(event){
-                    is RegisterFormViewModel.ValidationEvent.Success -> {
-                        setUserValue(registerVM.state)
-                        userVM.createAccountUser(requestUser)
-                    }
-                }
-            }
-        }
-
-        LaunchedEffect(isLoading) {
-            if (!isLoading && userInfo != null) {
-                val status = StatusCode.fromCode(userInfo?.code ?: 0)
-                val text: String = StatusCode.fromStatusResId(status.statusResId)
-
-                when(userInfo!!.code){
-                    1000 -> {
-                        Toast.makeText(
-                            context,
-                            regisSuccessful + " " + text,
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        onNavToAuthenticationActivity.putExtra("username", requestUser.username)
-                        onNavToAuthenticationActivity.putExtra("password", requestUser.password)
-                        startActivity(onNavToAuthenticationActivity)
-                        finish()
-                    }
-                    else -> {
-                        Toast.makeText(
-                            context,
-                            text,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        }
-
-        Column(
+    fun PasswordElementChecker(
+        icon: ImageVector,
+        label: Int,
+        color: Color
+    ){
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+                .padding(top = 4.dp)
+                .wrapContentSize(),
+            horizontalArrangement = Arrangement.Absolute.Right,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Header()
-
-
-            Body(
-                modifier = Modifier.weight(1f),
-                regisVM = registerVM
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color
             )
+            Text(
+                text = stringResource(id = label),
+                color = color,
+                style = AppTypography.labelMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(start = 4.dp)
+            )
+        }
+    }
 
-            Footer(
-                regisVM = registerVM
+    // region -- Checker Element --
+    @Composable
+    fun PasswordChecker(value: String){
+        val elementCheckers = listOf(
+            R.string.length_condi,
+            R.string.caplock_condi,
+            R.string.special_condi
+        )
+
+        Column (
+            modifier = Modifier
+                .offset(y = (-12).dp)
+                .fillMaxWidth()
+                .padding(start = 16.dp)
+        ) {
+            elementCheckers.forEachIndexed{
+                    index, item ->
+
+                var isCheck: Boolean = false
+
+                when (index){
+                    0 -> isCheck = isValidLength(value)
+                    1 -> isCheck = hasUpperCase(value)
+                    2 -> isCheck = hasSpecialCharacter(value)
+                }
+
+                val color = if (isCheck) AppColorTheme.secondary else AppColorTheme.onError
+                val icon = Icons.Outlined.CheckCircle
+
+                PasswordElementChecker(
+                    icon = icon,
+                    label = item,
+                    color = color
+                )
+            }
+        }
+    }
+
+    // region -- Condition Checker --
+    fun isValidLength(value: String): Boolean {
+        return value.length in 8..50
+    }
+
+    fun hasUpperCase(value: String): Boolean {
+        return value.any { it.isUpperCase() }
+    }
+
+    fun hasSpecialCharacter(value: String): Boolean {
+        val specialChars = "!@#\$%^&*(),.?\":{}|<>"
+        return value.any { it in specialChars }
+    }
+
+    // region -- Component Default --
+    @Composable
+    fun createTextDefault() : TextConfig {
+        return remember {
+            TextComponentBuilder()
+                .withConfig(
+                    TextConfig(
+                        color = AppColorTheme.onPrimary,
+                        textStyle = AppTypography.titleMedium
+                    )
+                )
+                .build()
+                .getConfig()
+        }
+    }
+
+    @Composable
+    fun createTextFieldDefault(
+        modifier: Modifier = Modifier
+    ) : InputFieldConfig{
+        return remember {
+            InputFieldConfig(
+                supportText = { /*TODO: Implement supportText*/ },
+                maxLine = 1,
+                shape = RoundedCornerShape(4.dp),
+                modifier = modifier
+                    .fillMaxWidth()
             )
         }
     }
@@ -686,7 +695,7 @@ class RegisterFormActivity: ComponentActivity() {
     // endregion
 
     // endregion
-
+    // endregion
     // endregion
 
     // endregion
