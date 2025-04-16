@@ -274,7 +274,10 @@ fun ImageBox(modifier: Modifier){
         val contentResolver = context.contentResolver
         val filteredUris = uris.filter { uri ->
             val type = contentResolver.getType(uri) ?: ""
-            (type.startsWith("image/") || type.startsWith("video/")) &&
+            // Comment Get Video
+            /*(type.startsWith("image/") || type.startsWith("video/")) &&
+                    mediaUris.none { it.toString() == uri.toString() }*/
+            type.startsWith("image/") &&
                     mediaUris.none { it.toString() == uri.toString() }
         }
         mediaUris.addAll(filteredUris)
@@ -384,7 +387,8 @@ fun ImageBox(modifier: Modifier){
                                 )
                             }
 
-                            if(Checker.isVideo(uri, context)){
+                            // Comment Show Video
+                            /*if(Checker.isVideo(uri, context)){
                                 AndroidView(
                                     factory = { ctx ->
                                         VideoView(ctx).apply {
@@ -402,7 +406,7 @@ fun ImageBox(modifier: Modifier){
                                         .aspectRatio(1f)
 
                                 )
-                            }
+                            }*/
                             // endregion
 
                             // region - Pop Image/Video Button -

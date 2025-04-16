@@ -10,7 +10,7 @@ class ValidateName: ValidationAbs() {
 
         val length = value.length
         val min = 1
-        val max = 30
+        val max = 15
 
         if (value.isBlank())
             return isBlank()

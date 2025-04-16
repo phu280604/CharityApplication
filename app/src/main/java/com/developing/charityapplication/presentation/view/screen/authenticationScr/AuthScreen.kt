@@ -1,7 +1,7 @@
 package com.developing.charityapplication.presentation.view.screen.authenticationScr
 
-import android.app.Activity
-import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,10 +21,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
@@ -33,11 +33,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.event.activityEvent.AuthChangeEvent
-import com.developing.charityapplication.presentation.view.activity.RecoveryActivity
-import com.developing.charityapplication.presentation.view.activity.UserAppActivity
+import com.developing.charityapplication.presentation.state.activityState.AuthEventVM
+import com.developing.charityapplication.presentation.state.activityState.AuthStateVM
+import com.developing.charityapplication.presentation.state.activityState.AuthenticationState
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
@@ -45,14 +45,14 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppTypography
-import com.developing.charityapplication.presentation.viewmodel.activityViewModel.AuthenticationViewModel
+import kotlinx.coroutines.delay
 
 // region -- Authentication Screen --
 @Composable
-fun AuthScreen(isForget: Boolean) {
-    val authVM: AuthenticationViewModel = hiltViewModel()
-    authVM.setState(5)
-
+fun AuthScreen(
+    states: AuthStateVM,
+    onEventVM: AuthEventVM
+) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 24.dp)
@@ -63,9 +63,16 @@ fun AuthScreen(isForget: Boolean) {
 
         AuthHeader()
 
-        AuthBody(authVM)
+        AuthBody(
+            states = states.states,
+            focusRequests = states.focusRequests,
+            onChangeValue = onEventVM.onChangeValue
+        )
 
-        AuthFooter(isForget)
+        AuthFooter(
+            onSendOtp = onEventVM.onSendOtp,
+            onSubmit = onEventVM.onSubmit
+        )
     }
 }
 // endregion
@@ -95,12 +102,13 @@ fun AuthHeader(){
 }
 
 @Composable
-fun AuthBody(authVM: AuthenticationViewModel){
+fun AuthBody(
+    states: List<AuthenticationState>,
+    focusRequests: List<FocusRequester>,
+    onChangeValue: (Int, String) -> Unit
+){
     val textConfig =  createConfigText()
     val textFieldConfig = createConfigInputFields()
-
-    val state by authVM.state.collectAsState()
-    val focusRequest by authVM.focusRequest.collectAsState()
 
     // region - Pin Input -
     Column(
@@ -131,27 +139,22 @@ fun AuthBody(authVM: AuthenticationViewModel){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            itemsIndexed(state) {
-                    index, item ->
-
+            itemsIndexed(states) {
+                index, item ->
                 var countRequest = 1
-                if (index >= state.count() - 1)
+                if (index >= states.count() - 1)
                     countRequest = 0
 
                 InputFieldComponentBuilder()
                     .withConfig(
                         textFieldConfig.copy(
-                            value = state.get(index).pinValue,
+                            value = item.pinValue,
                             onValueChange = { newValue ->
                                 if (newValue.length <= 1 && newValue.isDigitsOnly()) {
-                                    authVM.onEvent(index, AuthChangeEvent.PinValueChange(newValue))
-
-                                    if (newValue.isNotEmpty() && index < (state.count() - 1)) {
-                                        focusRequest[index + 1].requestFocus()
-                                    }
-
-                                    if(newValue.isEmpty() && index - 1 >= 0){
-                                        focusRequest[index - 1].requestFocus()
+                                    onChangeValue(index, newValue)
+                                    when {
+                                        newValue.isNotEmpty() && index < states.lastIndex -> focusRequests[index + 1].requestFocus()
+                                        newValue.isEmpty() && index > 0 -> focusRequests[index - 1].requestFocus()
                                     }
                                 }
                             },
@@ -160,8 +163,8 @@ fun AuthBody(authVM: AuthenticationViewModel){
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(40.dp)
-                                .focusRequester(focusRequest[index])
-                                .focusProperties { next = focusRequest[index + countRequest] },
+                                .focusRequester(focusRequests[index])
+                                .focusProperties { next = focusRequests[index + countRequest] },
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number
                             )
@@ -177,27 +180,35 @@ fun AuthBody(authVM: AuthenticationViewModel){
 }
 
 @Composable
-fun AuthFooter(isForget: Boolean){
+fun AuthFooter(
+    onSendOtp: () -> Unit,
+    onSubmit: () -> Unit,
+    startSeconds: Int = 15
+){
     val textConfig =  createConfigText()
     val buttonConfig =  createConfigButton()
 
-    val context = LocalContext.current
+    var timeLeft by remember{ mutableIntStateOf(startSeconds) }
+
+    LaunchedEffect(key1 = timeLeft) {
+        if (timeLeft == startSeconds)
+        {
+
+            onSendOtp()
+        }
+
+        if (timeLeft > 0) {
+            delay(1000L)
+            timeLeft--
+        }
+    }
 
     // region - Submit -
     ButtonComponentBuilder()
         .withConfig(
             buttonConfig.copy(
                 text = stringResource(id = R.string.authentication_button),
-                onClick = {
-                    val onNavToNextActivity = if(isForget)
-                        Intent(context, RecoveryActivity::class.java)
-                    else
-                            Intent(context, UserAppActivity::class.java)
-                    context.startActivity(onNavToNextActivity)
-                    val activity = context as? Activity
-                    activity?.finish()
-                    /*TODO: Implement Submit Logic*/
-                },
+                onClick = onSubmit,
                 textStyle = AppTypography.bodyMedium,
                 modifier = Modifier
                     .padding(top = 24.dp)
@@ -228,20 +239,36 @@ fun AuthFooter(isForget: Boolean){
             .build()
             .BaseDecorate {  }
 
-        TextComponentBuilder()
-            .withConfig(
-                textConfig.copy(
-                    text = stringResource(id = R.string.resend),
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .clickable(
-                            onClick = { /*TODO: Implements resend pin logic*/ },
-                            role = Role.Button
-                        )
+        if (timeLeft != 0){
+            TextComponentBuilder()
+                .withConfig(
+                    textConfig.copy(
+                        text = timeLeft.toString(),
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
                 )
-            )
-            .build()
-            .BaseDecorate {  }
+                .build()
+                .BaseDecorate {  }
+        }
+        else {
+            TextComponentBuilder()
+                .withConfig(
+                    textConfig.copy(
+                        text = stringResource(id = R.string.resend),
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier
+                            .clickable(
+                                onClick = {
+                                    timeLeft = startSeconds
+                                    /*TODO: Implements resend pin logic*/
+                                },
+                                role = Role.Button
+                            )
+                    )
+                )
+                .build()
+                .BaseDecorate {  }
+        }
     }
     // endregion
 }

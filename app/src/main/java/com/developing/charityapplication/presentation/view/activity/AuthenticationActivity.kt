@@ -5,6 +5,7 @@ package com.developing.charityapplication.presentation.view.activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -55,6 +56,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -62,6 +64,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
@@ -69,11 +72,20 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
+import com.developing.charityapplication.domain.model.identityModel.RequestEmailM
 import com.developing.charityapplication.domain.model.identityModel.RequestLoginM
+import com.developing.charityapplication.domain.model.identityModel.RequestOTPM
+import com.developing.charityapplication.infrastructure.utils.StatusCode
+import com.developing.charityapplication.presentation.event.activityEvent.AuthChangeEvent
+import com.developing.charityapplication.presentation.state.activityState.AuthEventVM
+import com.developing.charityapplication.presentation.state.activityState.AuthStateVM
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.screen.authenticationScr.AuthScreen
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
+import com.developing.charityapplication.presentation.viewmodel.activityViewModel.AuthenticationViewModel
+import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -85,15 +97,21 @@ class AuthenticationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        isForget = intent.getBooleanExtra("isForget", false)
-        val userInfo = RequestLoginM()
-        userInfo.username = intent.getStringExtra("username") ?: ""
-        userInfo.password = intent.getStringExtra("password") ?: ""
-        Log.d("UserInfo", userInfo.username)
-        Log.d("UserInfo", userInfo.password)
+        var formType = intent.getIntExtra("formType", 1)
+
+        var email: RequestEmailM = RequestEmailM()
+        email.email = intent.getStringExtra("email") ?: ""
+
+        var account = RequestLoginM()
+        account.username = intent.getStringExtra("username") ?: ""
+        account.password = intent.getStringExtra("password") ?: ""
 
         setContent{
-            PinEntryCard()
+            PinEntryCard(
+                formType = formType,
+                email = email,
+                account = account
+            )
         }
     }
 
@@ -103,7 +121,85 @@ class AuthenticationActivity : ComponentActivity() {
 
     // region -- Main UI --
     @Composable
-    fun PinEntryCard() {
+    fun PinEntryCard(
+        formType: Int,
+        email: RequestEmailM,
+        account: RequestLoginM
+    ) {
+        // region -- View Model --
+        val authVM: AuthenticationViewModel = hiltViewModel()
+        val authApiVM: AuthViewModel = hiltViewModel()
+        // endregion
+
+        // region -- State --
+        val state by authVM.state.collectAsState()
+        val focusRequest by authVM.focusRequest.collectAsState()
+        val checkingState by authVM.checkingState.collectAsState()
+        val sendingResponse by authApiVM.sendingOtpResponse.collectAsState()
+        val loginResponse by authApiVM.loginResponse.collectAsState()
+
+        val context = LocalContext.current
+        // endregion
+
+        // region -- Message --
+        val sendingOtp_success = stringResource(id = R.string.sendingOtp_success)
+        val sendingOtp_failed = stringResource(id = R.string.sendingOtp_failed)
+        val checkingState_sms = if (checkingState != 0) stringResource(id = checkingState) else ""
+
+        val login_success = stringResource(id = R.string.verifying_success)
+        // endregion
+
+        // region -- Call API --
+        LaunchedEffect(key1 = Unit) {
+            authVM.validationEvents.collect { event ->
+                when(event){
+                    is AuthenticationViewModel.ValidationEvent.Success -> {
+                        var otp = RequestOTPM()
+                        state.forEach{ otp.otp += it.pinValue }
+                        authApiVM.verifyOtp_Email(otp, account)
+                    }
+                }
+            }
+        }
+
+        LaunchedEffect(key1 = checkingState) {
+            checkingState.let {
+                if (it != 0)
+                    Toast.makeText(
+                        context,
+                        checkingState_sms,
+                        Toast.LENGTH_LONG
+                    ).show()
+                authVM.resetState()
+            }
+        }
+
+        LaunchedEffect(key1 = sendingResponse) {
+            sendingResponse?.let {
+                val sms = if (it.result?.result != null) sendingOtp_success else sendingOtp_failed
+                Toast.makeText(context, sms, Toast.LENGTH_LONG).show()
+                it.result = null
+            }
+        }
+
+        LaunchedEffect(key1 = loginResponse) {
+            loginResponse?.let {
+                if (!it.result?.token.isNullOrEmpty())
+                    Toast.makeText(
+                        context,
+                        login_success,
+                        Toast.LENGTH_LONG
+                    ).show()
+                onNavToUserAppActivity.putExtra("isEnable", false)
+                startActivity(onNavToUserAppActivity)
+
+                it.result = null
+
+                finish()
+            }
+        }
+        // endregion
+
         HeartBellTheme {
             Scaffold(
                 modifier = Modifier
@@ -116,8 +212,13 @@ class AuthenticationActivity : ComponentActivity() {
                         navigationIcon = {
                             IconButton(
                                 onClick = {
-                                    onNavToGmailActivity.putExtra("isForget", isForget)
-                                    startActivity(onNavToGmailActivity)
+                                    val intent = when(formType){
+                                        1 -> Intent(this, LoginActivity::class.java)
+                                        2 -> Intent(this, GmailActivity::class.java)
+                                        else -> Intent(this, RegisterFormActivity::class.java)
+                                    }
+                                    intent.putExtra("formType", formType)
+                                    startActivity(intent)
                                     finish()
                                     /*TODO: Implement navigate back*/
                                 },
@@ -163,18 +264,30 @@ class AuthenticationActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
-                    AuthScreen(isForget)
+                    AuthScreen(
+                        states = AuthStateVM(
+                            states = state,
+                            focusRequests = focusRequest,
+                        ),
+                        onEventVM = AuthEventVM(
+                            onChangeValue = {
+                                index, newValue ->
+                                authVM.onEvent(index, AuthChangeEvent.PinValueChange(newValue))
+                            },
+                            onSendOtp = {
+                                authApiVM.sendOtp_Email(email)
+                            },
+                            onSubmit = {
+                                authVM.onEvent(formType, AuthChangeEvent.Submit)
+                            }
+                        )
+                    )
                 }
             }
         }
     }
 
     // region -- Preview --
-    @Preview
-    @Composable
-    fun MainUIPreview(){
-        PinEntryCard()
-    }
     // endregion
     // endregion
 
@@ -182,8 +295,9 @@ class AuthenticationActivity : ComponentActivity() {
 
     // region --- Fields ---
 
-    private var isForget: Boolean = false
-
+    private val onNavToUserAppActivity: Intent by lazy { Intent(this, UserAppActivity::class.java) }
+    private val onNavToLoginActivity: Intent by lazy { Intent(this, LoginActivity::class.java) }
+    private val onNavToRegisterActivity: Intent by lazy { Intent(this, RegisterFormActivity::class.java) }
     private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }
 
     // endregion

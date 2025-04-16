@@ -247,7 +247,7 @@ fun UserFollowItem(
     ) {
         // region -- Avatar Section --
         Image(
-            painter = painterResource(id = data.userbackground),
+            painter = data.userbackground ?: painterResource(id = R.drawable.avt_young_girl),
             contentDescription = null,
             modifier = Modifier
                 .weight(0.3f)
@@ -346,47 +346,49 @@ fun UserFollowItem(
 }
 
 // region --- Fake Data ---
+@Composable
 fun fakeData(): List<PostConfig>{
+    val avatar = painterResource(id = R.drawable.avt_young_girl)
     return listOf(
         PostConfig(
             username = "Nguyễn Văn An",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Trần Thị Mai",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Lê Hoàng Phúc",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Phạm Ngọc Lan",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Đỗ Minh Khang",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Hồ Thị Bích Vân",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Vũ Quốc Huy",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Bùi Thanh Hà",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Lý Gia Hân",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         ),
         PostConfig(
             username = "Trịnh Công Sơn",
-            userbackground = R.drawable.avt_young_girl
+            userbackground = avatar
         )
     )
 }

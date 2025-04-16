@@ -10,6 +10,7 @@ interface UsersAPI {
 
     // region --- POST ---
 
+    // Creating New User
     @Headers("Content-Type: application/json", "Accept: */*")
     @POST("identity/users/registration")
     suspend fun createUser(@Body userRequest: RequestCreateUser) : Response<ResponseM<UserM>>

@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.R
 import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
@@ -41,12 +42,12 @@ fun HomePageScreen(){
 // region --- Fake Datas ---
 @Composable
 fun fakeDataPost(): List<PostConfig>{
+    val avatar = painterResource(id = R.drawable.avt_young_girl)
     return remember {
         listOf(
             PostConfig(
-                userbackground = R.drawable.avt_young_girl,
+                userbackground = avatar,
                 username = "Nguyễn Văn A",
-                timeAgo = 5,
                 content = "Hôm nay là một ngày tuyệt vời! Cùng nhau làm điều ý nghĩa nhé! ❤️",
                 donationValue = "500.000 VNĐ",
                 dateRange = "1-5 Tháng 4",
@@ -55,9 +56,8 @@ fun fakeDataPost(): List<PostConfig>{
                 shareCount = "15"
             ),
             PostConfig(
-                userbackground = R.drawable.avt_woman,
+                userbackground = avatar,
                 username = "Trần Thị B",
-                timeAgo = 10,
                 content = "Chúng ta hãy chung tay giúp đỡ những hoàn cảnh khó khăn!",
                 donationValue = "1.000.000 VNĐ",
                 dateRange = "10-15 Tháng 4",
@@ -66,9 +66,8 @@ fun fakeDataPost(): List<PostConfig>{
                 shareCount = "30"
             ),
             PostConfig(
-                userbackground = R.drawable.avt_woman,
+                userbackground = avatar,
                 username = "Lê Văn C",
-                timeAgo = 15,
                 content = "Mỗi hành động nhỏ của bạn đều có thể tạo ra sự khác biệt lớn!",
                 donationValue = "750.000 VNĐ",
                 dateRange = "5-10 Tháng 4",
@@ -77,9 +76,8 @@ fun fakeDataPost(): List<PostConfig>{
                 shareCount = "20"
             ),
             PostConfig(
-                userbackground = R.drawable.avt_young_boy,
+                userbackground = avatar,
                 username = "Phạm Thị D",
-                timeAgo = 20,
                 content = "Cảm ơn mọi người đã luôn đồng hành và ủng hộ!",
                 donationValue = "2.000.000 VNĐ",
                 dateRange = "20-25 Tháng 4",

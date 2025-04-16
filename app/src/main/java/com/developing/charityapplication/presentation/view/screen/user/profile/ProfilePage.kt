@@ -2,6 +2,8 @@
 
 package com.developing.charityapplication.presentation.view.screen.user.profile
 
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -43,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -51,13 +54,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.R
+import com.developing.charityapplication.data.dataManager.DataStoreManager
+import com.developing.charityapplication.domain.model.postModel.ResponsePostM
+import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
+import com.developing.charityapplication.presentation.view.activity.LoginActivity
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.EditProfilePage
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.ProfileScreenViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import kotlinx.coroutines.launch
 
 // region --- Methods ---
@@ -71,12 +81,17 @@ fun HeaderProfile(navController: NavHostController){
         Pair(R.string.more_option_profile, Icons.Default.List),
         Pair(R.string.logout, Icons.Default.ExitToApp),
     )
+
+    val context = LocalContext.current
+    // endregion
+
+    // region -- ViewModel --
+    val profileScreenVM: ProfileScreenViewModel = hiltViewModel()
     // endregion
 
     // region -- Value ViewModel --
-    val profileScreenVM: ProfileScreenViewModel = hiltViewModel()
-
     val state by profileScreenVM.selectedIndexState.asIntState()
+
     var showBottomSheet by remember { mutableStateOf(false) }
     // endregion
 
@@ -151,6 +166,13 @@ fun HeaderProfile(navController: NavHostController){
 
                                 val route = when(listProfile.get(indexItem).first){
                                     R.string.edit_prodile -> EditProfilePage.route
+                                    R.string.logout -> {
+                                        val intent = Intent(context, LoginActivity::class.java)
+                                        context.startActivity(intent)
+                                        val activity = (context as? Activity)
+                                        activity?.finish()
+                                        return@MenuOpitionProfile
+                                    }
                                     else -> ProfilePage.route
                                 }
 
@@ -173,19 +195,58 @@ fun HeaderProfile(navController: NavHostController){
 
 @Composable
 fun ProfilePageScreen(){
+    // region -- Value Default --
     val fakePostProfile = fakeDataPostProfile()
-    val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    // endregion
 
-    BodyProfile(
-        fakePostProfile,
-        Modifier
-            .background(color = AppColorTheme.surface)
-            .verticalScroll(scrollState))
+    // region -- ViewModel --
+    val profileInfoVM: ProfileViewModel = hiltViewModel()
+    val postVM: PostViewModel = hiltViewModel()
+    // endregion
+
+    // region -- State ViewModel --
+    val profileInfo by profileInfoVM.profileResponse.collectAsState()
+    val postsInfo by postVM.postsResponse.collectAsState()
+    val isLoading by profileInfoVM.isLoading.collectAsState()
+
+    val profileId by DataStoreManager.getProfileId(context).collectAsState(initial = null)
+    Log.d("Json",profileId.toString() )
+
+    val scrollState = rememberScrollState()
+    // endregion
+
+    // region -- Call API --
+    LaunchedEffect(profileId) {
+        if (!profileId.isNullOrEmpty())
+        {
+            profileInfoVM.getProfileByProfileId(profileId!!)
+        }
+    }
+    // endregion
+
+    if (profileInfo?.code == 1000 && postsInfo?.code == 1000){
+        BodyProfile(
+            profile = profileInfo?.result ?: ResponseProfilesM(),
+            posts = postsInfo?.result ?: emptyList(),
+            modifier = Modifier
+                .background(color = AppColorTheme.surface)
+                .verticalScroll(scrollState))
+    }
+
 }
 
 // region -- Body Section
 @Composable
-fun BodyProfile(posts: List<PostConfig>, modifier: Modifier){
+fun BodyProfile(
+    profile: ResponseProfilesM,
+    posts: List<ResponsePostM>,
+    modifier: Modifier
+){
+    val avatar = if(profile.avatarUrl.isEmpty())
+        painterResource(id = R.drawable.avt_young_girl)
+    else
+        rememberAsyncImagePainter(profile.avatarUrl)
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -201,10 +262,11 @@ fun BodyProfile(posts: List<PostConfig>, modifier: Modifier){
             // region -- Profile Info --
             /*TODO: Implement profile information*/
             DetailsProfile(
-                userBackground = painterResource(posts[0].userbackground),
-                username = posts[0].username,
-                followingAmount = 24,
-                followerAmount = 2
+                userBackground = avatar,
+                username = profile.lastName + " " + profile.firstName,
+                location = if(profile.location.isEmpty()) "" else profile.location,
+                followingAmount = 0,
+                followerAmount = 0
             )
             // endregion
 
@@ -225,7 +287,14 @@ fun BodyProfile(posts: List<PostConfig>, modifier: Modifier){
                 index, item ->
                 PostComponentBuilder()
                     .withConfig(
-                        item
+                        PostConfig(
+                            userbackground = avatar,
+                            username = profile.lastName + " " + profile.firstName,
+                            content = item.content,
+                            fileIds = item.fileIds,
+                            timeAgo = item.createdAt,
+                            donationValue = "0"
+                        )
                     )
                     .build()
                     .BaseDecorate {  }
@@ -239,6 +308,7 @@ fun BodyProfile(posts: List<PostConfig>, modifier: Modifier){
 fun DetailsProfile(
     userBackground: Painter,
     username: String,
+    location: String,
     followingAmount: Int,
     followerAmount: Int
 ){
@@ -256,6 +326,13 @@ fun DetailsProfile(
             text = username,
             style = AppTypography.titleMedium.copy(
                 fontWeight = FontWeight.SemiBold
+            ),
+            color = AppColorTheme.onPrimary
+        )
+        Text(
+            text = location,
+            style = AppTypography.labelMedium.copy(
+                fontWeight = FontWeight.Light
             ),
             color = AppColorTheme.onPrimary
         )
@@ -342,7 +419,11 @@ fun CategoryPost(
 }
 
 @Composable
-fun DetailItems(amount: Int, title: String, modifier: Modifier){
+fun DetailItems(
+    amount: Int,
+    title: String,
+    modifier: Modifier
+){
     Column(
         modifier = modifier
             .fillMaxSize(),
@@ -420,12 +501,12 @@ fun MenuOpitionProfile(
 // region -- Fake Data --
 @Composable
 fun fakeDataPostProfile(): List<PostConfig>{
+    val avatar = painterResource(id = R.drawable.avt_young_girl)
     return remember {
         listOf(
             PostConfig(
-                userbackground = R.drawable.avt_young_girl,
+                userbackground = avatar,
                 username = "Nguyễn Văn A",
-                timeAgo = 5,
                 content = "Hôm nay là một ngày tuyệt vời! Cùng nhau làm điều ý nghĩa nhé! ❤️",
                 donationValue = "500.000 VNĐ",
                 dateRange = "1-5 Tháng 4",
@@ -434,9 +515,8 @@ fun fakeDataPostProfile(): List<PostConfig>{
                 shareCount = "15"
             ),
             PostConfig(
-                userbackground = R.drawable.avt_young_girl,
+                userbackground = avatar,
                 username = "Nguyễn Văn A",
-                timeAgo = 10,
                 content = "Chúng ta hãy chung tay giúp đỡ những hoàn cảnh khó khăn!",
                 donationValue = "1.000.000 VNĐ",
                 dateRange = "10-15 Tháng 4",
@@ -445,9 +525,8 @@ fun fakeDataPostProfile(): List<PostConfig>{
                 shareCount = "30"
             ),
             PostConfig(
-                userbackground = R.drawable.avt_young_girl,
+                userbackground = avatar,
                 username = "Nguyễn Văn A",
-                timeAgo = 15,
                 content = "Mỗi hành động nhỏ của bạn đều có thể tạo ra sự khác biệt lớn!",
                 donationValue = "750.000 VNĐ",
                 dateRange = "5-10 Tháng 4",
@@ -456,9 +535,8 @@ fun fakeDataPostProfile(): List<PostConfig>{
                 shareCount = "20"
             ),
             PostConfig(
-                userbackground = R.drawable.avt_young_girl,
+                userbackground = avatar,
                 username = "Nguyễn Văn A",
-                timeAgo = 20,
                 content = "Cảm ơn mọi người đã luôn đồng hành và ủng hộ!",
                 donationValue = "2.000.000 VNĐ",
                 dateRange = "20-25 Tháng 4",

@@ -56,6 +56,7 @@ import com.developing.charityapplication.infrastructure.utils.ShowSMS
 import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.event.activityEvent.LoginFormEvent
 import com.developing.charityapplication.presentation.state.activityState.LoginFormState
+import com.developing.charityapplication.presentation.state.activityState.LoginUIState
 import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
@@ -128,7 +129,11 @@ class LoginActivity() : ComponentActivity() {
         LaunchedEffect(isLoading) {
             loginInfo?.let {
                 val status = StatusCode.fromCode(it.code)
-                val message = StatusCode.fromStatusResId(status.statusResId)
+                val hasToken = loginInfo?.result?.token.isNullOrEmpty()
+                val message = if(hasToken)
+                    StatusCode.fromStatusResId(status.statusResId)
+                else
+                    StatusCode.fromStatusResId(1)
 
                 if (!isLoading) {
                     if (it.code == 1000) {
@@ -137,7 +142,13 @@ class LoginActivity() : ComponentActivity() {
                             "$loginSuccessful: $message",
                             Toast.LENGTH_LONG
                         ).show()
-                        startActivity(onNavToHomePage)
+                        if (loginInfo?.result?.token.isNullOrEmpty())
+                            startActivity(onNavToAuthenticationPage)
+                        else
+                        {
+                            onNavToHomePage.putExtra("isEnable", false)
+                            startActivity(onNavToHomePage)
+                        }
                         finish()
                     } else {
                         Toast.makeText(
@@ -172,8 +183,7 @@ class LoginActivity() : ComponentActivity() {
                         HeaderSection()
 
                         BodySection(
-                            textValue = listOf(loginState.username, loginState.password),
-                            errorText = listOf(loginState.usernameError, loginState.passwordError),
+                            state = loginState,
                             onValuechange = {
                                 index, value ->
                                 setStateValue(
@@ -233,8 +243,7 @@ class LoginActivity() : ComponentActivity() {
 
     @Composable
     fun BodySection(
-        textValue: List<String>,
-        errorText: List<String?>,
+        state: LoginFormState,
         onValuechange: (Int, String) -> Unit,
         onSubmit: () -> Unit
     ){
@@ -246,8 +255,18 @@ class LoginActivity() : ComponentActivity() {
 
         // region -- Item Text Box --
         val itemInputfield = listOf(
-            Pair(R.string.username_email, R.drawable.ic_user),
-            Pair(R.string.password, R.drawable.ic_eye_open)
+            LoginUIState(
+                value = state.username,
+                valueError = state.usernameError,
+                title = R.string.username_email,
+                icon = R.drawable.ic_user
+            ),
+            LoginUIState(
+                value = state.password,
+                valueError = state.passwordError,
+                title = R.string.password,
+                icon = R.drawable.ic_eye_open
+            )
         )
 
         var passwordVisible by remember { mutableStateOf(true) }
@@ -262,32 +281,32 @@ class LoginActivity() : ComponentActivity() {
             // region - TextBox Section -
             itemInputfield.forEachIndexed {
                 index, item ->
-                val isError = errorText[index] != null
+                val isError = item.valueError != null
                 InputFieldComponentBuilder()
                     .withConfig(
                         inputFieldDefault.copy(
-                            value = textValue[index],
+                            value = item.value,
                             onValueChange = {
                                 onValuechange(index, it)
                             },
                             label = {
                                 Text(
-                                    text = stringResource(item.first),
+                                    text = stringResource(item.title),
                                     style = AppTypography.titleMedium,
                                     color = AppColorTheme.onPrimary
                                 )
                             },
                             visualTransformation =
-                                if (passwordVisible && item.first == R.string.password)
+                                if (passwordVisible && item.title == R.string.password)
                                     PasswordVisualTransformation()
                                 else
                                     VisualTransformation.None,
                             leadingIcon = {
-                                if (item.first == R.string.password){
+                                if (item.title == R.string.password){
                                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                         Icon(
                                             painter = painterResource(
-                                                id = if (!passwordVisible) item.second else R.drawable.ic_eye_closed
+                                                id = if (!passwordVisible) item.icon else R.drawable.ic_eye_closed
                                             ),
                                             contentDescription = if (passwordVisible) "Hide Password" else "Show Password",
                                             tint = AppColorTheme.onPrimary
@@ -308,7 +327,7 @@ class LoginActivity() : ComponentActivity() {
                                     TextComponentBuilder()
                                         .withConfig(
                                             textDefault.copy(
-                                                text = "${stringResource(id = item.first)} ${errorText[index]}",
+                                                text = "${stringResource(id = item.title)} ${item.valueError}",
                                                 textStyle = AppTypography.labelMedium.copy(
                                                     fontWeight = FontWeight.Light
                                                 ),
@@ -319,7 +338,7 @@ class LoginActivity() : ComponentActivity() {
                                         .BaseDecorate {  }
                                 }
                             },
-                            modifier = if (item.first == R.string.password)
+                            modifier = if (item.title == R.string.password)
                                 Modifier
                                     .fillMaxWidth()
                                     .padding(
@@ -614,6 +633,7 @@ class LoginActivity() : ComponentActivity() {
 
     // region --- Fields ---
 
+    private val onNavToAuthenticationPage: Intent by lazy { Intent(this, AuthenticationActivity::class.java) }
     private val onNavToHomePage: Intent by lazy { Intent(this, UserAppActivity::class.java) }
     private val onNavToForgetPassword: Intent by lazy { Intent(this, GmailActivity::class.java) }
     private val onNavToRegister: Intent by lazy { Intent(this, RegisterFormActivity::class.java) }

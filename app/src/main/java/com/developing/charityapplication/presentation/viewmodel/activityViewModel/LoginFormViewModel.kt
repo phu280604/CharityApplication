@@ -1,6 +1,5 @@
 package com.developing.charityapplication.presentation.viewmodel.activityViewModel
 
-import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -46,7 +45,6 @@ class LoginFormViewModel @Inject constructor(): ViewModel() {
     fun submitData(){
         val username = ValidateUsername().execute(_state.username)
         val password = ValidatePassword().execute(_state.password)
-        //Log.d("Json", password.errorMessage.toString())
 
         val hasError = listOf(
             username,

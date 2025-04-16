@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.developing.charityapplication.presentation.view.component.image.decorator.IImageDecorator
+import com.developing.charityapplication.R
 
 class ImageComponent(
     private val config: ImageConfig
@@ -14,7 +15,7 @@ class ImageComponent(
     @Composable
     override fun BaseDecorate(content: @Composable (() -> Unit)) {
         Image(
-            painter = painterResource(id = config.painter),
+            painter = config.painter ?: painterResource(id = R.drawable.avt_young_girl),
             contentDescription = config.contentDescription,
             modifier = config.modifier,
             alignment = config.alignment,

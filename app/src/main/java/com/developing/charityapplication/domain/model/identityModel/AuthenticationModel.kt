@@ -25,16 +25,15 @@ data class Result(
 )
 
 data class RequestEmailM(
-    val email: String = ""
+    var email: String = ""
 )
 
-data class RequestOTPLoginM(
-    val otp: String = ""
+data class RequestOTPM(
+    var otp: String = ""
 )
 
 data class RequestResetPasswordM(
     val newPassword: String = "",
-    val token: String = ""
 )
 
 data class RequestLogoutM(

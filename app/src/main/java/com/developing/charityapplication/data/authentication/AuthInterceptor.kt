@@ -10,7 +10,10 @@ class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
         // Những endpoint không cần Bearer token
         val excludedEndpoints = listOf(
             "/auth/token",
-            "identity/users/registration"
+            "identity/users/registration",
+            "identity/auth/send-verify-email-with-otp",
+            "identity/auth/confirm-verify-email-otp",
+
         )
 
         // Nếu URL KHÔNG nằm trong danh sách loại trừ => thêm token

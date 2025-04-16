@@ -155,3 +155,11 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-navigation-animation:0.34.0")
 }
 // endregion
+
+// region -- Data Store Manager --
+
+dependencies{
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+}
+
+// endregion

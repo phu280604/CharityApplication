@@ -19,11 +19,9 @@ class UsersRepo @Inject constructor(
 
     override suspend fun createAccount(userInfo: RequestCreateUser): ResponseM<UserM>?{
         try {
-            Log.d("Json", Gson().toJson(userInfo))
             val response = apiUser.createUser(userInfo)
             if (response.isSuccessful)
             {
-
                 val result = response.body()!!
                 Log.d("Json", Gson().toJson(result))
                 Logger.log(response, result.message)
@@ -38,7 +36,7 @@ class UsersRepo @Inject constructor(
             return result
         }
         catch (ex: Exception){
-            Log.d("CreateAccountUser", "Error: $ex")
+            Log.d("Error", "Error: $ex")
             return null
         }
 

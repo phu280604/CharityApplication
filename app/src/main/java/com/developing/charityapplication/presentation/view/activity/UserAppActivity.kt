@@ -46,10 +46,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -59,6 +61,7 @@ import com.developing.charityapplication.presentation.view.component.button.Butt
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
+import com.developing.charityapplication.data.dataManager.DataStoreManager
 import com.developing.charityapplication.infrastructure.utils.ShowSMS
 import com.developing.charityapplication.presentation.view.component.navItem.NavItemConfig
 import com.developing.charityapplication.presentation.view.navigate.userNav.NavigationUsersApplication
@@ -74,8 +77,11 @@ import com.developing.charityapplication.presentation.view.screen.user.home.Head
 import com.developing.charityapplication.presentation.view.screen.user.profile.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlin.toString
 
 @AndroidEntryPoint
 class UserAppActivity : ComponentActivity() {
@@ -85,8 +91,11 @@ class UserAppActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val isEnable = intent.getBooleanExtra("isEnable", true)
+
         setContent{
-            UserAppUI()
+            UserAppUI(isEnable)
         }
     }
     
@@ -95,59 +104,91 @@ class UserAppActivity : ComponentActivity() {
     // region --- Methods ---
 
     @Composable
-    fun UserAppUI (){
-        val navController = rememberAnimatedNavController()
-        val userAppVM: UserAppViewModel = hiltViewModel()
+    fun UserAppUI (
+        isEnable: Boolean
+    ){
+        val profileVM: ProfileViewModel = hiltViewModel()
 
-        val selectedState by userAppVM.selectedIndexState.asIntState()
+        val profileResponse by profileVM.profileResponse.collectAsState()
+        val isLoading by profileVM.isLoading.collectAsState()
+        val context = LocalContext.current
+        var isActive by remember { mutableStateOf(isEnable) }
 
-        var showMessage = remember { mutableStateOf(false) }
-        var funcTitle by remember { mutableIntStateOf(0) }
+        LaunchedEffect(Unit) {
+            if(!isActive)
+                profileVM.setActiveProfile()
+        }
 
-        HeartBellTheme {
-            Scaffold(
-                topBar = {
-                    Header(
-                        navController = navController,
-                        selectedIndex = selectedState,
-                        onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
-                    )
-                },
-                bottomBar = {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(64.dp)
-                            .background(color = AppColorTheme.primary)
-                            .shadow(
-                                elevation = 16.dp, // độ đổ bóng
-                                shape = RectangleShape,
-                                clip = false
-                            ),
-                        color = AppColorTheme.primary,
-                        contentColor = AppColorTheme.secondary
-                    ) {
-                        Footer(
-                            navController,
-                            selectedState,
-                            onChangeState = { index -> userAppVM.changeSelectedIndex(index) },
-                            onShowMessage = {
-                                index ->
-                                showMessage.value = true
-                                funcTitle = index
-                            }
-                        )
+        LaunchedEffect(isLoading) {
+            if(!isLoading) {
+                isActive = true
+                val profileId = profileResponse?.result?.profileId
+                val userId = profileResponse?.result?.userId
+
+                if (!profileId.isNullOrEmpty() && !userId.isNullOrEmpty())
+                    lifecycleScope.launch{
+                        DataStoreManager.saveProfileId(context, profileId)
+                        DataStoreManager.saveUserId(context, userId)
+                        Log.d("Json",profileId.toString() )
                     }
-                },
-                modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
-            ){ innerPadding ->
-                NavigationUsersApplication(Modifier.padding(innerPadding), navController)
 
-                ShowSMS(
-                    funcTitle = if (funcTitle != 0) stringResource(funcTitle) else null,
-                    visible = showMessage.value,
-                    onDismiss = { showMessage.value = false }
-                )
+            }
+        }
+        Log.d("Json", DataStoreManager.getProfileId(context).collectAsState(initial = null).value.toString() )
+        if (isActive) {
+            val navController = rememberAnimatedNavController()
+            val userAppVM: UserAppViewModel = hiltViewModel()
+
+            val selectedState by userAppVM.selectedIndexState.asIntState()
+
+            var showMessage = remember { mutableStateOf(false) }
+            var funcTitle by remember { mutableIntStateOf(0) }
+
+            HeartBellTheme {
+                Scaffold(
+                    topBar = {
+                        Header(
+                            navController = navController,
+                            selectedIndex = selectedState,
+                            onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
+                        )
+                    },
+                    bottomBar = {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(64.dp)
+                                .background(color = AppColorTheme.primary)
+                                .shadow(
+                                    elevation = 16.dp, // độ đổ bóng
+                                    shape = RectangleShape,
+                                    clip = false
+                                ),
+                            color = AppColorTheme.primary,
+                            contentColor = AppColorTheme.secondary
+                        ) {
+                            Footer(
+                                navController,
+                                selectedState,
+                                onChangeState = { index -> userAppVM.changeSelectedIndex(index) },
+                                onShowMessage = {
+                                        index ->
+                                    showMessage.value = true
+                                    funcTitle = index
+                                }
+                            )
+                        }
+                    },
+                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                ){ innerPadding ->
+                    NavigationUsersApplication(Modifier.padding(innerPadding), navController)
+
+                    ShowSMS(
+                        funcTitle = if (funcTitle != 0) stringResource(funcTitle) else null,
+                        visible = showMessage.value,
+                        onDismiss = { showMessage.value = false }
+                    )
+                }
             }
         }
     }

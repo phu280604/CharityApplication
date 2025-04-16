@@ -64,8 +64,6 @@ class GmailActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        isForget = intent.getBooleanExtra("isForget", false)
-
         setContent{
             PreviewGmail()
         }
@@ -180,7 +178,7 @@ class GmailActivity : ComponentActivity() {
         // region - Next Form -
         Button(
             onClick = {
-                onNavToAuthentication.putExtra("isForget", isForget)
+                onNavToAuthentication.putExtra("formType", 2)
                 startActivity(onNavToAuthentication)
                 finish()
             /*TODO: Implement next activity logic*/
@@ -278,18 +276,8 @@ class GmailActivity : ComponentActivity() {
     // endregion
 
     // region --- Fields ---
-    private var isForget: Boolean = false
 
-    private val onNavToPreviousActivity: Intent by lazy {
-        var previousActivity: Class<*>
-
-        if (isForget)
-            previousActivity = LoginActivity::class.java
-        else
-            previousActivity = RegisterFormActivity::class.java
-
-        Intent(this, previousActivity)
-    }
+    private val onNavToPreviousActivity: Intent by lazy { Intent(this, LoginActivity::class.java) }
     private val onNavToAuthentication: Intent by lazy { Intent(this, AuthenticationActivity::class.java) }
 
     // endregion

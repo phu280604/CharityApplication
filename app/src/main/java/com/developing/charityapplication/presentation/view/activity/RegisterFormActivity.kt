@@ -204,8 +204,10 @@ class RegisterFormActivity: ComponentActivity() {
                         Toast.LENGTH_LONG
                     ).show()
 
+                    onNavToAuthenticationActivity.putExtra("email", requestUser.email)
                     onNavToAuthenticationActivity.putExtra("username", requestUser.username)
                     onNavToAuthenticationActivity.putExtra("password", requestUser.password)
+                    onNavToAuthenticationActivity.putExtra("formType", 3)
 
                     startActivity(onNavToAuthenticationActivity)
                     finish()

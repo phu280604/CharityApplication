@@ -70,7 +70,7 @@ abstract class ValidationAbs {
                 " ${min} " +
                 getStringError(R.string.to_number) +
                 " ${max} " +
-                getStringError(R.string.number)
+                getStringError(R.string.word)
 
         return ValidateResult(
             successful =  false,

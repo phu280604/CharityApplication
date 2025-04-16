@@ -2,8 +2,12 @@ package com.developing.charityapplication.di.module.repo
 
 import com.developing.charityapplication.data.repository.identityRepo.AuthRepo
 import com.developing.charityapplication.data.repository.identityRepo.UsersRepo
+import com.developing.charityapplication.data.repository.postRepo.PostRepo
+import com.developing.charityapplication.data.repository.profileRepo.ProfileRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
+import com.developing.charityapplication.domain.repoInter.postsRepoInter.IPostRepo
+import com.developing.charityapplication.domain.repoInter.profileRepoInter.IProfileRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,6 +24,12 @@ class RepoModule {
 
     @Provides
     fun providesAuthRepo(repo: AuthRepo): IAuthRepo = repo
+
+    @Provides
+    fun providesProfileRepo(repo: ProfileRepo): IProfileRepo = repo
+
+    @Provides
+    fun providesPostRepo(repo: PostRepo): IPostRepo = repo
 
     // endregion
 

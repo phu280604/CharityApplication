@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ago">trước</string>
+    <string name="second">giây</string>
+    <string name="minute">phút</string>
+    <string name="hour">giờ</string>
+    <string name="day">ngày</string>
+    <string name="month">tháng</string>
+    <string name="year">năm</string>
+</resources>

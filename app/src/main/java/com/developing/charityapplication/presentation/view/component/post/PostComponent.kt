@@ -1,5 +1,6 @@
 package com.developing.charityapplication.presentation.view.component.post
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -33,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +46,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.R
+import com.developing.charityapplication.infrastructure.utils.Checker
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.component.image.ImageConfig
@@ -53,6 +58,9 @@ import com.developing.charityapplication.presentation.view.component.text.TextCo
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.componentViewModel.postState.DropDownMenuState
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.Period
 
 
 class PostComponent(
@@ -120,14 +128,10 @@ class PostComponent(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 // region - Profile picture -
-                var userBackroundConfig = imageConfigDefault
-                if(config.userbackground >= 0)
-                    userBackroundConfig = userBackroundConfig.copy(
-                        painter = config.userbackground
-                    )
+                var userBackroundConfig = createImageDefault()
                 ImageComponentBuilder()
                     .withConfig(
-                        newConfig = userBackroundConfig
+                        userBackroundConfig.copy(painter = config.userbackground)
                     )
                     .build()
                     .BaseDecorate {  }
@@ -153,7 +157,7 @@ class PostComponent(
                     TextComponentBuilder()
                         .withConfig(
                             textConfigDefault.copy(
-                                text = "${config.timeAgo} ${stringResource(id = R.string.hour_ago)}",
+                                text = getTimeAgo(createAt = config.timeAgo ?: LocalDateTime.now()),
                                 textStyle = AppTypography.labelMedium.copy(
                                     fontWeight = FontWeight.Light,
                                     color = AppColorTheme.onPrimary.copy(
@@ -285,14 +289,43 @@ class PostComponent(
             // endregion
 
             // region - Post image -
-            Box(
+            LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(LightGray)
+                    .background(color = AppColorTheme.primary)
                     .padding(bottom = 12.dp)
-            )
+            ){
+                itemsIndexed(config.fileIds){
+                    index, item ->
+                    Box(
+                        modifier = Modifier
+                            .width(112.dp)
+                            .fillMaxHeight()
+                            .background(
+                                color = AppColorTheme.onPrimary.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .border(
+                                width = 0.5f.dp,
+                                color = AppColorTheme.onPrimary.copy(alpha = 0.4f),
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .padding(8.dp),
+                        contentAlignment = Alignment.TopEnd
+                    ){
+                        // region - Show Image -
+                        Image(
+                            painter = rememberAsyncImagePainter(item),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+            }
             // endregion
         }
     }
@@ -348,23 +381,44 @@ class PostComponent(
 
     }
 
+    @Composable
+    fun getTimeAgo(createAt: LocalDateTime, currentDateTime: LocalDateTime = LocalDateTime.now()): String {
+        val duration = Duration.between(createAt, currentDateTime)
+        val period = Period.between(createAt.toLocalDate(), currentDateTime.toLocalDate())
+
+        var timeLeft = when {
+            duration.toMinutes() < 1 -> "${duration.seconds} ${stringResource(id = R.string.second)}"
+            duration.toHours() < 1 -> "${duration.toMinutes()} ${stringResource(id = R.string.minute)}"
+            duration.toHours() < 24 -> "${duration.toHours()} ${stringResource(id = R.string.hour)}"
+            period.days < 30 -> "${period.days} ${stringResource(id = R.string.day)}"
+            period.months < 12 -> "${period.months} ${stringResource(id = R.string.month)}"
+            else -> "${period.years} ${stringResource(id = R.string.year)}"
+        }
+
+        return timeLeft + " ${stringResource(id = R.string.ago)}"
+    }
+
     // Config Default
+    @Composable
     fun createImageDefault(): ImageConfig {
-        return ImageComponentBuilder()
-            .withConfig(newConfig = ImageConfig(
-                painter = R.drawable.avt_young_girl,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 1.dp,
-                        color = AppColorTheme.secondary,
-                        shape = CircleShape
-                    )
-            ))
-            .build()
-            .getConfig()
+        val image = painterResource(id = R.drawable.avt_young_girl)
+        return remember {
+            ImageComponentBuilder()
+                .withConfig(newConfig = ImageConfig(
+                    painter = image,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 1.dp,
+                            color = AppColorTheme.secondary,
+                            shape = CircleShape
+                        )
+                ))
+                .build()
+                .getConfig()
+        }
     }
 
     fun createTextDefault(): TextConfig {
@@ -465,7 +519,6 @@ class PostComponent(
         Pair(R.drawable.ic_report, R.string.report)
     )
 
-    private val imageConfigDefault: ImageConfig by lazy { createImageDefault() }
     private val textConfigDefault: TextConfig by lazy { createTextDefault() }
     private val buttonConfigDefault: ButtonConfig by lazy { createButtonDefault() }
 

@@ -1,6 +1,8 @@
 package com.developing.charityapplication.di.module.network
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 import com.developing.charityapplication.data.authentication.AuthInterceptor
 import com.developing.charityapplication.data.authentication.TokenProvider
 import com.developing.charityapplication.di.cert.getOkHttpClientWithCertificate
@@ -24,15 +26,22 @@ object NetworkModule{
     @Provides
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().apply {
+        return HttpLoggingInterceptor { message ->
+            Log.d("HTTP_LOG", message)
+        }.apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
     }
 
     @Provides
     @Singleton
-    fun provideTokenProvider(@ApplicationContext context: Context): TokenProvider {
-        val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenProvider(sharedPreferences: SharedPreferences): TokenProvider {
         return TokenProvider(sharedPreferences)
     }
 
