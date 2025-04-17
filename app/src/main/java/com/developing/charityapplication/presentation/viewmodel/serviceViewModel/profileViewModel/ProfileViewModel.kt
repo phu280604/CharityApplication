@@ -82,6 +82,10 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun resetProfileResponse(value: ResponseM<ResponseProfilesM>? = null){
+        _profileResponse.value = null
+    }
+
     // endregion
 
     // region --- Properties ---

@@ -70,7 +70,7 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.EditProfilePage
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
-import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.ProfileScreenViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.ProfileScreenViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import kotlinx.coroutines.launch

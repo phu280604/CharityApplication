@@ -6,7 +6,7 @@ import com.developing.charityapplication.domain.model.identityModel.*
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResultM
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
-import com.developing.charityapplication.infrastructure.utils.JsonConverter
+import com.developing.charityapplication.infrastructure.utils.ConverterData
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
 import javax.inject.Inject
@@ -31,7 +31,7 @@ class AuthRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<Result> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<Result> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
@@ -56,7 +56,7 @@ class AuthRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<ResultM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<ResultM> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
@@ -80,7 +80,7 @@ class AuthRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<ResultM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<ResultM> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result

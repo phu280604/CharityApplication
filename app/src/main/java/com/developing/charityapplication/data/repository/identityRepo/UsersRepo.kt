@@ -6,7 +6,7 @@ import com.developing.charityapplication.domain.model.identityModel.RequestCreat
 import com.developing.charityapplication.domain.model.identityModel.UserM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
-import com.developing.charityapplication.infrastructure.utils.JsonConverter
+import com.developing.charityapplication.infrastructure.utils.ConverterData
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class UsersRepo @Inject constructor(
 
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<UserM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<UserM> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result

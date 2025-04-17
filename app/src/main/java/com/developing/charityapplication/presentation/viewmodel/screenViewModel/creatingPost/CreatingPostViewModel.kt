@@ -57,6 +57,10 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
                 _state.value = _state.value.copy(endDate = event.endDate)
                 _state.value = _state.value.copy(endDateError = null)
             }
+            is CreatingPostEvent.ResetEndDateChange -> {
+                _state.value = _state.value.copy(endDate = event.endDate)
+                _state.value = _state.value.copy(endDateError = null)
+            }
             is CreatingPostEvent.FilesChange -> {
                 _state.value = _state.value.copy(files = event.files)
                 _state.value = _state.value.copy(filesError = null)
@@ -69,18 +73,18 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
 
     fun submitData(){
         val content = ValidateName().execute(_state.value.content)
-        val startDate = ValidateName().execute(_state.value.startDate)
-        val endDate = ValidateUsername().execute(_state.value.endDate)
+        //val startDate = ValidateName().execute(_state.value.startDate)
+        //val endDate = ValidateUsername().execute(_state.value.endDate)
         val hasError = listOf(
             content,
-            startDate,
-            endDate
+            //startDate,
+            //endDate
         ).any { !it.successful }
         if (hasError){
             _state.value = _state.value.copy(
                 contentError = content.errorMessage,
-                startDateError = startDate.errorMessage,
-                endDateError = endDate.errorMessage
+                //startDateError = startDate.errorMessage,
+                //endDateError = endDate.errorMessage
             )
             return
         }

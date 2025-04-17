@@ -84,7 +84,7 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
             route = PostDestinations.Destination.route
         ) {
             composable(PostDestinations.CreatePostPage.route) {
-                CreatingPostPageScreen()
+                CreatingPostPageScreen(navController)
             }
         }
         // endregion

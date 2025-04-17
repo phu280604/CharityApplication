@@ -233,6 +233,8 @@ fun EditProfileScreen(
                 Toast.LENGTH_LONG
             ).show()
         }
+
+        profileVM.resetProfileResponse()
     }
     // endregion
 

@@ -7,6 +7,8 @@ import java.util.Date
 data class RequestPostContentM(
     val profileId: String,
     val content: String,
+    val startDate: LocalDateTime,
+    val endDate: LocalDateTime,
     val privacy: String = "PUBLIC"
 )
 

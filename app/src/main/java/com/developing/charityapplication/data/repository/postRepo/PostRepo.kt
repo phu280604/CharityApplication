@@ -1,23 +1,15 @@
 package com.developing.charityapplication.data.repository.postRepo
 
 import android.util.Log
-import com.developing.charityapplication.data.api.identityService.AuthAPI
 import com.developing.charityapplication.data.api.postsService.PostsAPI
-import com.developing.charityapplication.data.api.profileService.UserProfilesAPI
-import com.developing.charityapplication.domain.model.identityModel.*
 import com.developing.charityapplication.domain.model.postModel.RequestPostContentM
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
-import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
-import com.developing.charityapplication.domain.model.utilitiesModel.ResultM
-import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.domain.repoInter.postsRepoInter.IPostRepo
-import com.developing.charityapplication.domain.repoInter.profileRepoInter.IProfileRepo
-import com.developing.charityapplication.infrastructure.utils.JsonConverter
+import com.developing.charityapplication.infrastructure.utils.ConverterData
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
 import okhttp3.MultipartBody
-import retrofit2.Response
 import javax.inject.Inject
 
 class PostRepo @Inject constructor(
@@ -42,7 +34,7 @@ class PostRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<ResponsePostM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<ResponsePostM> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
@@ -66,7 +58,7 @@ class PostRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<List<ResponsePostM>> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<List<ResponsePostM>> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result

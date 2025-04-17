@@ -6,7 +6,7 @@ import com.developing.charityapplication.domain.model.profileModel.RequestUpdate
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.repoInter.profileRepoInter.IProfileRepo
-import com.developing.charityapplication.infrastructure.utils.JsonConverter
+import com.developing.charityapplication.infrastructure.utils.ConverterData
 import com.developing.charityapplication.infrastructure.utils.Logger
 import com.google.gson.Gson
 import okhttp3.MultipartBody
@@ -31,7 +31,7 @@ class ProfileRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<List<ResponseProfilesM>> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<List<ResponseProfilesM>> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
@@ -55,7 +55,7 @@ class ProfileRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<ResponseProfilesM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<ResponseProfilesM> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
@@ -83,7 +83,7 @@ class ProfileRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<ResponseProfilesM> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<ResponseProfilesM> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
@@ -107,7 +107,7 @@ class ProfileRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<String> = JsonConverter.fromJson(errorString)
+            val result: ResponseM<String> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result
