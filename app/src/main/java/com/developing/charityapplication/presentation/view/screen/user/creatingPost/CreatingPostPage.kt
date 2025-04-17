@@ -4,6 +4,7 @@ package com.developing.charityapplication.presentation.view.screen.user.creating
 
 import android.app.DatePickerDialog
 import android.net.Uri
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -56,13 +57,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.R
+import com.developing.charityapplication.data.dataManager.DataStoreManager
 import com.developing.charityapplication.infrastructure.utils.Checker
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.*
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.creatingPost.CreatingPostViewModel
+import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -81,7 +86,7 @@ fun HeaderCreatingPost(navController: NavHostController){
         TopAppBar(
             title = {
                 Text(
-                    text = stringResource(id = R.string.creating_page),
+                    text = stringResource(id = R.string.post_page),
                     style = AppTypography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
             },
@@ -92,8 +97,9 @@ fun HeaderCreatingPost(navController: NavHostController){
             ),
             navigationIcon = {
                 Icon(
-                    imageVector = Icons.Default.AddCircle,
+                    painter = painterResource(id = R.drawable.post),
                     contentDescription = null,
+                    tint = AppColorTheme.secondary,
                     modifier = Modifier.size(32.dp)
                 )
             }
@@ -103,6 +109,27 @@ fun HeaderCreatingPost(navController: NavHostController){
 
 @Composable
 fun CreatingPostPageScreen(){
+    // region -- Value Default --
+    val context = LocalContext.current
+    // endregion
+
+    // region -- ViewModel --
+    val creatingPostVM: CreatingPostViewModel = hiltViewModel()
+    val postVM: PostViewModel = hiltViewModel()
+    // endregion
+
+    // region -- State --
+    val state by creatingPostVM.state.collectAsState()
+    val profileId = DataStoreManager.getProfileId(context).collectAsState(initial = null)
+    Log.d("profileId", "CreatingPost: ${profileId}")
+    // endregion
+
+    // region -- Call Api --
+    LaunchedEffect(true) {
+        when()
+    }
+    // endregion
+
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -5,12 +5,9 @@ import java.time.LocalDateTime
 import java.util.Date
 
 data class RequestPostContentM(
-    val content: String,
-    val fileIds: List<String>,
-    val point: PointM,
-    val privacy: String = "PUBLIC",
     val profileId: String,
-    val tags: List<String>
+    val content: String,
+    val privacy: String = "PUBLIC"
 )
 
 data class ResponsePostM(

@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.developing.charityapplication.data.authentication.TokenProvider
 import com.developing.charityapplication.data.dataManager.DataStoreManager
+import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
-import com.developing.charityapplication.domain.model.utilitiesModel.ResultM
-import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.domain.repoInter.profileRepoInter.IProfileRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +30,27 @@ class ProfileViewModel @Inject constructor(
             _isLoading.value = true
             try {
                 val result = repo.getProfileByProfileId(profileId)
+                _profileResponse.value = result
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Lỗi khi gọi API", e)
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun updateProfile(
+        profileId: String,
+        profileInfo: RequestUpdateProfileM,
+        avatar: MultipartBody.Part?
+    ){
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                Log.d("Json", "newPro: ${profileId}")
+                Log.d("Json", "newPro: ${profileInfo}")
+                Log.d("Json", "newPro: ${avatar}")
+                val result = repo.updateProfile(profileId, profileInfo, avatar)
                 _profileResponse.value = result
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)

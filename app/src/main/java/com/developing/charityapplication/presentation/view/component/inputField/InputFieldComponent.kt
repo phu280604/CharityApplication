@@ -32,14 +32,15 @@ class InputFieldComponent(
             onValueChange = config.onValueChange ?: {},
             label = config.label,
             placeholder = config.placeHolder,
+            readOnly = config.readOnly,
             colors = config.color as? TextFieldColors ?: OutlinedTextFieldDefaults.colors(
                 cursorColor = AppColorTheme.onPrimary,
                 selectionColors = TextSelectionColors(
                     handleColor = AppColorTheme.onBackground,
                     backgroundColor = AppColorTheme.background
                 ),
-                unfocusedLabelColor = Color.Unspecified,
-                focusedLabelColor = Color.Unspecified,
+                unfocusedLabelColor = AppColorTheme.onPrimary,
+                focusedLabelColor = AppColorTheme.onPrimary,
                 unfocusedBorderColor = AppColorTheme.surface,
                 unfocusedTextColor = AppColorTheme.onPrimary,
                 focusedBorderColor = AppColorTheme.onPrimary,

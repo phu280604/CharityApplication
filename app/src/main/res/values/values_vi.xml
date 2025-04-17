@@ -38,6 +38,7 @@
     <string name="regis_form">Đăng ký tài khoản</string>
     <string name="last_name">Họ</string>
     <string name="first_name">Tên</string>
+    <string name="location">Tỉnh</string>
     <string name="email">Email</string>
     <string name="username">Tên đăng nhập</string>
     <string name="repassword">Xác nhận mật khẩu</string>

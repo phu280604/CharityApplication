@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,6 +58,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
@@ -109,7 +111,7 @@ class UserAppActivity : ComponentActivity() {
     ){
         val profileVM: ProfileViewModel = hiltViewModel()
 
-        val profileResponse by profileVM.profileResponse.collectAsState()
+        val profilesResponse by profileVM.profilesResponse.collectAsState()
         val isLoading by profileVM.isLoading.collectAsState()
         val context = LocalContext.current
         var isActive by remember { mutableStateOf(isEnable) }
@@ -122,19 +124,18 @@ class UserAppActivity : ComponentActivity() {
         LaunchedEffect(isLoading) {
             if(!isLoading) {
                 isActive = true
-                val profileId = profileResponse?.result?.profileId
-                val userId = profileResponse?.result?.userId
+                val profileId = profilesResponse?.result?.firstOrNull()?.profileId
+                val userId = profilesResponse?.result?.firstOrNull()?.userId
 
                 if (!profileId.isNullOrEmpty() && !userId.isNullOrEmpty())
                     lifecycleScope.launch{
                         DataStoreManager.saveProfileId(context, profileId)
                         DataStoreManager.saveUserId(context, userId)
-                        Log.d("Json",profileId.toString() )
                     }
 
             }
         }
-        Log.d("Json", DataStoreManager.getProfileId(context).collectAsState(initial = null).value.toString() )
+
         if (isActive) {
             val navController = rememberAnimatedNavController()
             val userAppVM: UserAppViewModel = hiltViewModel()
@@ -168,8 +169,12 @@ class UserAppActivity : ComponentActivity() {
                             contentColor = AppColorTheme.secondary
                         ) {
                             Footer(
-                                navController,
-                                selectedState,
+                                navController = navController,
+                                selectedIndex = selectedState,
+                                avatar = if(profilesResponse?.result?.firstOrNull()?.avatarUrl != "")
+                                    rememberAsyncImagePainter(profilesResponse?.result?.firstOrNull()?.avatarUrl)
+                                else
+                                    painterResource(id = R.drawable.avt_young_girl),
                                 onChangeState = { index -> userAppVM.changeSelectedIndex(index) },
                                 onShowMessage = {
                                         index ->
@@ -181,7 +186,14 @@ class UserAppActivity : ComponentActivity() {
                     },
                     modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 ){ innerPadding ->
-                    NavigationUsersApplication(Modifier.padding(innerPadding), navController)
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .background(color = AppColorTheme.primary)
+                    ){
+                        NavigationUsersApplication(Modifier.fillMaxSize(), navController)
+                    }
 
                     ShowSMS(
                         funcTitle = if (funcTitle != 0) stringResource(funcTitle) else null,
@@ -380,6 +392,7 @@ class UserAppActivity : ComponentActivity() {
     fun Footer(
         navController: NavController,
         selectedIndex: Int,
+        avatar: Painter,
         onChangeState: (Int) -> Unit,
         onShowMessage: (Int) -> Unit
     ) {
@@ -405,14 +418,23 @@ class UserAppActivity : ComponentActivity() {
 
                 NavigationBarItem(
                     icon = {
+                        val newModifier = if(item.title == navItems().last().title)
+                            modifier
+                                .clip(CircleShape)
+                                .border(width = 0.5f.dp, color = AppColorTheme.onPrimary, shape = CircleShape)
+                        else
+                            modifier
+                                .clip(CircleShape)
                         Image(
-                            painter = painterResource(item.icon),
+                            painter = if(item.title == navItems().last().title) avatar
+                            else painterResource(item.icon),
                             contentDescription = null,
                             colorFilter = if (!item.skipOption)
                                 ColorFilter.tint(color)
                             else null,
-                            modifier = modifier
+                            modifier = newModifier
                         )
+
                     },
                     label = {
                         if (item.title != 0)

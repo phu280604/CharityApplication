@@ -1,5 +1,7 @@
 package com.developing.charityapplication.domain.model.profileModel
 
+import android.os.Parcelable
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
 data class ResponseProfilesM(
@@ -15,9 +17,10 @@ data class ResponseProfilesM(
     val active: Boolean = false
 )
 
-data class RequestUpdateProfile(
-    val firstName: String,
-    val lastName: String,
-    val location: String,
-    val username: String
+@Serializable
+data class RequestUpdateProfileM(
+    var firstName: String = "",
+    var lastName: String = "",
+    var location: String = "",
+    var username: String = ""
 )

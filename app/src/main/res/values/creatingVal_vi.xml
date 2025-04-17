@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="post_page">Bài viết</string>
     <string name="creating_page">Đăng bài viết mới</string>
     <string name="timeline_title">Đặt lịch quyên góp</string>
     <string name="timeline_date">ngày</string>

@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -42,6 +44,7 @@ import androidx.compose.runtime.asIntState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,6 +61,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.R
 import com.developing.charityapplication.data.dataManager.DataStoreManager
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
+import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.presentation.view.activity.LoginActivity
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
@@ -65,7 +69,8 @@ import com.developing.charityapplication.presentation.view.component.post.builde
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.EditProfilePage
 import com.developing.charityapplication.presentation.view.theme.*
-import com.developing.charityapplication.presentation.viewmodel.screenViewModel.ProfileScreenViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.ProfileScreenViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import kotlinx.coroutines.launch
@@ -194,9 +199,11 @@ fun HeaderProfile(navController: NavHostController){
 }
 
 @Composable
-fun ProfilePageScreen(){
+fun ProfilePageScreen(
+    navController: NavHostController,
+    editProfileVM: EditProfileViewModel
+){
     // region -- Value Default --
-    val fakePostProfile = fakeDataPostProfile()
     val context = LocalContext.current
     // endregion
 
@@ -208,16 +215,16 @@ fun ProfilePageScreen(){
     // region -- State ViewModel --
     val profileInfo by profileInfoVM.profileResponse.collectAsState()
     val postsInfo by postVM.postsResponse.collectAsState()
-    val isLoading by profileInfoVM.isLoading.collectAsState()
 
     val profileId by DataStoreManager.getProfileId(context).collectAsState(initial = null)
-    Log.d("Json",profileId.toString() )
 
     val scrollState = rememberScrollState()
+
+    val navCurrent = navController.currentBackStackEntry?.arguments
     // endregion
 
     // region -- Call API --
-    LaunchedEffect(profileId) {
+    LaunchedEffect(Unit) {
         if (!profileId.isNullOrEmpty())
         {
             profileInfoVM.getProfileByProfileId(profileId!!)
@@ -225,7 +232,18 @@ fun ProfilePageScreen(){
     }
     // endregion
 
-    if (profileInfo?.code == 1000 && postsInfo?.code == 1000){
+    if (profileInfo?.code == 1000 || postsInfo?.code == 1000){
+        editProfileVM.setEditProfileData(
+            context = context,
+            profileId = profileId ?: "",
+            profileInfo = RequestUpdateProfileM(
+                lastName = profileInfo?.result?.lastName ?: "",
+                firstName = profileInfo?.result?.firstName ?: "",
+                username = profileInfo?.result?.username ?: "",
+                location = profileInfo?.result?.location ?: "",
+            ),
+            avatar = profileInfo?.result?.avatarUrl
+        )
         BodyProfile(
             profile = profileInfo?.result ?: ResponseProfilesM(),
             posts = postsInfo?.result ?: emptyList(),
@@ -239,11 +257,11 @@ fun ProfilePageScreen(){
 // region -- Body Section
 @Composable
 fun BodyProfile(
-    profile: ResponseProfilesM,
+    profile: ResponseProfilesM?,
     posts: List<ResponsePostM>,
     modifier: Modifier
 ){
-    val avatar = if(profile.avatarUrl.isEmpty())
+    val avatar = if(profile?.avatarUrl == null)
         painterResource(id = R.drawable.avt_young_girl)
     else
         rememberAsyncImagePainter(profile.avatarUrl)
@@ -263,8 +281,8 @@ fun BodyProfile(
             /*TODO: Implement profile information*/
             DetailsProfile(
                 userBackground = avatar,
-                username = profile.lastName + " " + profile.firstName,
-                location = if(profile.location.isEmpty()) "" else profile.location,
+                username = profile?.lastName + " " + profile?.firstName,
+                location = if(profile?.location == null) "" else profile.location,
                 followingAmount = 0,
                 followerAmount = 0
             )
@@ -289,7 +307,7 @@ fun BodyProfile(
                     .withConfig(
                         PostConfig(
                             userbackground = avatar,
-                            username = profile.lastName + " " + profile.firstName,
+                            username = profile?.lastName + " " + profile?.firstName,
                             content = item.content,
                             fileIds = item.fileIds,
                             timeAgo = item.createdAt,
@@ -320,7 +338,10 @@ fun DetailsProfile(
         Image(
             painter = userBackground,
             contentDescription = null,
-            modifier = Modifier.size(96.dp)
+            modifier = Modifier
+                .size(112.dp)
+                .clip(CircleShape)
+                .border(width = 0.5f.dp, color = AppColorTheme.onPrimary, shape = CircleShape)
         )
         Text(
             text = username,

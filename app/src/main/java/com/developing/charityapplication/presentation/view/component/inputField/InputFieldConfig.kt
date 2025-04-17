@@ -20,6 +20,7 @@ data class InputFieldConfig (
     var isError: Boolean = false,
     var color: Any? = null,
     var modifier: Modifier = Modifier,
+    var readOnly: Boolean = false,
     var shape: Shape = RectangleShape,
     var maxLine: Int = Int.MAX_VALUE,
     var minLine: Int = 1,

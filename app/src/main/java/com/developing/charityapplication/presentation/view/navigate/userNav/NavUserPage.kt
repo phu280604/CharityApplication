@@ -14,12 +14,16 @@ import com.developing.charityapplication.presentation.view.screen.user.home.*
 import com.developing.charityapplication.presentation.view.screen.user.message.*
 import com.developing.charityapplication.presentation.view.screen.user.profile.*
 import androidx.compose.animation.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationUsersApplication(modifier: Modifier, navController: NavHostController) {
+    val sharedProfileInfo: EditProfileViewModel = hiltViewModel()
+
     AnimatedNavHost(
         navController = navController,
         startDestination = HomeDestinations.Destination.route,
@@ -101,11 +105,12 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
             startDestination = ProfileDestinations.ProfilePage.route,
             route = ProfileDestinations.Destination.route
         ) {
+
             composable(ProfileDestinations.ProfilePage.route) {
-                ProfilePageScreen()
+                ProfilePageScreen(navController, sharedProfileInfo)
             }
             composable(ProfileDestinations.EditProfilePage.route) {
-                EditProfileScreen(navController)
+                EditProfileScreen(navController, sharedProfileInfo)
             }
         }
         // endregion

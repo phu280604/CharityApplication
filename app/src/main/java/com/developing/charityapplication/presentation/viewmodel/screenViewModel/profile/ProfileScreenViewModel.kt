@@ -1,4 +1,4 @@
-package com.developing.charityapplication.presentation.viewmodel.screenViewModel
+package com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel

@@ -1,6 +1,6 @@
 package com.developing.charityapplication.data.api.profileService
 
-import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfile
+import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import okhttp3.MultipartBody
@@ -36,10 +36,10 @@ interface UserProfilesAPI {
     // Update Profile
     @Headers("Accept: */*")
     @Multipart
-    @PUT("profile/userProfiles/myProfiles")
+    @PUT("profile/userProfiles/{profileId}")
     suspend fun updateProfileUser(
         @Path("profileId") profileId: String,
-        @Part("profile") profile: RequestUpdateProfile,
+        @Part("profile") profile: RequestUpdateProfileM,
         @Part avatar: MultipartBody.Part?
     ) : Response<ResponseM<ResponseProfilesM>>
 

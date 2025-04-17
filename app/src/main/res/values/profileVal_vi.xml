@@ -7,4 +7,7 @@
     <string name="following_users">Theo dõi</string>
     <string name="follower">Người theo dõi</string>
     <string name="save_change">Lưu thay đổi</string>
+    <string name="selected_location">Chọn tỉnh/thành</string>
+    <string name="overLoad_size_avatar">Ảnh vượt quá dung lượng cho phép (≥ 1MB)</string>
+    <string name="change_successful">Thay đổi thành công!</string>
 </resources>
