@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.developing.charityapplication.presentation.view.component.notificationItem.NotificationConfig
 import com.developing.charityapplication.R
+import com.developing.charityapplication.infrastructure.utils.DefaultValue
 import com.developing.charityapplication.presentation.view.component.notificationItem.builder.NotificationItemComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
@@ -162,19 +163,19 @@ fun fakeDatas(): List<NotificationConfig>{
     return listOf(
                 createNotification(
                     username = "Trần Thị Mai",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã bình luận bài viết của bạn.",
                     timeStamp = "5 phút trước"
                 ),
                 createNotification(
                     username = "Lê Hoàng Phúc",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã thích bài viết của bạn.",
                     timeStamp = "10 phút trước"
                 ),
                 createNotification(
                     username = "Phạm Ngọc Lan",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã bắt đầu theo dõi bạn.",
                     timeStamp = "20 phút trước"
                 ),
@@ -186,25 +187,25 @@ fun fakeDatas(): List<NotificationConfig>{
                 ),
                 createNotification(
                     username = "Đỗ Minh Khang",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã bình luận bài viết của bạn.",
                     timeStamp = "1 giờ trước"
                 ),
                 createNotification(
                     username = "Hồ Thị Bích Vân",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã chia sẻ bài viết của bạn.",
                     timeStamp = "1 giờ trước"
                 ),
                 createNotification(
                     username = "Vũ Quốc Huy",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã thích bình luận của bạn.",
                     timeStamp = "2 giờ trước"
                 ),
                 createNotification(
                     username = "Bùi Thanh Hà",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã gửi lời mời kết bạn.",
                     timeStamp = "2 giờ trước"
                 ),
@@ -216,7 +217,7 @@ fun fakeDatas(): List<NotificationConfig>{
                 ),
                 createNotification(
                     username = "Lý Gia Hân",
-                    background = R.drawable.avt_young_girl,
+                    background = DefaultValue.avatar,
                     content = "đã gắn thẻ bạn trong một bài viết.",
                     timeStamp = "4 giờ trước"
                 )

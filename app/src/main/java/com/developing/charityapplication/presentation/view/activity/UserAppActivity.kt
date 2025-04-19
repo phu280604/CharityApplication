@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,16 +56,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
 import com.developing.charityapplication.presentation.view.component.button.builder.ButtonComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
 import com.developing.charityapplication.data.dataManager.DataStoreManager
+import com.developing.charityapplication.infrastructure.utils.DefaultValue
 import com.developing.charityapplication.infrastructure.utils.ShowSMS
 import com.developing.charityapplication.presentation.view.component.navItem.NavItemConfig
 import com.developing.charityapplication.presentation.view.navigate.userNav.NavigationUsersApplication
@@ -73,17 +74,18 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.MessageDestinations.MessagerPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
-import com.developing.charityapplication.presentation.view.screen.user.creatingPost.HeaderCreatingPost
+import com.developing.charityapplication.presentation.view.screen.user.posts.HeaderCreatingPost
 import com.developing.charityapplication.presentation.view.screen.user.follower.HeaderFollower
 import com.developing.charityapplication.presentation.view.screen.user.home.HeaderNotification
+import com.developing.charityapplication.presentation.view.screen.user.posts.HeaderEditPost
 import com.developing.charityapplication.presentation.view.screen.user.profile.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
-import com.developing.charityapplication.presentation.viewmodel.activityViewModel.UserAppViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.FooterViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.HeaderViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlin.toString
 
 @AndroidEntryPoint
 class UserAppActivity : ComponentActivity() {
@@ -95,6 +97,8 @@ class UserAppActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val isEnable = intent.getBooleanExtra("isEnable", true)
+        HeaderViewModel.changeSelectedIndex()
+        FooterViewModel.changeSelectedIndex()
 
         setContent{
             UserAppUI(isEnable)
@@ -138,9 +142,8 @@ class UserAppActivity : ComponentActivity() {
 
         if (isActive) {
             val navController = rememberAnimatedNavController()
-            val userAppVM: UserAppViewModel = hiltViewModel()
-
-            val selectedState by userAppVM.selectedIndexState.asIntState()
+            val state by HeaderViewModel.selectedIndexState.collectAsState()
+            val stateBottom by FooterViewModel.selectedIndexState.collectAsState()
 
             var showMessage = remember { mutableStateOf(false) }
             var funcTitle by remember { mutableIntStateOf(0) }
@@ -150,8 +153,7 @@ class UserAppActivity : ComponentActivity() {
                     topBar = {
                         Header(
                             navController = navController,
-                            selectedIndex = selectedState,
-                            onChangeState = { index -> userAppVM.changeSelectedIndex(index) }
+                            selectedIndex = state
                         )
                     },
                     bottomBar = {
@@ -168,14 +170,14 @@ class UserAppActivity : ComponentActivity() {
                             color = AppColorTheme.primary,
                             contentColor = AppColorTheme.secondary
                         ) {
+                            Log.d("ProfileAvt", "Avt: ${profilesResponse?.result?.firstOrNull()?.avatarUrl}")
                             Footer(
                                 navController = navController,
-                                selectedIndex = selectedState,
-                                avatar = if(profilesResponse?.result?.firstOrNull()?.avatarUrl != "")
+                                selectedIndex = stateBottom,
+                                avatar = if(!profilesResponse?.result?.firstOrNull()?.avatarUrl.isNullOrEmpty())
                                     rememberAsyncImagePainter(profilesResponse?.result?.firstOrNull()?.avatarUrl)
                                 else
-                                    painterResource(id = R.drawable.avt_young_girl),
-                                onChangeState = { index -> userAppVM.changeSelectedIndex(index) },
+                                    painterResource(DefaultValue.avatar),
                                 onShowMessage = {
                                         index ->
                                     showMessage.value = true
@@ -209,9 +211,20 @@ class UserAppActivity : ComponentActivity() {
     @Composable
     fun Header(
         navController: NavHostController,
-        selectedIndex: Int,
-        onChangeState: (Int) -> Unit
+        selectedIndex: Int
     ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+        LaunchedEffect(navBackStackEntry) {
+            navBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedIndex")?.observeForever { index ->
+                index?.let {
+                    HeaderViewModel.changeSelectedIndex()
+                    FooterViewModel.changeSelectedIndex()
+                    navBackStackEntry?.savedStateHandle?.remove<Int>("selectedIndex")
+                }
+            }
+        }
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -222,7 +235,7 @@ class UserAppActivity : ComponentActivity() {
             contentColor = AppColorTheme.secondary
         ){
             when (selectedIndex) {
-                0 -> {
+                R.string.nav_home -> {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -302,7 +315,8 @@ class UserAppActivity : ComponentActivity() {
                             .withConfig(
                                 newConfig = defaultButton.copy(
                                     onClick = {
-                                        onChangeState(-1)
+                                        HeaderViewModel.changeSelectedIndex(-1)
+                                        FooterViewModel.changeSelectedIndex()
                                         navController.navigate(route = NotificationPage.route){
                                             popUpTo(route = HomePage.route){
                                                 inclusive = false
@@ -348,37 +362,51 @@ class UserAppActivity : ComponentActivity() {
                         // endregion
                     }
                 }
-                1 -> {
+                R.string.nav_friend -> {
                     BackHandler {
                         Log.d("backHandler", "Total")
-                        onChangeState(0)
+                        HeaderViewModel.changeSelectedIndex()
+                        FooterViewModel.changeSelectedIndex()
                         navController.popBackStack()
                     }
 
                     HeaderFollower(navController)
                 }
-                2 -> {
+                R.string.creating_page -> {
                     BackHandler {
                         Log.d("backHandler", "Total")
-                        onChangeState(0)
+                        HeaderViewModel.changeSelectedIndex()
+                        FooterViewModel.changeSelectedIndex()
                         navController.popBackStack()
                     }
 
                     HeaderCreatingPost(navController)
                 }
-                4 -> {
+                R.string.nav_profile -> {
                     BackHandler {
                         Log.d("backHandler", "Total")
-                        onChangeState(0)
+                        HeaderViewModel.changeSelectedIndex()
+                        FooterViewModel.changeSelectedIndex()
                         navController.popBackStack()
                     }
 
                     HeaderProfile(navController)
                 }
+                R.string.edit_post -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
+                        FooterViewModel.changeSelectedIndex(4)
+                        navController.popBackStack()
+                    }
+
+                    HeaderEditPost(navController)
+                }
                 else -> {
                     BackHandler {
                         Log.d("backHandler", "Total")
-                        onChangeState(0)
+                        HeaderViewModel.changeSelectedIndex()
+                        FooterViewModel.changeSelectedIndex()
                         navController.popBackStack()
                     }
 
@@ -393,7 +421,6 @@ class UserAppActivity : ComponentActivity() {
         navController: NavController,
         selectedIndex: Int,
         avatar: Painter,
-        onChangeState: (Int) -> Unit,
         onShowMessage: (Int) -> Unit
     ) {
         var navItem = navItems()
@@ -421,7 +448,13 @@ class UserAppActivity : ComponentActivity() {
                         val newModifier = if(item.title == navItems().last().title)
                             modifier
                                 .clip(CircleShape)
-                                .border(width = 0.5f.dp, color = AppColorTheme.onPrimary, shape = CircleShape)
+                                .border(
+                                    width = 0.5f.dp,
+                                    color = if(selectedIndex == 4)
+                                        AppColorTheme.secondary
+                                    else AppColorTheme.onPrimary,
+                                    shape = CircleShape
+                                )
                         else
                             modifier
                                 .clip(CircleShape)
@@ -432,6 +465,7 @@ class UserAppActivity : ComponentActivity() {
                             colorFilter = if (!item.skipOption)
                                 ColorFilter.tint(color)
                             else null,
+                            contentScale = ContentScale.Inside,
                             modifier = newModifier
                         )
 
@@ -440,25 +474,42 @@ class UserAppActivity : ComponentActivity() {
                         if (item.title != 0)
                             Text(
                                 text = stringResource(id = item.title),
-                                style = AppTypography.labelMedium
+                                style = AppTypography.labelMedium,
+                                color = color
                             )
                     },
                     selected = selectedIndex == index,
                     onClick = {
                         val route = when (item.title) {
-                            R.string.nav_home -> HomePage.route
+                            R.string.nav_home -> {
+                                HeaderViewModel.changeSelectedIndex(R.string.nav_home)
+                                FooterViewModel.changeSelectedIndex(0)
+                                HomePage.route
+                            }
                             R.string.nav_friend -> {
                                 onShowMessage(item.title)
                                 return@NavigationBarItem
+                                HeaderViewModel.changeSelectedIndex(R.string.nav_friend)
+                                FooterViewModel.changeSelectedIndex(1)
                                 FollowerPage.route
                             }
                             R.string.nav_chatting -> {
                                 onShowMessage(item.title)
                                 return@NavigationBarItem
+                                HeaderViewModel.changeSelectedIndex(R.string.nav_chatting)
+                                FooterViewModel.changeSelectedIndex(3)
                                 MessagerPage.route
                             }
-                            R.string.nav_profile -> ProfilePage.route
-                            else -> CreatePostPage.route
+                            R.string.nav_profile -> {
+                                HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
+                                FooterViewModel.changeSelectedIndex(4)
+                                ProfilePage.route
+                            }
+                            else -> {
+                                HeaderViewModel.changeSelectedIndex(R.string.creating_page)
+                                FooterViewModel.changeSelectedIndex(2)
+                                CreatePostPage.route
+                            }
                         }
                         navController.navigate(route){
                             popUpTo(HomePage.route){
@@ -467,7 +518,6 @@ class UserAppActivity : ComponentActivity() {
 
                             launchSingleTop = true
                         }
-                        onChangeState(index)
                     },
                     colors = NavigationBarItemDefaults.colors().copy(
                         selectedIndicatorColor = Color.Transparent,
@@ -498,7 +548,7 @@ class UserAppActivity : ComponentActivity() {
             ),
             NavItemConfig(
                 title = R.string.nav_profile,
-                icon = R.drawable.avt_young_girl,
+                icon = DefaultValue.avatar,
                 skipOption = true,
             )
         )

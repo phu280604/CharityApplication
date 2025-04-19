@@ -101,6 +101,16 @@ class EditProfileViewModel @Inject constructor(): ViewModel() {
         this.profileId = profileId
         this.profileInfo = profileInfo
         this.avatar = avatar ?: ""
+
+        viewModelScope.launch{
+            if (avatar?.isEmpty() == true)
+            {
+                val downloadImage = DownloadImage.prepareImageParts(context, avatar, "avatar")
+                _state.value = _state.value.copy(
+                    avatar = downloadImage
+                )
+            }
+        }
     }
 
 

@@ -48,6 +48,7 @@ import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.R
+import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
@@ -65,13 +66,75 @@ class GmailActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent{
-            PreviewGmail()
+            GmailFormUI()
         }
     }
 
     // endregion
 
     // region --- Methods ---
+
+    @Composable
+    fun GmailFormUI(){
+        HeartBellTheme {
+            Scaffold(
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.systemBars),
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {},
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {
+                                    startActivity(onNavToPreviousActivity)
+                                    finish()
+                                    /*TODO: Implement navigate back*/
+                                },
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = AppColorTheme.onSurface
+                                ),
+                                modifier = Modifier.padding(start = 16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowLeft,
+                                    contentDescription = null,
+                                    tint = AppColorTheme.onPrimary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        },
+                        actions = {
+                            Image(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .size(40.dp)
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = AppColorTheme.primary
+                        ),
+                        modifier = Modifier
+                            .background(
+                                color = AppColorTheme.primary
+                            )
+                            .shadow(
+                                elevation = 4.dp
+                            )
+                    )
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .background(color = AppColorTheme.primary)
+                ) {
+                    GmailForm()
+                }
+            }
+        }
+    }
 
     // region - Component Default -
     @Composable
@@ -204,71 +267,6 @@ class GmailActivity : ComponentActivity() {
         }
         // endregion
     }
-
-    // region -- UI Preview --
-    @Preview
-    @Composable
-    fun PreviewGmail(){
-        HeartBellTheme {
-            Scaffold(
-                modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.systemBars),
-                topBar = {
-                    CenterAlignedTopAppBar(
-                        title = {},
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    startActivity(onNavToPreviousActivity)
-                                    finish()
-                                /*TODO: Implement navigate back*/
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = AppColorTheme.onSurface
-                                ),
-                                modifier = Modifier.padding(start = 16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowLeft,
-                                    contentDescription = null,
-                                    tint = AppColorTheme.onPrimary,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                        },
-                        actions = {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .size(40.dp)
-                            )
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = AppColorTheme.primary
-                        ),
-                        modifier = Modifier
-                            .background(
-                                color = AppColorTheme.primary
-                            )
-                            .shadow(
-                                elevation = 4.dp
-                            )
-                    )
-                }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .background(color = AppColorTheme.primary)
-                ) {
-                    GmailForm()
-                }
-            }
-        }
-    }
-    // endregion
     // endregion
     // endregion
     // endregion

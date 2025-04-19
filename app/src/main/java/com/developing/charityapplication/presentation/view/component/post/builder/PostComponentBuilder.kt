@@ -22,7 +22,9 @@ class PostComponentBuilder : IBaseBuilder<IPostComponentDecorator> {
 
     // region --- Fields ---
 
-    private var _config = PostConfig()
+    private var _config = PostConfig(
+        maximizeImage = {}
+    )
 
     // endregion
 

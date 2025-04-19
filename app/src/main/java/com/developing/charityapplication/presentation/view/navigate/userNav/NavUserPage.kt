@@ -8,13 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.*
-import com.developing.charityapplication.presentation.view.screen.user.creatingPost.*
+import com.developing.charityapplication.presentation.view.screen.user.posts.*
 import com.developing.charityapplication.presentation.view.screen.user.follower.*
 import com.developing.charityapplication.presentation.view.screen.user.home.*
 import com.developing.charityapplication.presentation.view.screen.user.message.*
 import com.developing.charityapplication.presentation.view.screen.user.profile.*
 import androidx.compose.animation.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.creatingPost.CreatingPostViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -23,6 +24,7 @@ import com.google.accompanist.navigation.animation.composable
 @Composable
 fun NavigationUsersApplication(modifier: Modifier, navController: NavHostController) {
     val sharedProfileInfo: EditProfileViewModel = hiltViewModel()
+    val sharedPostInfo: CreatingPostViewModel = hiltViewModel()
 
     AnimatedNavHost(
         navController = navController,
@@ -86,6 +88,10 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
             composable(PostDestinations.CreatePostPage.route) {
                 CreatingPostPageScreen(navController)
             }
+
+            composable(PostDestinations.EditPostPage.route) {
+                EditPostPageScreen(navController, sharedPostInfo)
+            }
         }
         // endregion
 
@@ -107,7 +113,7 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
         ) {
 
             composable(ProfileDestinations.ProfilePage.route) {
-                ProfilePageScreen(navController, sharedProfileInfo)
+                ProfilePageScreen(navController, sharedProfileInfo, sharedPostInfo)
             }
             composable(ProfileDestinations.EditProfilePage.route) {
                 EditProfileScreen(navController, sharedProfileInfo)

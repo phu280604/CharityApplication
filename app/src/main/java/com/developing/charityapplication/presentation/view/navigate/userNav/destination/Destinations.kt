@@ -23,6 +23,8 @@ sealed class PostDestinations(val route: String){
     object Destination: HomeDestinations(route = "PostDes")
 
     object CreatePostPage: PostDestinations(route = "CreatePostPage")
+
+    object EditPostPage: PostDestinations(route = "EditPostPage")
 }
 
 sealed class MessageDestinations(val route: String){

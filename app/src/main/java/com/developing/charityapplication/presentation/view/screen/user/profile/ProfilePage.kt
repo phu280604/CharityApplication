@@ -48,12 +48,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -61,16 +63,22 @@ import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.R
 import com.developing.charityapplication.data.dataManager.DataStoreManager
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
+import com.developing.charityapplication.domain.model.postModel.ResponsePostsByProfileId
 import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
+import com.developing.charityapplication.infrastructure.utils.DefaultValue
+import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.view.activity.LoginActivity
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.component.post.builder.PostComponentBuilder
+import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.EditProfilePage
 import com.developing.charityapplication.presentation.view.theme.*
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.creatingPost.CreatingPostViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
-import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.ProfileScreenViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.FooterViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.HeaderViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import kotlinx.coroutines.launch
@@ -90,12 +98,9 @@ fun HeaderProfile(navController: NavHostController){
     val context = LocalContext.current
     // endregion
 
-    // region -- ViewModel --
-    val profileScreenVM: ProfileScreenViewModel = hiltViewModel()
-    // endregion
-
     // region -- Value ViewModel --
-    val state by profileScreenVM.selectedIndexState.asIntState()
+    var stateProfile by remember { mutableIntStateOf(0) }
+    val state by HeaderViewModel.selectedIndexState.collectAsState()
 
     var showBottomSheet by remember { mutableStateOf(false) }
     // endregion
@@ -107,8 +112,9 @@ fun HeaderProfile(navController: NavHostController){
 
     // region -- Back Navigate Handle --
     BackHandler(enabled = currentRoute != ProfilePage.route) {
-        profileScreenVM.changeSelectedIndex(0)
+        HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
         navController.popBackStack()
+        stateProfile = 0
         Log.d("backHandler", "profile")
     }
     // endregion
@@ -117,7 +123,7 @@ fun HeaderProfile(navController: NavHostController){
     LaunchedEffect(navBackStackEntry) {
         navBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedIndex")?.observeForever { index ->
             index?.let {
-                profileScreenVM.changeSelectedIndex(it)
+                HeaderViewModel.changeSelectedIndex(R.string.nav_home)
                 navBackStackEntry?.savedStateHandle?.remove<Int>("selectedIndex")
             }
         }
@@ -134,7 +140,7 @@ fun HeaderProfile(navController: NavHostController){
         TopAppBar(
             title = {
                 Text(
-                    text = stringResource(listProfile[state].first),
+                    text = stringResource(listProfile[stateProfile].first),
                     style = AppTypography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
                 )
             },
@@ -145,7 +151,7 @@ fun HeaderProfile(navController: NavHostController){
             ),
             navigationIcon = {
                 Icon(
-                    imageVector = listProfile[state].second,
+                    imageVector = listProfile[stateProfile].second,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp)
                 )
@@ -167,11 +173,12 @@ fun HeaderProfile(navController: NavHostController){
                             },
                             onNavigate = {
                                 indexItem ->
-                                profileScreenVM.changeSelectedIndex(indexItem)
-
                                 val route = when(listProfile.get(indexItem).first){
-                                    R.string.edit_prodile -> EditProfilePage.route
+                                    R.string.edit_prodile -> {
+                                        EditProfilePage.route
+                                    }
                                     R.string.logout -> {
+                                        HeaderViewModel.changeSelectedIndex()
                                         val intent = Intent(context, LoginActivity::class.java)
                                         context.startActivity(intent)
                                         val activity = (context as? Activity)
@@ -180,6 +187,8 @@ fun HeaderProfile(navController: NavHostController){
                                     }
                                     else -> ProfilePage.route
                                 }
+
+                                stateProfile = indexItem
 
                                 navController.navigate(route){
                                     popUpTo(ProfilePage.route){
@@ -201,7 +210,8 @@ fun HeaderProfile(navController: NavHostController){
 @Composable
 fun ProfilePageScreen(
     navController: NavHostController,
-    editProfileVM: EditProfileViewModel
+    editProfileVM: EditProfileViewModel,
+    editPostVM: CreatingPostViewModel
 ){
     // region -- Value Default --
     val context = LocalContext.current
@@ -215,24 +225,25 @@ fun ProfilePageScreen(
     // region -- State ViewModel --
     val profileInfo by profileInfoVM.profileResponse.collectAsState()
     val postsInfo by postVM.postsResponse.collectAsState()
+    val deletedPostRes by postVM.postDeletedResponse.collectAsState()
 
     val profileId by DataStoreManager.getProfileId(context).collectAsState(initial = null)
 
     val scrollState = rememberScrollState()
-
-    val navCurrent = navController.currentBackStackEntry?.arguments
     // endregion
 
     // region -- Call API --
-    LaunchedEffect(Unit) {
-        if (!profileId.isNullOrEmpty())
+    LaunchedEffect(key1 =  Unit, key2 = deletedPostRes) {
+        if (!profileId.isNullOrEmpty() || !deletedPostRes?.result.isNullOrEmpty())
         {
             profileInfoVM.getProfileByProfileId(profileId!!)
+            postVM.getPostsByProfileId(profileId!!)
+            postVM.resetResponse()
         }
     }
     // endregion
 
-    if (profileInfo?.code == 1000 || postsInfo?.code == 1000){
+    if (profileInfo?.code == StatusCode.SUCCESS.code && postsInfo?.code == StatusCode.SUCCESS.code){
         editProfileVM.setEditProfileData(
             context = context,
             profileId = profileId ?: "",
@@ -246,7 +257,30 @@ fun ProfilePageScreen(
         )
         BodyProfile(
             profile = profileInfo?.result ?: ResponseProfilesM(),
-            posts = postsInfo?.result ?: emptyList(),
+            posts = postsInfo?.result,
+            onEdit = { item ->
+                editPostVM.setEditPostData(
+                    context = context,
+                    postInfo = item,
+                    postId = item.id
+                )
+
+                HeaderViewModel.changeSelectedIndex(R.string.edit_post)
+                FooterViewModel.changeSelectedIndex(2)
+
+                val route = PostDestinations.EditPostPage.route
+
+                navController.navigate(route){
+                    popUpTo(ProfilePage.route){
+                        inclusive = false
+                    }
+
+                    launchSingleTop = true
+                }
+            },
+            onDelete = { postId ->
+                postVM.deletePost(postId)
+            },
             modifier = Modifier
                 .background(color = AppColorTheme.surface)
                 .verticalScroll(scrollState))
@@ -258,11 +292,14 @@ fun ProfilePageScreen(
 @Composable
 fun BodyProfile(
     profile: ResponseProfilesM?,
-    posts: List<ResponsePostM>,
+    posts: ResponsePostsByProfileId?,
+    onEdit: (ResponsePostM) -> Unit,
+    onDelete: (String) -> Unit,
     modifier: Modifier
 ){
+    var selectedImage by remember { mutableStateOf<String?>(null) }
     val avatar = if(profile?.avatarUrl == null)
-        painterResource(id = R.drawable.avt_young_girl)
+        painterResource(DefaultValue.avatar)
     else
         rememberAsyncImagePainter(profile.avatarUrl)
     Column(
@@ -301,7 +338,7 @@ fun BodyProfile(
             )
 
             // region -- Post --
-            posts.forEachIndexed {
+            posts?.data?.forEachIndexed {
                 index, item ->
                 PostComponentBuilder()
                     .withConfig(
@@ -311,7 +348,11 @@ fun BodyProfile(
                             content = item.content,
                             fileIds = item.fileIds,
                             timeAgo = item.createdAt,
-                            donationValue = "0"
+                            donationValue = "0",
+                            readOnly = false,
+                            maximizeImage = { image -> selectedImage = image },
+                            onEdit = { onEdit(item) },
+                            onDelete = { onDelete(item.id) }
                         )
                     )
                     .build()
@@ -320,6 +361,27 @@ fun BodyProfile(
             // endregion
         }
     }
+    // region -- Overlay Maximize Image --
+    selectedImage?.let { image ->
+        Box(
+            modifier = Modifier
+                .zIndex(1f)
+                .fillMaxSize()
+                .background(AppColorTheme.onPrimary.copy(alpha = 0.85f))
+                .clickable { selectedImage = null },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.9f),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+    // endregion
 }
 
 @Composable
@@ -518,57 +580,6 @@ fun MenuOpitionProfile(
     }
 
 }
-
-// region -- Fake Data --
-@Composable
-fun fakeDataPostProfile(): List<PostConfig>{
-    val avatar = painterResource(id = R.drawable.avt_young_girl)
-    return remember {
-        listOf(
-            PostConfig(
-                userbackground = avatar,
-                username = "Nguyễn Văn A",
-                content = "Hôm nay là một ngày tuyệt vời! Cùng nhau làm điều ý nghĩa nhé! ❤️",
-                donationValue = "500.000 VNĐ",
-                dateRange = "1-5 Tháng 4",
-                likeCount = "120",
-                commentCount = "30",
-                shareCount = "15"
-            ),
-            PostConfig(
-                userbackground = avatar,
-                username = "Nguyễn Văn A",
-                content = "Chúng ta hãy chung tay giúp đỡ những hoàn cảnh khó khăn!",
-                donationValue = "1.000.000 VNĐ",
-                dateRange = "10-15 Tháng 4",
-                likeCount = "250",
-                commentCount = "50",
-                shareCount = "30"
-            ),
-            PostConfig(
-                userbackground = avatar,
-                username = "Nguyễn Văn A",
-                content = "Mỗi hành động nhỏ của bạn đều có thể tạo ra sự khác biệt lớn!",
-                donationValue = "750.000 VNĐ",
-                dateRange = "5-10 Tháng 4",
-                likeCount = "180",
-                commentCount = "40",
-                shareCount = "20"
-            ),
-            PostConfig(
-                userbackground = avatar,
-                username = "Nguyễn Văn A",
-                content = "Cảm ơn mọi người đã luôn đồng hành và ủng hộ!",
-                donationValue = "2.000.000 VNĐ",
-                dateRange = "20-25 Tháng 4",
-                likeCount = "400",
-                commentCount = "100",
-                shareCount = "50"
-            )
-        )
-    }
-}
-// endregion
 // endregion
 // endregion
 

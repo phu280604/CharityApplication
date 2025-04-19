@@ -75,7 +75,7 @@ class RecoveryActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent{
-            RecoveryPreview()
+            RecoveryUI()
         }
     }
 
@@ -385,14 +385,6 @@ class RecoveryActivity : ComponentActivity() {
             }
         }
     }
-
-    // region -- Preview UI --
-    @Preview
-    @Composable
-    fun RecoveryPreview(){
-        RecoveryUI()
-    }
-    // endregion
     // endregion
     // endregion
     // endregion

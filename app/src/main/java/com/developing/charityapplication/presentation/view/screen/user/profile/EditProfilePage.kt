@@ -62,6 +62,7 @@ import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.developing.charityapplication.R
 import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
+import com.developing.charityapplication.infrastructure.utils.DefaultValue
 import com.developing.charityapplication.infrastructure.utils.DownloadImage
 import com.developing.charityapplication.infrastructure.utils.Provinces
 import com.developing.charityapplication.infrastructure.utils.StatusCode
@@ -183,6 +184,7 @@ fun EditProfileScreen(
     // endregion
 
     // region -- Call API --
+    Log.d("EditContent", "MediaPart: ${state.avatar.toString()}")
     LaunchedEffect(true) {
         editProfileVM.validationEvents.collect { event ->
             when(event){
@@ -196,7 +198,8 @@ fun EditProfileScreen(
                     val newAvatar = if (!state.avatar.toString().isEmpty()) state.avatar
                     else {
                         val file = DownloadImage.downloadImageToFile(context, editProfileVM.avatar)
-                        file?.let { DownloadImage.createImagePartFromFile(it) }
+
+                        file?.let { DownloadImage.createImagePartFromFile(it, "avatar") }
                     }
                     profileVM.updateProfile(
                         profileId = editProfileVM.profileId,
@@ -211,7 +214,7 @@ fun EditProfileScreen(
 
     // region -- Navigate Back To Profile --
     LaunchedEffect(profile) {
-        if(profile?.code == 1000 && profile?.result != null){
+        if(profile?.code == StatusCode.SUCCESS.code && profile?.result != null){
             Toast.makeText(
                 context,
                 changeSuccessful,
@@ -225,7 +228,7 @@ fun EditProfileScreen(
             navController.popBackStack()
         }
 
-        if (profile?.code != 1000){
+        if (profile?.code != StatusCode.SUCCESS.code && profile != null){
             val sms = StatusCode.fromStatusResId(profile?.code ?: 0)
             Toast.makeText(
                 context,
@@ -248,9 +251,10 @@ fun EditProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // region - Change avatar -
+            Log.d("EditContent", "Background: ${editProfileVM.avatar}")
             EditAvatar(
                 background = if(editProfileVM.avatar.isEmpty())
-                    painterResource(id = R.drawable.avt_young_girl)
+                    painterResource(DefaultValue.avatar)
                 else
                     rememberAsyncImagePainter(editProfileVM.avatar),
                 mediaUri = mediaUri,
@@ -298,6 +302,7 @@ fun EditAvatar(
     onClickChange: () -> Unit,
     modifier: Modifier
 ){
+
     Box(
         modifier = modifier
             .fillMaxSize(),

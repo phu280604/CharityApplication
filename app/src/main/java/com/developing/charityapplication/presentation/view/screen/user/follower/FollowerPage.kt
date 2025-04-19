@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.developing.charityapplication.R
+import com.developing.charityapplication.infrastructure.utils.DefaultValue
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
@@ -95,8 +96,6 @@ fun FollowerPageScreen(){
 
     var selectedCateState = remember { mutableIntStateOf(0) }
 
-    val fakeDatas = fakeData()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +104,7 @@ fun FollowerPageScreen(){
         FollowerCategory(selectedCateState, Modifier.weight(0.1f))
 
         UsersList(
-            datas = fakeDatas,
+            datas = emptyList(),
             selectedCate = selectedCateState.intValue,
             modifier = Modifier.weight(1f)
         )
@@ -247,7 +246,7 @@ fun UserFollowItem(
     ) {
         // region -- Avatar Section --
         Image(
-            painter = data.userbackground ?: painterResource(id = R.drawable.avt_young_girl),
+            painter = data.userbackground ?: painterResource(id = DefaultValue.avatar),
             contentDescription = null,
             modifier = Modifier
                 .weight(0.3f)
@@ -344,55 +343,6 @@ fun UserFollowItem(
         // endregion
     }
 }
-
-// region --- Fake Data ---
-@Composable
-fun fakeData(): List<PostConfig>{
-    val avatar = painterResource(id = R.drawable.avt_young_girl)
-    return listOf(
-        PostConfig(
-            username = "Nguyễn Văn An",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Trần Thị Mai",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Lê Hoàng Phúc",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Phạm Ngọc Lan",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Đỗ Minh Khang",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Hồ Thị Bích Vân",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Vũ Quốc Huy",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Bùi Thanh Hà",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Lý Gia Hân",
-            userbackground = avatar
-        ),
-        PostConfig(
-            username = "Trịnh Công Sơn",
-            userbackground = avatar
-        )
-    )
-}
-// endregion
 // endregion
 // endregion
 

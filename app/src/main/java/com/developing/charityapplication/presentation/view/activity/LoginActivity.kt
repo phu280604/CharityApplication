@@ -136,7 +136,7 @@ class LoginActivity() : ComponentActivity() {
                     StatusCode.fromStatusResId(1)
 
                 if (!isLoading) {
-                    if (it.code == 1000) {
+                    if (it.code == StatusCode.SUCCESS.code) {
                         Toast.makeText(
                             context,
                             "$loginSuccessful: $message",

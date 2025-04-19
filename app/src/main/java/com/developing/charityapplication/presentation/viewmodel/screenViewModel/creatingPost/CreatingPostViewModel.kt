@@ -6,7 +6,9 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.developing.charityapplication.domain.model.postModel.ResponsePostM
 import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
+import com.developing.charityapplication.domain.usecase.validation.ValidateContent
 import com.developing.charityapplication.domain.usecase.validation.ValidateName
 import com.developing.charityapplication.domain.usecase.validation.ValidateUsername
 import com.developing.charityapplication.infrastructure.utils.DownloadImage
@@ -72,9 +74,10 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
     }
 
     fun submitData(){
-        val content = ValidateName().execute(_state.value.content)
-        //val startDate = ValidateName().execute(_state.value.startDate)
-        //val endDate = ValidateUsername().execute(_state.value.endDate)
+        val content = ValidateContent().execute(_state.value.content)
+        Log.d("CheckingCreatePost", content.successful.toString())
+        //val startDate = ValidateContent().execute(_state.value.startDate)
+        //val endDate = ValidateContent().execute(_state.value.endDate)
         val hasError = listOf(
             content,
             //startDate,
@@ -96,13 +99,40 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
 
     fun setEditPostData(
         context: Context,
-        profileId: String,
-        profileInfo: RequestUpdateProfileM,
-        avatar: String?
+        postInfo: ResponsePostM,
+        postId: String
     ) {
-        this.profileId = profileId
-        this.profileInfo = profileInfo
-        this.avatar = avatar ?: ""
+        // Reset Data
+        postId_D.value = ""
+        profileId_D.value = ""
+        mediaUrls.value = emptyList()
+        _state.value = _state.value.copy(
+            content = "",
+            startDate = null,
+            endDate = null,
+            files = null
+        )
+
+        viewModelScope.launch{
+            val files = mutableListOf<MultipartBody.Part>()
+
+            postInfo.fileIds.forEach { imageUrl ->
+                val downloadedImage = DownloadImage.prepareImageParts(context, imageUrl, "files")
+                files.add(downloadedImage)
+            }
+
+            postId_D.value = postId
+            profileId_D.value = postInfo.profileId
+            mediaUrls.value = postInfo.fileIds
+            Log.d("EditContent", "PostId: ${postId_D.value}")
+
+            _state.value = _state.value.copy(
+                content = postInfo.content,
+                startDate = null,
+                endDate = null,
+                files = files
+            )
+        }
     }
 
 
@@ -113,13 +143,13 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
     val state: StateFlow<CreatingPostState>
         get() = _state
 
-    var profileId by mutableStateOf("")
+    var postId_D = MutableStateFlow<String>("")
         private set
 
-    var profileInfo by mutableStateOf<RequestUpdateProfileM?>(null)
+    var profileId_D = MutableStateFlow<String>("")
         private set
 
-    var avatar by mutableStateOf("")
+    var mediaUrls = MutableStateFlow<List<String>>(emptyList())
         private set
 
     // endregion
