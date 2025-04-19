@@ -6,6 +6,7 @@ import com.developing.charityapplication.domain.model.identityModel.RequestLogin
 import com.developing.charityapplication.domain.model.identityModel.RequestLogoutM
 import com.developing.charityapplication.domain.model.identityModel.RequestOTPM
 import com.developing.charityapplication.domain.model.identityModel.RequestResetPasswordM
+import com.developing.charityapplication.domain.model.identityModel.ResponseVerifyResetPasswordM
 import com.developing.charityapplication.domain.model.identityModel.Result
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResultM
@@ -47,7 +48,7 @@ interface AuthAPI {
     // Verifying Email to Reset Pass
     @Headers("Accept: */*")
     @POST("identity/auth/verify-otp-password")
-    suspend fun verifyOtpToResetPassword(@Query("otp") otp: String): Response<ResponseM<ResultM>>
+    suspend fun verifyOtpToResetPassword(@Query("otp") otp: String): Response<ResponseM<ResponseVerifyResetPasswordM>>
 
     // Resetting Password
     @Headers("Content-Type: application/json", "Accept: */*")

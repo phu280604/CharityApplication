@@ -4,4 +4,8 @@
     <string name="sendingOtp_failed">Không thể gửi mã OTP, vui lòng kiểm tra lại email</string>
     <string name="invalid_Otp">Mã OTP không đúng, vui lòng đợi và kiểm tra lại email</string>
     <string name="verifying_success">Xác nhận thành công</string>
+    <string name="verifying_failed">Mã otp không đúng hoặc đã hết hạn</string>
+    <string name="reset_success">Đặt lại mật khẩu thành công</string>
+    <string name="login_success">Đăng nhập thành công!</string>
+    <string name="login_failed">Tài khoản hoặc mật khẩu không đúng. Vui lòng kiếm tra lại!</string>
 </resources>

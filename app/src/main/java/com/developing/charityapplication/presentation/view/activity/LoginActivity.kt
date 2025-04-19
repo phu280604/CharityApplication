@@ -108,7 +108,8 @@ class LoginActivity() : ComponentActivity() {
         var showSms = remember { mutableStateOf(false) }
         var funcTitle by remember { mutableIntStateOf(0) }
 
-        val loginSuccessful: String = stringResource(id = R.string.login)
+        val loginSuccessful: String = stringResource(id = R.string.login_success)
+        val loginFailed: String = stringResource(id = R.string.login_failed)
         // endregion
 
         // region -- LaunchedEffect Call API --
@@ -128,18 +129,11 @@ class LoginActivity() : ComponentActivity() {
         // region -- Loading Result --
         LaunchedEffect(isLoading) {
             loginInfo?.let {
-                val status = StatusCode.fromCode(it.code)
-                val hasToken = loginInfo?.result?.token.isNullOrEmpty()
-                val message = if(hasToken)
-                    StatusCode.fromStatusResId(status.statusResId)
-                else
-                    StatusCode.fromStatusResId(1)
-
                 if (!isLoading) {
                     if (it.code == StatusCode.SUCCESS.code) {
                         Toast.makeText(
                             context,
-                            "$loginSuccessful: $message",
+                            loginSuccessful,
                             Toast.LENGTH_LONG
                         ).show()
                         if (loginInfo?.result?.token.isNullOrEmpty())
@@ -153,7 +147,7 @@ class LoginActivity() : ComponentActivity() {
                     } else {
                         Toast.makeText(
                             context,
-                            message,
+                            loginFailed,
                             Toast.LENGTH_LONG
                         ).show()
                     }

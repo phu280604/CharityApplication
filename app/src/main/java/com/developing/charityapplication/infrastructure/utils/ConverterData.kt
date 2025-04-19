@@ -45,4 +45,17 @@ object ConverterData {
         return calendar
     }
 
+    fun maskEmail(email: String, visibleChars: Int = 1): String {
+        val parts = email.split("@")
+        if (parts.size != 2) return email
+
+        val username = parts[0]
+        val domain = parts[1]
+
+        val visiblePart = username.take(visibleChars)
+        val maskedPart = "*".repeat(maxOf(username.length - visibleChars, 0))
+
+        return "$visiblePart$maskedPart@$domain"
+    }
+
 }

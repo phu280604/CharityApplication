@@ -9,6 +9,9 @@ class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
 
         // Những endpoint không cần Bearer token
         val excludedEndpoints = listOf(
+            "identity/auth/forgot-password-otp",
+            "identity/auth/verify-otp-password",
+            "identity/auth/reset-password-otp",
             "/auth/token",
             "identity/users/registration",
             "identity/auth/send-verify-email-with-otp",

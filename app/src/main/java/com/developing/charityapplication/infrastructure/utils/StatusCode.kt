@@ -31,6 +31,7 @@ enum class StatusCode(val code: Int, val statusResId: Int) {
     STRANGE_DEVICE(1, R.string.status_1),
     INVALID_KEY_PROVIDED(1001, R.string.status_1001),
     USER_ALREADY_EXISTS(1002, R.string.status_1002),
+    USER_NOT_EXISTS(1003, R.string.status_1003),
     OTP_EXPIRED(1022, R.string.status_1022),
 
     UNKNOWN(9999, R.string.status_9999);

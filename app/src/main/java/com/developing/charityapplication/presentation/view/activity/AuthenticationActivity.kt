@@ -136,6 +136,8 @@ class AuthenticationActivity : ComponentActivity() {
         val focusRequest by authVM.focusRequest.collectAsState()
         val checkingState by authVM.checkingState.collectAsState()
         val sendingResponse by authApiVM.sendingOtpResponse.collectAsState()
+        val verifyingOtpRes by authApiVM.verifyingOtpResponse.collectAsState()
+        val verifyingResetOtpRes by authApiVM.verifyingOtpResetPasswordResponse.collectAsState()
         val loginResponse by authApiVM.loginResponse.collectAsState()
 
         val context = LocalContext.current
@@ -147,6 +149,7 @@ class AuthenticationActivity : ComponentActivity() {
         val checkingState_sms = if (checkingState != 0) stringResource(id = checkingState) else ""
 
         val login_success = stringResource(id = R.string.verifying_success)
+        val login_failed = stringResource(id = R.string.verifying_failed)
         // endregion
 
         // region -- Call API --
@@ -156,7 +159,10 @@ class AuthenticationActivity : ComponentActivity() {
                     is AuthenticationViewModel.ValidationEvent.Success -> {
                         var otp = RequestOTPM()
                         state.forEach{ otp.otp += it.pinValue }
-                        authApiVM.verifyOtp_Email(otp, account)
+                        when(formType){
+                            2 -> authApiVM.verifyOtpToResetPassword(otp.otp)
+                            3 -> authApiVM.verifyOtp_Email(otp, account)
+                        }
                     }
                 }
             }
@@ -182,6 +188,49 @@ class AuthenticationActivity : ComponentActivity() {
             }
         }
 
+        LaunchedEffect(key1 = verifyingOtpRes) {
+            verifyingOtpRes?.let {
+                if (it.result?.result.isNullOrEmpty())
+                    Toast.makeText(
+                        context,
+                        login_failed,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                it.result = null
+            }
+        }
+
+        LaunchedEffect(key1 = verifyingResetOtpRes) {
+            verifyingResetOtpRes?.let {
+                if (!it.result?.result.isNullOrEmpty())
+                {
+                    Toast.makeText(
+                        context,
+                        login_success,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    onNavToResetPasswordActivity.putExtra("resetToken", verifyingResetOtpRes?.result?.resetToken)
+                    startActivity(onNavToResetPasswordActivity)
+
+                    it.result = null
+
+                    finish()
+                }
+                else{
+                    val smsFailed = StatusCode.fromStatusResId(it.code)
+                    Toast.makeText(
+                        context,
+                        smsFailed,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    it.result = null
+                }
+            }
+        }
+
         LaunchedEffect(key1 = loginResponse) {
             loginResponse?.let {
                 if (!it.result?.token.isNullOrEmpty())
@@ -190,9 +239,18 @@ class AuthenticationActivity : ComponentActivity() {
                         login_success,
                         Toast.LENGTH_LONG
                     ).show()
-                onNavToUserAppActivity.putExtra("isEnable", false)
-                startActivity(onNavToUserAppActivity)
+                when(formType){
+                    2 -> {
+                        if(verifyingResetOtpRes?.result?.resetToken.isNullOrEmpty()) return@LaunchedEffect
 
+                        onNavToResetPasswordActivity.putExtra("resetToken", verifyingResetOtpRes?.result?.resetToken)
+                        startActivity(onNavToResetPasswordActivity)
+                    }
+                    else -> {
+                        onNavToUserAppActivity.putExtra("isEnable", false)
+                        startActivity(onNavToUserAppActivity)
+                    }
+                }
                 it.result = null
 
                 finish()
@@ -213,9 +271,9 @@ class AuthenticationActivity : ComponentActivity() {
                             IconButton(
                                 onClick = {
                                     val intent = when(formType){
-                                        1 -> Intent(this, LoginActivity::class.java)
-                                        2 -> Intent(this, GmailActivity::class.java)
-                                        else -> Intent(this, RegisterFormActivity::class.java)
+                                        1 -> onNavToLoginActivity
+                                        2 -> onNavToGmailActivity
+                                        else -> onNavToRegisterActivity
                                     }
                                     intent.putExtra("formType", formType)
                                     startActivity(intent)
@@ -265,6 +323,8 @@ class AuthenticationActivity : ComponentActivity() {
                     contentAlignment = Alignment.Center
                 ) {
                     AuthScreen(
+                        email = email.email,
+                        formType = formType,
                         states = AuthStateVM(
                             states = state,
                             focusRequests = focusRequest,
@@ -286,9 +346,6 @@ class AuthenticationActivity : ComponentActivity() {
             }
         }
     }
-
-    // region -- Preview --
-    // endregion
     // endregion
 
     // endregion
@@ -296,6 +353,7 @@ class AuthenticationActivity : ComponentActivity() {
     // region --- Fields ---
 
     private val onNavToUserAppActivity: Intent by lazy { Intent(this, UserAppActivity::class.java) }
+    private val onNavToResetPasswordActivity: Intent by lazy { Intent(this, RecoveryActivity::class.java) }
     private val onNavToLoginActivity: Intent by lazy { Intent(this, LoginActivity::class.java) }
     private val onNavToRegisterActivity: Intent by lazy { Intent(this, RegisterFormActivity::class.java) }
     private val onNavToGmailActivity: Intent by lazy { Intent(this, GmailActivity::class.java) }

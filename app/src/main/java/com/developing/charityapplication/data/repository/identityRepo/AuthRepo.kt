@@ -43,6 +43,30 @@ class AuthRepo @Inject constructor(
 
     }
 
+    override suspend fun defaultLogout(authRequest: RequestLogoutM): ResponseM<ResultM>? {
+        try {
+            val response = apiAuth.defaultLogout(authRequest)
+
+            if (response.isSuccessful)
+            {
+                val result = response.body()!!
+                Log.d("Json", Gson().toJson(result).toString())
+                Logger.log(response, result.message)
+                return result
+            }
+
+            val errorString = response.errorBody()?.string() ?: "{}"
+            val result: ResponseM<ResultM> = ConverterData.fromJson(errorString)
+            Logger.log(response, response.message())
+
+            return result
+        }
+        catch (ex: Exception){
+            Log.d("Error", "Error: $ex")
+            return null
+        }
+    }
+
     override suspend fun sendOtp_email(email: RequestEmailM): ResponseM<ResultM>? {
         try {
             val response = apiAuth.sendOtp_Email(email)
@@ -70,6 +94,78 @@ class AuthRepo @Inject constructor(
     override suspend fun verifyOtp_email(otp: RequestOTPM): ResponseM<ResultM>? {
         try {
             val response = apiAuth.verifyEmailWithOtp(otp)
+
+            if (response.isSuccessful)
+            {
+                val result = response.body()!!
+                Log.d("Json", Gson().toJson(result).toString())
+                Logger.log(response, result.message)
+                return result
+            }
+
+            val errorString = response.errorBody()?.string() ?: "{}"
+            val result: ResponseM<ResultM> = ConverterData.fromJson(errorString)
+            Logger.log(response, response.message())
+
+            return result
+        }
+        catch (ex: Exception){
+            Log.d("Error", "Error: $ex")
+            return null
+        }
+    }
+
+    override suspend fun sendOtp_ResetPassword(authRequest: RequestEmailM): ResponseM<ResultM>? {
+        try {
+            val response = apiAuth.sendOtp_ResetPassword(authRequest)
+
+            if (response.isSuccessful)
+            {
+                val result = response.body()!!
+                Log.d("Json", Gson().toJson(result).toString())
+                Logger.log(response, result.message)
+                return result
+            }
+
+            val errorString = response.errorBody()?.string() ?: "{}"
+            val result: ResponseM<ResultM> = ConverterData.fromJson(errorString)
+            Logger.log(response, response.message())
+
+            return result
+        }
+        catch (ex: Exception){
+            Log.d("Error", "Error: $ex")
+            return null
+        }
+    }
+
+    override suspend fun verifyOtpToResetPassword(otp: String): ResponseM<ResponseVerifyResetPasswordM>? {
+        try {
+            val response = apiAuth.verifyOtpToResetPassword(otp)
+
+            if (response.isSuccessful)
+            {
+                val result = response.body()!!
+                Log.d("Json", Gson().toJson(result).toString())
+                Logger.log(response, result.message)
+                return result
+            }
+
+            val errorString = response.errorBody()?.string() ?: "{}"
+            val result: ResponseM<ResponseVerifyResetPasswordM> = ConverterData.fromJson(errorString)
+            Logger.log(response, response.message())
+
+            return result
+        }
+        catch (ex: Exception){
+            Log.d("Error", "Error: $ex")
+            return null
+        }
+    }
+
+    override suspend fun resetPassword(newPassword: RequestResetPasswordM): ResponseM<ResultM>? {
+        try {
+            val response = apiAuth.resetPassword(newPassword)
 
             if (response.isSuccessful)
             {

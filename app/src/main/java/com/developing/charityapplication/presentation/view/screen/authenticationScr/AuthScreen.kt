@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.developing.charityapplication.R
+import com.developing.charityapplication.infrastructure.utils.ConverterData
 import com.developing.charityapplication.presentation.event.activityEvent.AuthChangeEvent
 import com.developing.charityapplication.presentation.state.activityState.AuthEventVM
 import com.developing.charityapplication.presentation.state.activityState.AuthStateVM
@@ -50,6 +51,8 @@ import kotlinx.coroutines.delay
 // region -- Authentication Screen --
 @Composable
 fun AuthScreen(
+    email: String,
+    formType: Int,
     states: AuthStateVM,
     onEventVM: AuthEventVM
 ) {
@@ -61,7 +64,7 @@ fun AuthScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
     ) {
 
-        AuthHeader()
+        AuthHeader(email)
 
         AuthBody(
             states = states.states,
@@ -70,6 +73,7 @@ fun AuthScreen(
         )
 
         AuthFooter(
+            formType = formType,
             onSendOtp = onEventVM.onSendOtp,
             onSubmit = onEventVM.onSubmit
         )
@@ -79,7 +83,9 @@ fun AuthScreen(
 
 // region -- Authentication Elements Screen --
 @Composable
-fun AuthHeader(){
+fun AuthHeader(
+    email: String
+){
     val textConfig =  createConfigText()
     // region - Information -
     Box(
@@ -91,7 +97,7 @@ fun AuthHeader(){
         TextComponentBuilder()
             .withConfig(
                 textConfig.copy(
-                    text = stringResource(id = R.string.subtitle_authentication),
+                    text = stringResource(id = R.string.subtitle_authentication) + " ${ConverterData.maskEmail(email)}",
                     textStyle = AppTypography.titleMedium
                 )
             )
@@ -181,6 +187,7 @@ fun AuthBody(
 
 @Composable
 fun AuthFooter(
+    formType: Int,
     onSendOtp: () -> Unit,
     onSubmit: () -> Unit,
     startSeconds: Int = 15
@@ -191,9 +198,8 @@ fun AuthFooter(
     var timeLeft by remember{ mutableIntStateOf(startSeconds) }
 
     LaunchedEffect(key1 = timeLeft) {
-        if (timeLeft == startSeconds)
+        if (timeLeft == startSeconds && formType != 2)
         {
-
             onSendOtp()
         }
 
@@ -260,6 +266,9 @@ fun AuthFooter(
                             .clickable(
                                 onClick = {
                                     timeLeft = startSeconds
+                                    if(formType == 2){
+                                        onSendOtp()
+                                    }
                                     /*TODO: Implements resend pin logic*/
                                 },
                                 role = Role.Button

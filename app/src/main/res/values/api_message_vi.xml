@@ -25,7 +25,7 @@
     <string name="status_1000">thành công!</string>
     <string name="status_1001">Khóa được cung cấp không hợp lệ!</string>
     <string name="status_1002">Tài khoản đã tồn tại!</string>
-    <string name="status_1003">Người dùng không tồn tại!</string>
+    <string name="status_1003">không tồn tại!!</string>
     <string name="status_1022">Mã OTP đã hết hạn!</string>
 
     <string name="status_9999">Lỗi hệ thống nội bộ không xác định!</string>

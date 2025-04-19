@@ -33,13 +33,15 @@ data class RequestOTPM(
 )
 
 data class RequestResetPasswordM(
-    val newPassword: String = "",
+    val resetToken: String = "",
+    val newPassword: String = ""
 )
 
 data class RequestLogoutM(
     val token: String = ""
 )
 
-data class RequestTokenM(
-    val token: String = ""
+data class ResponseVerifyResetPasswordM(
+    val result: String,
+    val resetToken: String
 )
