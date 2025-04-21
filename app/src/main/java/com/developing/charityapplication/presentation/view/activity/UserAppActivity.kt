@@ -153,6 +153,7 @@ class UserAppActivity : ComponentActivity() {
             val navController = rememberAnimatedNavController()
             val state by HeaderViewModel.selectedIndexState.collectAsState()
             val stateBottom by FooterViewModel.selectedIndexState.collectAsState()
+            Log.d("EditProfile", "${state} -${stateBottom}")
 
             var showMessage = remember { mutableStateOf(false) }
             var funcTitle by remember { mutableIntStateOf(0) }

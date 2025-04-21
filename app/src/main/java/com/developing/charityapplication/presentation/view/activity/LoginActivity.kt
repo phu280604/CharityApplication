@@ -253,7 +253,7 @@ class LoginActivity() : ComponentActivity() {
             LoginUIState(
                 value = state.username,
                 valueError = state.usernameError,
-                title = R.string.username_email,
+                title = R.string.username,
                 icon = R.drawable.ic_user
             ),
             LoginUIState(

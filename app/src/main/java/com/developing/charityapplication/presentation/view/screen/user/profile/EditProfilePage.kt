@@ -227,9 +227,10 @@ fun EditProfileScreen(
                 Toast.LENGTH_LONG
             ).show()
 
-            HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
-            FooterViewModel.changeSelectedIndex(4)
-
+            navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.set("profileSelectedIndex", 0)
+            Log.d("EditProfile", "hello")
             navController.popBackStack()
         }
 

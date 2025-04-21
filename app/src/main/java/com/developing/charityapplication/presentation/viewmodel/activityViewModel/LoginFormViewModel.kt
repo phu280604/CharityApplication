@@ -44,10 +44,10 @@ class LoginFormViewModel @Inject constructor(): ViewModel() {
 
     fun submitData(){
         /*TODO: Delete here before deloy App*/
-        _state = _state.copy(
+        /*_state = _state.copy(
             username = if (_state.username.isEmpty()) "phu" else _state.username,
             password = "Phu2806!"
-        )
+        )*/
         val username = ValidateUsername().execute(_state.username)
         val password = ValidatePassword().execute(_state.password)
 

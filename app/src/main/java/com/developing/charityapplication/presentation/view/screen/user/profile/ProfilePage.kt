@@ -124,10 +124,11 @@ fun HeaderProfile(navController: NavHostController){
 
     // region -- Update Selected Index When PopBackStack --
     LaunchedEffect(navBackStackEntry) {
-        navBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedIndex")?.observeForever { index ->
+        navBackStackEntry?.savedStateHandle?.getLiveData<Int>("profileSelectedIndex")?.observeForever { index ->
             index?.let {
-                HeaderViewModel.changeSelectedIndex(R.string.nav_home)
-                navBackStackEntry?.savedStateHandle?.remove<Int>("selectedIndex")
+                HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
+                stateProfile = index
+                navBackStackEntry?.savedStateHandle?.remove<Int>("profileSelectedIndex")
             }
         }
     }

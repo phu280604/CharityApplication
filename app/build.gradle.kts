@@ -18,10 +18,15 @@ android {
 
     defaultConfig {
         applicationId = "com.developing.charityapplication"
-        minSdk = 29
-        targetSdk = 35
+        minSdk = 26
+        //noinspection OldTargetApi
+        targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
+
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,10 +34,12 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -72,7 +79,7 @@ dependencies {
     val lasted_Version = "2.11.0"
     implementation ("com.squareup.retrofit2:retrofit:$lasted_Version")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
-    implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("com.squareup.retrofit2:converter-gson:$lasted_Version")
 
     // coil
