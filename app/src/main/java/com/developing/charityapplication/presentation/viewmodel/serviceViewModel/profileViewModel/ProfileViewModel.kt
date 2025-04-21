@@ -11,6 +11,7 @@ import com.developing.charityapplication.domain.model.profileModel.RequestUpdate
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.repoInter.profileRepoInter.IProfileRepo
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,17 +28,32 @@ class ProfileViewModel @Inject constructor(
 
     fun getProfileByProfileId(profileId: String){
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.getProfileByProfileId(profileId)
                 _profileResponse.value = result
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
+
+    suspend fun getProfileById(profileId: String): ResponseProfilesM? {
+        LoadingViewModel.enableLoading(true)
+        return try {
+            val response = repo.getProfileByProfileId(profileId)
+            response?.result
+        } catch (e: Exception) {
+            Log.e("ProfileVM", "Lỗi lấy profile", e)
+            null
+        }
+        finally {
+            LoadingViewModel.enableLoading()
+        }
+    }
+
 
     fun updateProfile(
         profileId: String,
@@ -45,7 +61,7 @@ class ProfileViewModel @Inject constructor(
         avatar: MultipartBody.Part?
     ){
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 Log.d("Json", "newPro: ${profileId}")
                 Log.d("Json", "newPro: ${profileInfo}")
@@ -55,14 +71,14 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun setActiveProfile(){
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 _profilesResponse.value = repo.getProfile()
                 val profileId = _profilesResponse.value?.result?.firstOrNull()?.profileId
@@ -77,7 +93,7 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
@@ -99,9 +115,6 @@ class ProfileViewModel @Inject constructor(
     val activeProfileResponse: StateFlow<ResponseM<String>?>
         get() = _activeProfileResponse
 
-    val isLoading: StateFlow<Boolean>
-        get() = _isLoading
-
     // endregion
 
     // region --- Fields ---
@@ -109,7 +122,6 @@ class ProfileViewModel @Inject constructor(
     private val _profilesResponse = MutableStateFlow<ResponseM<List<ResponseProfilesM>>?>(null)
     private val _profileResponse = MutableStateFlow<ResponseM<ResponseProfilesM>?>(null)
     private val _activeProfileResponse = MutableStateFlow<ResponseM<String>?>(null)
-    private val _isLoading = MutableStateFlow(false)
 
     // endregion
 

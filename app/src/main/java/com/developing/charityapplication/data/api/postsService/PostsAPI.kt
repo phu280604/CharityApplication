@@ -2,6 +2,7 @@ package com.developing.charityapplication.data.api.postsService
 
 import com.developing.charityapplication.domain.model.postModel.RequestPostContentM
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
+import com.developing.charityapplication.domain.model.postModel.ResponsePosts
 import com.developing.charityapplication.domain.model.postModel.ResponsePostsByProfileId
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import okhttp3.MultipartBody
@@ -15,7 +16,7 @@ interface PostsAPI {
     // Getting All Posts
     @Headers("Accept: */*")
     @GET("post/postUsers/getAllPosts")
-    suspend fun getAllPosts() : Response<ResponseM<List<ResponsePostM>>>
+    suspend fun getAllPosts() : Response<ResponseM<ResponsePosts>>
 
     // Getting All Posts By Profile Id
     @Headers("Accept: */*")

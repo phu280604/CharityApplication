@@ -6,6 +6,7 @@ import com.developing.charityapplication.domain.model.identityModel.RequestOTPM
 import com.developing.charityapplication.domain.model.identityModel.Result
 import com.developing.charityapplication.domain.model.postModel.RequestPostContentM
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
+import com.developing.charityapplication.domain.model.postModel.ResponsePosts
 import com.developing.charityapplication.domain.model.postModel.ResponsePostsByProfileId
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
@@ -35,7 +36,7 @@ interface IPostRepo {
 
     suspend fun deletePost(postId: String) : ResponseM<String>?
 
-    suspend fun getAllPosts() : ResponseM<List<ResponsePostM>>?
+    suspend fun getAllPosts() : ResponseM<ResponsePosts>?
 
     suspend fun getPostsByProfileId(profileId: String): ResponseM<ResponsePostsByProfileId>?
 

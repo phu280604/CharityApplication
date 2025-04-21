@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -74,18 +75,21 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.MessageDestinations.MessagerPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
+import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
 import com.developing.charityapplication.presentation.view.screen.user.posts.HeaderCreatingPost
 import com.developing.charityapplication.presentation.view.screen.user.follower.HeaderFollower
 import com.developing.charityapplication.presentation.view.screen.user.home.HeaderNotification
 import com.developing.charityapplication.presentation.view.screen.user.posts.HeaderEditPost
 import com.developing.charityapplication.presentation.view.screen.user.profile.HeaderProfile
 import com.developing.charityapplication.presentation.view.theme.*
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.FooterViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.HeaderViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlin.toString
 
 @AndroidEntryPoint
 class UserAppActivity : ComponentActivity() {
@@ -116,9 +120,10 @@ class UserAppActivity : ComponentActivity() {
         val profileVM: ProfileViewModel = hiltViewModel()
 
         val profilesResponse by profileVM.profilesResponse.collectAsState()
-        val isLoading by profileVM.isLoading.collectAsState()
         val context = LocalContext.current
         var isActive by remember { mutableStateOf(isEnable) }
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
+        var isActiveLoading by remember { mutableStateOf(true) }
 
         LaunchedEffect(Unit) {
             if(!isActive)
@@ -128,15 +133,19 @@ class UserAppActivity : ComponentActivity() {
         LaunchedEffect(isLoading) {
             if(!isLoading) {
                 isActive = true
+                isActiveLoading = false
                 val profileId = profilesResponse?.result?.firstOrNull()?.profileId
                 val userId = profilesResponse?.result?.firstOrNull()?.userId
 
                 if (!profileId.isNullOrEmpty() && !userId.isNullOrEmpty())
                     lifecycleScope.launch{
-                        DataStoreManager.saveProfileId(context, profileId)
-                        DataStoreManager.saveUserId(context, userId)
+                        DataStoreManager.saveProfileId(context, profileId.toString())
+                        DataStoreManager.saveUserId(context, userId.toString())
                     }
 
+            }
+            else{
+                isActiveLoading = true
             }
         }
 
@@ -188,11 +197,18 @@ class UserAppActivity : ComponentActivity() {
                     },
                     modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 ){ innerPadding ->
+                    if (isActiveLoading)
+                        LoadingScreen(
+                            Modifier
+                                .padding(innerPadding)
+                                .zIndex(1f)
+                        )
                     Box(
                         modifier = Modifier
                             .padding(innerPadding)
                             .fillMaxSize()
                             .background(color = AppColorTheme.primary)
+                            .zIndex(0f)
                     ){
                         NavigationUsersApplication(Modifier.fillMaxSize(), navController)
                     }

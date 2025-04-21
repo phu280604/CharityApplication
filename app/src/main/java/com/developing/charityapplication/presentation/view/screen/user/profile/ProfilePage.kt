@@ -81,7 +81,10 @@ import com.developing.charityapplication.presentation.viewmodel.screenViewModel.
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.HeaderViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // region --- Methods ---
 
@@ -179,10 +182,19 @@ fun HeaderProfile(navController: NavHostController){
                                     }
                                     R.string.logout -> {
                                         HeaderViewModel.changeSelectedIndex()
-                                        val intent = Intent(context, LoginActivity::class.java)
-                                        context.startActivity(intent)
-                                        val activity = (context as? Activity)
-                                        activity?.finish()
+                                        FooterViewModel.changeSelectedIndex()
+
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            DataStoreManager.clearAll(context)
+
+                                            withContext(Dispatchers.Main) {
+                                                val intent = Intent(context, LoginActivity::class.java)
+                                                context.startActivity(intent)
+                                                val activity = (context as? Activity)
+                                                activity?.finish()
+                                            }
+                                        }
+
                                         return@MenuOpitionProfile
                                     }
                                     else -> ProfilePage.route
@@ -234,7 +246,7 @@ fun ProfilePageScreen(
 
     // region -- Call API --
     LaunchedEffect(key1 =  Unit, key2 = deletedPostRes) {
-        if (!profileId.isNullOrEmpty() || !deletedPostRes?.result.isNullOrEmpty())
+        if (!profileId.isNullOrEmpty())
         {
             profileInfoVM.getProfileByProfileId(profileId!!)
             postVM.getPostsByProfileId(profileId!!)
@@ -279,7 +291,7 @@ fun ProfilePageScreen(
                 }
             },
             onDelete = { postId ->
-                postVM.deletePost(postId)
+                postVM.deletePost(postId, profileId ?: "")
             },
             modifier = Modifier
                 .background(color = AppColorTheme.surface)

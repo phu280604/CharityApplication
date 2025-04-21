@@ -34,3 +34,11 @@ data class ResponsePostsByProfileId(
     val totalElements: Int,
     val `data`: List<ResponsePostM>,
 )
+
+data class ResponsePosts(
+    val currentPage: Int,
+    val totalPages: Int,
+    val pageSize: Int,
+    val totalElements: Int,
+    val `data`: List<ResponsePostM>,
+)

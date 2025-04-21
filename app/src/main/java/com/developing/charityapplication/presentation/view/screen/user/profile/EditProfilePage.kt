@@ -75,6 +75,8 @@ import com.developing.charityapplication.presentation.view.component.text.builde
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.FooterViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.HeaderViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.profileViewModel.ProfileViewModel
 import com.yalantis.ucrop.UCrop
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -94,6 +96,8 @@ fun EditProfileScreen(
     // region -- value Default --
     val overLoadAvaSms = stringResource(id = R.string.overLoad_size_avatar)
     val changeSuccessful = stringResource(id = R.string.change_successful)
+
+    val context = LocalContext.current
     // endregion
 
     // region -- ViewModel --
@@ -116,12 +120,16 @@ fun EditProfileScreen(
         editProfileVM.onEvent(EditProfileEvent.FirstNameChange(editProfileVM.profileInfo?.firstName ?: ""))
         editProfileVM.onEvent(EditProfileEvent.UsernameChange(editProfileVM.profileInfo?.username ?: ""))
         editProfileVM.onEvent(EditProfileEvent.LocationChange(editProfileVM.profileInfo?.location ?: ""))
+        if(!editProfileVM.avatar.isEmpty()){
+            val avatar = DownloadImage.prepareImageParts(context, editProfileVM.avatar, "avatar")
+            editProfileVM.onEvent(EditProfileEvent.AvatarChange(avatar))
+            Log.d("ProfileAvt", "currentAvt: $avatar")
+        }
         isShow = true
     }
     // endregion
 
     // region -- Selected Image Value --
-    val context = LocalContext.current
     val cacheDir = context.cacheDir
     val pixelSize = with(LocalDensity.current) { 192.dp.roundToPx() }
 
@@ -197,9 +205,7 @@ fun EditProfileScreen(
                     )
                     val newAvatar = if (!state.avatar.toString().isEmpty()) state.avatar
                     else {
-                        val file = DownloadImage.downloadImageToFile(context, editProfileVM.avatar)
-
-                        file?.let { DownloadImage.createImagePartFromFile(it, "avatar") }
+                        DownloadImage.prepareImageParts(context, editProfileVM.avatar, "avatar")
                     }
                     profileVM.updateProfile(
                         profileId = editProfileVM.profileId,
@@ -221,9 +227,8 @@ fun EditProfileScreen(
                 Toast.LENGTH_LONG
             ).show()
 
-            navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.set("selectedIndex", 0)
+            HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
+            FooterViewModel.changeSelectedIndex(4)
 
             navController.popBackStack()
         }

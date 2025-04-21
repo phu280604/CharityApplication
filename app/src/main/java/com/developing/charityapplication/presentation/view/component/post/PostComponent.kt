@@ -1,5 +1,6 @@
 package com.developing.charityapplication.presentation.view.component.post
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,8 +59,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil3.compose.rememberAsyncImagePainter
@@ -232,7 +237,12 @@ class PostComponent(
     ){
         val maxLines = 3
         var expanded by remember { mutableStateOf(false) }
-        val textToShow = if (expanded) config.content else config.content.take(maxLines)
+        val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
+        val textLayoutResult = textLayoutResultState.value
+        var finalText by remember { mutableStateOf(config.content) }
+        val showLess = stringResource(id = R.string.minimize)
+        val showMore = stringResource(id = R.string.maximize)
+        var isClickable by remember { mutableStateOf(false) }
 
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
@@ -248,39 +258,63 @@ class PostComponent(
                     .fillMaxWidth()
                     .wrapContentHeight(),
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
+                verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically)
             ){
-                Text(
-                    text = textToShow,
-                    style = AppTypography.bodyMedium,
-                    maxLines = if (expanded) Int.MAX_VALUE else maxLines,
-                    overflow = TextOverflow.Ellipsis,
-                    color = AppColorTheme.onPrimary
-                )
-
-                if (config.content.length > maxLines) {
-                    Text(
-                        text = if (expanded) "Thu gọn" else "Xem thêm",
-                        style = AppTypography.labelMedium,
-                        color = AppColorTheme.onPrimary,
-                        modifier = Modifier
-                            .clickable(
-                                role = Role.Button,
-                                onClick = { expanded = !expanded }
-                            )
-                    )
+                LaunchedEffect(textLayoutResult) {
+                    if(textLayoutResult == null) return@LaunchedEffect
+                    when {
+                        expanded -> {
+                            finalText = config.content
+                        }
+                        !expanded && textLayoutResult.hasVisualOverflow -> {
+                            val lastCharIndex = textLayoutResult.getLineEnd(maxLines - 1)
+                            val adjustedText = config.content
+                                .substring(startIndex = 0, endIndex = lastCharIndex)
+                                .dropLast(showMore.length)
+                                .dropLastWhile {
+                                    it == '.'
+                                }
+                            finalText = "$adjustedText..."
+                            isClickable = true
+                        }
+                    }
                 }
-            }
-
-            /*TextComponentBuilder()
-                .withConfig(
-                    textConfigDefault.copy(
-                        text = config.content,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = AppColorTheme.onPrimary,
+                                fontSize = AppTypography.bodyMedium.fontSize,
+                                fontWeight = AppTypography.bodyMedium.fontWeight,
+                                fontFamily = AppTypography.bodyMedium.fontFamily
+                            )
+                        ) {
+                            append(finalText)
+                        }
+                        if (isClickable)
+                            withStyle(
+                                style = SpanStyle(
+                                    color = AppColorTheme.surface,
+                                    fontSize = AppTypography.bodyMedium.fontSize,
+                                    fontWeight = AppTypography.bodyMedium.fontWeight,
+                                    fontFamily = AppTypography.bodyMedium.fontFamily
+                                )
+                            ) {
+                                if(!expanded) append(" $showMore") else append("\n$showLess")
+                            }
+                    },
+                    maxLines = if (expanded) Int.MAX_VALUE else maxLines,
+                    overflow = TextOverflow.Visible,
+                    onTextLayout = {
+                        textLayoutResultState.value = it
+                    },
+                    modifier = Modifier
+                        .clickable(enabled = isClickable){
+                            expanded = !expanded
+                        }
+                        .animateContentSize()
                 )
-                .build()
-                .BaseDecorate {  }*/
+            }
             // endregion
 
             // region - Donation amount -

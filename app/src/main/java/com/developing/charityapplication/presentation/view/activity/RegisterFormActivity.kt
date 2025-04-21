@@ -75,6 +75,7 @@ import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.event.activityEvent.RegisterFormEvent
 import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -171,7 +172,7 @@ class RegisterFormActivity: ComponentActivity() {
 
         // region - State Value -
         val userInfo by userVM.userInfo.collectAsState()
-        val isLoading by userVM.isLoading.collectAsState()
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
 
         val context = LocalContext.current
         // endregion

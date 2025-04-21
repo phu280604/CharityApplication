@@ -4,6 +4,7 @@ import android.util.Log
 import com.developing.charityapplication.data.api.postsService.PostsAPI
 import com.developing.charityapplication.domain.model.postModel.RequestPostContentM
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
+import com.developing.charityapplication.domain.model.postModel.ResponsePosts
 import com.developing.charityapplication.domain.model.postModel.ResponsePostsByProfileId
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.repoInter.postsRepoInter.IPostRepo
@@ -101,7 +102,7 @@ class PostRepo @Inject constructor(
         }
     }
 
-    override suspend fun getAllPosts(): ResponseM<List<ResponsePostM>>? {
+    override suspend fun getAllPosts(): ResponseM<ResponsePosts>? {
         try {
             val response = apiPost.getAllPosts()
 
@@ -114,7 +115,7 @@ class PostRepo @Inject constructor(
             }
 
             val errorString = response.errorBody()?.string() ?: "{}"
-            val result: ResponseM<List<ResponsePostM>> = ConverterData.fromJson(errorString)
+            val result: ResponseM<ResponsePosts> = ConverterData.fromJson(errorString)
             Logger.log(response, response.message())
 
             return result

@@ -66,6 +66,7 @@ import com.developing.charityapplication.presentation.view.component.text.TextCo
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.LoginFormViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -98,7 +99,6 @@ class LoginActivity() : ComponentActivity() {
 
         // region -- State value --
         val loginInfo by authVM.loginResponse.collectAsState()
-        val isLoading by authVM.isLoading.collectAsState()
 
         val loginState = loginVM.state
         val context = LocalContext.current
@@ -127,30 +127,31 @@ class LoginActivity() : ComponentActivity() {
         // endregion
 
         // region -- Loading Result --
-        LaunchedEffect(isLoading) {
+        LaunchedEffect(loginInfo) {
             loginInfo?.let {
-                if (!isLoading) {
-                    if (it.code == StatusCode.SUCCESS.code) {
-                        Toast.makeText(
-                            context,
-                            loginSuccessful,
-                            Toast.LENGTH_LONG
-                        ).show()
-                        if (loginInfo?.result?.token.isNullOrEmpty())
-                            startActivity(onNavToAuthenticationPage)
-                        else
-                        {
-                            onNavToHomePage.putExtra("isEnable", false)
-                            startActivity(onNavToHomePage)
-                        }
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            context,
-                            loginFailed,
-                            Toast.LENGTH_LONG
-                        ).show()
+                if (it.code == StatusCode.SUCCESS.code && it.result != null) {
+                    Toast.makeText(
+                        context,
+                        loginSuccessful,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    if (loginInfo?.result?.token.isNullOrEmpty())
+                        startActivity(onNavToAuthenticationPage)
+                    else
+                    {
+                        onNavToHomePage.putExtra("isEnable", false)
+                        startActivity(onNavToHomePage)
                     }
+                    finish()
+                }
+                else{
+                    Toast.makeText(
+                        context,
+                        loginFailed,
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    it.result = null
                 }
             }
         }

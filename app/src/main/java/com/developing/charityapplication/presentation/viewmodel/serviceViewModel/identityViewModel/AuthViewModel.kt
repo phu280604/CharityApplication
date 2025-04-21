@@ -10,6 +10,7 @@ import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResultM
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel.ValidationEvent
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,11 +24,12 @@ class AuthViewModel @Inject constructor(
     private val repo: IAuthRepo,
     private val tokenProvider: TokenProvider
 ): ViewModel() {
+
     // region --- Methods ---
 
     fun defaultLogin(loginInfo: RequestLoginM) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.defaultLogin(loginInfo)
                 _loginResponse.value = result
@@ -39,14 +41,14 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun defaultLogout(loginInfo: RequestLogoutM) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.defaultLogout(loginInfo)
                 _logoutResponse.value = result
@@ -58,28 +60,28 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun sendOtp_Email(email: RequestEmailM) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.sendOtp_email(email)
                 _sendingOtpResponse.value = result
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun verifyOtp_Email(otp: RequestOTPM, loginInfo: RequestLoginM) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val verifyRes = repo.verifyOtp_email(otp)
                 _verifyingOtpResponse.value = verifyRes
@@ -96,14 +98,14 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun sendOtp_ResetPassword(email: RequestEmailM) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.sendOtp_ResetPassword(email)
                 _emailResponse.value = result
@@ -115,28 +117,28 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun verifyOtpToResetPassword(otp: String) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val verifyRes = repo.verifyOtpToResetPassword(otp)
                 _verifyingOtpResetPasswordRes.value = verifyRes
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
 
     fun resetPassword(newPassword: RequestResetPasswordM) {
         viewModelScope.launch {
-            _isLoading.value = true
+            LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.resetPassword(newPassword)
                 _resetPasswordResponse.value = result
@@ -148,7 +150,7 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
             } finally {
-                _isLoading.value = false
+                LoadingViewModel.enableLoading()
             }
         }
     }
@@ -187,9 +189,6 @@ class AuthViewModel @Inject constructor(
     val resetPasswordResponse: StateFlow<ResponseM<ResultM>?>
         get() = _resetPasswordResponse
 
-    val isLoading: StateFlow<Boolean>
-        get() = _isLoading
-
     // endregion
 
     // region --- Fields ---
@@ -201,7 +200,7 @@ class AuthViewModel @Inject constructor(
     private val _verifyingOtpResetPasswordRes = MutableStateFlow<ResponseM<ResponseVerifyResetPasswordM>?>(null)
     private val _emailResponse = MutableStateFlow<ResponseM<ResultM>?>(null)
     private val _resetPasswordResponse = MutableStateFlow<ResponseM<ResultM>?>(null)
-    private val _isLoading = MutableStateFlow(false)
 
     // endregion
+
 }
