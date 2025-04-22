@@ -8,10 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 
 data class InputFieldConfig (
     var value: String = "",
+    var alterValue : TextFieldValue? = null,
     var valueStyle: TextStyle = TextStyle(),
     var onValueChange: ((String) -> Unit)? = null,
     var label: @Composable (() -> Unit)? = null,

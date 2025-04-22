@@ -27,6 +27,14 @@ sealed class PostDestinations(val route: String){
     object EditPostPage: PostDestinations(route = "EditPostPage")
 }
 
+sealed class DonationDestinations(val route: String){
+    object Destination: DonationDestinations(route = "DonationDes")
+
+    object DonationPage: DonationDestinations(route = "DonationPage")
+
+    object PaymentPage: DonationDestinations(route = "PaymentPage")
+}
+
 sealed class MessageDestinations(val route: String){
     object Destination: HomeDestinations(route = "MessageDes")
 

@@ -14,6 +14,7 @@ import com.developing.charityapplication.domain.model.postModel.ResponsePostsByP
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResponseM
 import com.developing.charityapplication.domain.model.utilitiesModel.ResultM
+import com.developing.charityapplication.domain.repoInter.donationRepoInter.IDonationRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.domain.repoInter.postsRepoInter.IPostRepo
 import com.developing.charityapplication.domain.repoInter.profileRepoInter.IProfileRepo
@@ -28,7 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val repo: IPostRepo,
-    private val repoProfile: IProfileRepo
+    private val repoProfile: IProfileRepo,
+    private val repoDonation: IDonationRepo
 ): ViewModel() {
 
     // region --- Methods ---
@@ -38,10 +40,21 @@ class PostViewModel @Inject constructor(
             LoadingViewModel.enableLoading(true)
             try {
                 val result = repo.getAllPosts()
+                val selfProfile = repoProfile.getProfileByProfileId(profileId)
                 val posts = result?.result?.data?.filter { it.profileId != profileId }
                 val profilesId = posts?.mapNotNull { it.profileId }?.distinct()
 
                 val profilesInfo = mutableListOf<ResponseProfilesM>()
+                val totalDonations = mutableListOf<Pair<String, Int>>()
+
+                if(!posts.isNullOrEmpty()){
+                    posts.forEach{ post ->
+                        val donationResult = repoDonation.getTotalDonateByPostId(post.id)
+                        donationResult?.result?.let {
+                            totalDonations.add(Pair(post.id, it))
+                        }
+                    }
+                }
 
                 if (!profilesId.isNullOrEmpty()) {
                     profilesId.forEach { id ->
@@ -51,8 +64,11 @@ class PostViewModel @Inject constructor(
                         }
                     }
                 }
+
+                _allDonationsResponse.value = totalDonations
                 _allProfilesResponse.value = profilesInfo
                 _allPostsResponse.value = posts
+                _selfProfileResponse.value = selfProfile?.result
 
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Lỗi khi gọi API", e)
@@ -147,8 +163,14 @@ class PostViewModel @Inject constructor(
     val allPostsResponse: StateFlow<List<ResponsePostM>?>
         get() = _allPostsResponse
 
+    val allDonationsResponse: StateFlow<List<Pair<String, Int>>?>
+        get() = _allDonationsResponse
+
     val allProfilesResponse: StateFlow<List<ResponseProfilesM>?>
         get() = _allProfilesResponse
+
+    val selfProfilesResponse: StateFlow<ResponseProfilesM?>
+        get() = _selfProfileResponse
 
     val postResponse: StateFlow<ResponseM<ResponsePostM>?>
         get() = _postResponse
@@ -170,7 +192,9 @@ class PostViewModel @Inject constructor(
     // region --- Fields ---
 
     private val _allPostsResponse = MutableStateFlow<List<ResponsePostM>?>(null)
+    private val _allDonationsResponse = MutableStateFlow<List<Pair<String, Int>>?>(null)
     private val _allProfilesResponse = MutableStateFlow<List<ResponseProfilesM>?>(null)
+    private val _selfProfileResponse = MutableStateFlow<ResponseProfilesM?>(null)
     private val _postResponse = MutableStateFlow<ResponseM<ResponsePostM>?>(null)
     private val _postDeletedResponse = MutableStateFlow<ResponseM<String>?>(null)
     private val _postsResponse = MutableStateFlow<ResponseM<ResponsePostsByProfileId>?>(null)

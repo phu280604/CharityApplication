@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="amount_over">Số tiền phải lớn hơn</string>
+    <string name="continue_donate">Tiếp tục</string>
+    <string name="amount_title">Số tiền chuyển</string>
+    <string name="currency">VND</string>
+    <string name="content_title">Lời nhắn</string>
+    <string name="content_content">gửi lời nhắn yêu thương đến bạn</string>
+</resources>

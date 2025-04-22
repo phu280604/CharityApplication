@@ -32,8 +32,8 @@ class ButtonComponent(
             colors = config.colors as? ButtonColors ?: ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledContentColor = MaterialTheme.colorScheme.onSurface,
-                disabledContainerColor = MaterialTheme.colorScheme.surface
+                disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.3f),
+                disabledContainerColor = MaterialTheme.colorScheme.primary
             ),
             enabled = config.enable
         ) {
@@ -49,7 +49,8 @@ class ButtonComponent(
                 if (!config.text.isEmpty())
                     Text(
                         text = config.text,
-                        style = config.textStyle
+                        style = config.textStyle,
+                        maxLines = 1
                     )
             }
         }

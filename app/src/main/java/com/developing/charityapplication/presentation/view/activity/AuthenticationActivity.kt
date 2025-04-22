@@ -63,6 +63,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.presentation.view.component.button.ButtonConfig
@@ -82,9 +83,11 @@ import com.developing.charityapplication.presentation.state.activityState.AuthSt
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
 import com.developing.charityapplication.presentation.view.screen.authenticationScr.AuthScreen
+import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.AuthenticationViewModel
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -141,6 +144,7 @@ class AuthenticationActivity : ComponentActivity() {
         val loginResponse by authApiVM.loginResponse.collectAsState()
 
         val context = LocalContext.current
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
         // endregion
 
         // region -- Message --
@@ -261,6 +265,7 @@ class AuthenticationActivity : ComponentActivity() {
         HeartBellTheme {
             Scaffold(
                 modifier = Modifier
+                    .zIndex(0f)
                     .windowInsetsPadding(WindowInsets.systemBars),
                 containerColor = MaterialTheme.colorScheme.primary,
                 // Top app bar
@@ -344,6 +349,8 @@ class AuthenticationActivity : ComponentActivity() {
                     )
                 }
             }
+            if(isLoading)
+                LoadingScreen(modifier = Modifier.zIndex(1f))
         }
     }
     // endregion

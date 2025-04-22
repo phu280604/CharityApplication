@@ -27,6 +27,7 @@ class PostRepo @Inject constructor(
         files: List<MultipartBody.Part>
     ): ResponseM<ResponsePostM>? {
         try {
+            Log.d("DateTime", postRequest.toString())
             val response = apiPost.createPost(postRequest, files)
 
             if (response.isSuccessful)

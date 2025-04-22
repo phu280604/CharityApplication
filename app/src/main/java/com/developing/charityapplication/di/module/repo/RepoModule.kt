@@ -1,9 +1,11 @@
 package com.developing.charityapplication.di.module.repo
 
+import com.developing.charityapplication.data.repository.donationRepo.DonationRepo
 import com.developing.charityapplication.data.repository.identityRepo.AuthRepo
 import com.developing.charityapplication.data.repository.identityRepo.UsersRepo
 import com.developing.charityapplication.data.repository.postRepo.PostRepo
 import com.developing.charityapplication.data.repository.profileRepo.ProfileRepo
+import com.developing.charityapplication.domain.repoInter.donationRepoInter.IDonationRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IAuthRepo
 import com.developing.charityapplication.domain.repoInter.identityRepoInter.IUserRepo
 import com.developing.charityapplication.domain.repoInter.postsRepoInter.IPostRepo
@@ -30,6 +32,9 @@ class RepoModule {
 
     @Provides
     fun providesPostRepo(repo: PostRepo): IPostRepo = repo
+
+    @Provides
+    fun providesDonationRepo(repo: DonationRepo): IDonationRepo = repo
 
     // endregion
 

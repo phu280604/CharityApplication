@@ -1,5 +1,6 @@
 package com.developing.charityapplication.presentation.view.component.post
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -83,8 +85,10 @@ import com.developing.charityapplication.presentation.viewmodel.componentViewMod
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
+import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,7 +126,7 @@ class PostComponent(
                 modifier = Modifier
                     .padding(horizontal = 4.dp, vertical = 4.dp)
                     .fillMaxWidth()
-                    .height(32.dp)
+                    .height(36.dp)
             )
 
             HorizontalDivider(
@@ -360,7 +364,7 @@ class PostComponent(
             // endregion
 
             // region - Date range -
-            if(!config.dateRange.isEmpty())
+            if(config.dateStart != null && config.dateEnd != null)
                 Row(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
@@ -376,8 +380,9 @@ class PostComponent(
                         ),
                         modifier = Modifier.size(16.dp)
                     )
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
                     Text(
-                        text = config.dateRange,
+                        text = "${config.dateStart?.format(formatter)} - ${config.dateEnd?.format(formatter)}",
                         style = AppTypography.labelMedium,
                         color = MaterialTheme.colorScheme.onPrimary.copy(
                             alpha = 0.3f
@@ -505,24 +510,41 @@ class PostComponent(
         )
         LazyRow(
             modifier = modifier,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ){
-            itemsIndexed(listFooter){
-                index, item ->
+            items(listFooter){
+                item ->
                 ButtonComponentBuilder()
                     .withConfig(
                         buttonConfigDefault.copy(
-                            shape = RectangleShape,
+                            shape = RoundedCornerShape(8.dp),
                             spacer = 4,
                             onClick = {
-                                /*TODO: Implement function post logic*/
+                                when(item.second){
+                                    R.string.like_post -> { config.onLike() }
+                                    R.string.comment_post -> { config.onComment() }
+                                    R.string.share_post -> { config.onShare() }
+                                    R.string.donate_post -> { config.onDonation() }
+                                }
+                            },
+                            enable = when(item.second){
+                                R.string.donate_post ->{
+                                    if((config.dateStart == null && config.dateEnd == null) || config.blockDonate) false
+                                    else{
+                                        val currentDate = LocalDate.now()
+                                        Log.d("DateDonation", "${currentDate >= config.dateStart && currentDate <= config.dateEnd}")
+                                        currentDate >= config.dateStart && currentDate <= config.dateEnd
+                                    }
+                                }
+                                else -> true
                             },
                             content = {
                                 Icon(
                                     painter = painterResource(id = item.first),
                                     contentDescription = null,
                                     modifier = Modifier
-                                        .size(20.dp)
+                                        .size(24.dp)
                                 )
                             },
                             text = stringResource(id = item.second),
@@ -531,8 +553,7 @@ class PostComponent(
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(40.dp)
-                                .padding(4.dp)
+                                .wrapContentHeight()
                         )
                     )
                     .build()
@@ -544,7 +565,7 @@ class PostComponent(
 
     @Composable
     fun getTimeAgo(createAt: LocalDateTime, currentDateTime: LocalDateTime = LocalDateTime.now()): String {
-        val parseCreateAt = ParseToAreaTimeZone.parseToVietnamTime(createAt.toString())
+        val parseCreateAt = ParseToAreaTimeZone.parseToVietnamDateTime(createAt.toString())
         val duration = Duration.between(parseCreateAt, currentDateTime)
         val period = Period.between(parseCreateAt.toLocalDate(), currentDateTime.toLocalDate())
 
@@ -574,7 +595,7 @@ class PostComponent(
                         .clip(CircleShape)
                         .border(
                             width = 1.dp,
-                            color = AppColorTheme.secondary,
+                            color = AppColorTheme.onPrimary,
                             shape = CircleShape
                         )
                 ))
@@ -600,12 +621,6 @@ class PostComponent(
             .withConfig(
                 newConfig = ButtonConfig(
                     textStyle = AppTypography.bodyMedium,
-                    colors = ButtonColors(
-                        containerColor = AppColorTheme.primary,
-                        contentColor = AppColorTheme.onPrimary,
-                        disabledContainerColor = AppColorTheme.surface,
-                        disabledContentColor = AppColorTheme.onSurface
-                    )
                 )
             )
             .build()
@@ -653,17 +668,27 @@ class PostComponent(
                                 role = Role.Button,
                                 onClick = {
                                     when(item.second){
+                                        R.string.bookmark_post -> {
+                                            config.onSave()
+                                            onDismissed(false)
+                                        }
                                         R.string.edit_post -> {
                                             config.onEdit()
+                                            onDismissed(false)
+                                        }
+                                        R.string.analysis_post -> {
+                                            config.onAnalysis()
+                                            onDismissed(false)
+                                        }
+                                        R.string.report_post -> {
+                                            config.onReport()
                                             onDismissed(false)
                                         }
                                         R.string.delete_post -> {
                                             config.onDelete()
                                             onDismissed(false)
                                         }
-                                        else -> { onDismissed(false) }
                                     }
-                                    /*TODO: Implement drop down menu logic*/
                                 }
                             )
                             .padding(horizontal = 16.dp),

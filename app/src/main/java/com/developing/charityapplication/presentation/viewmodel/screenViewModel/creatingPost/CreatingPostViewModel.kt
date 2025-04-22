@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.developing.charityapplication.domain.model.postModel.ResponsePostM
 import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
 import com.developing.charityapplication.domain.usecase.validation.ValidateContent
+import com.developing.charityapplication.domain.usecase.validation.ValidateDate
 import com.developing.charityapplication.domain.usecase.validation.ValidateName
 import com.developing.charityapplication.domain.usecase.validation.ValidateUsername
 import com.developing.charityapplication.infrastructure.utils.DownloadImage
@@ -30,6 +31,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,11 +51,12 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
         when(event){
             is CreatingPostEvent.ContentChange -> {
                 _state.value = _state.value.copy(content = event.content)
-                _state.value = _state.value.copy(contentError = null)
+                _state.value = _state.value.copy(startDateError = null)
             }
             is CreatingPostEvent.StartDateChange -> {
                 _state.value = _state.value.copy(startDate = event.startDate)
                 _state.value = _state.value.copy(startDateError = null)
+
             }
             is CreatingPostEvent.EndDateChange -> {
                 _state.value = _state.value.copy(endDate = event.endDate)
@@ -76,18 +79,18 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
     fun submitData(){
         val content = ValidateContent().execute(_state.value.content)
         Log.d("CheckingCreatePost", content.successful.toString())
-        //val startDate = ValidateContent().execute(_state.value.startDate)
-        //val endDate = ValidateContent().execute(_state.value.endDate)
+        val startDate = ValidateDate().execute(_state.value.startDate)
+        val endDate = ValidateDate().execute(_state.value.endDate)
         val hasError = listOf(
             content,
-            //startDate,
-            //endDate
+            startDate,
+            endDate
         ).any { !it.successful }
         if (hasError){
             _state.value = _state.value.copy(
                 contentError = content.errorMessage,
-                //startDateError = startDate.errorMessage,
-                //endDateError = endDate.errorMessage
+                startDateError = startDate.errorMessage,
+                endDateError = endDate.errorMessage
             )
             return
         }
@@ -99,6 +102,8 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
 
     fun setEditPostData(
         context: Context,
+        startDate: LocalDateTime?,
+        endDate: LocalDateTime?,
         postInfo: ResponsePostM,
         postId: String
     ) {
@@ -128,11 +133,17 @@ class CreatingPostViewModel @Inject constructor(): ViewModel() {
 
             _state.value = _state.value.copy(
                 content = postInfo.content,
-                startDate = null,
-                endDate = null,
+                startDate = startDate,
+                endDate = endDate,
                 files = files
             )
         }
+    }
+
+    fun resetErrorState(){
+        _state.value = _state.value.copy(startDateError = null)
+        _state.value = _state.value.copy(endDateError = null)
+        _state.value = _state.value.copy(contentError = null)
     }
 
 

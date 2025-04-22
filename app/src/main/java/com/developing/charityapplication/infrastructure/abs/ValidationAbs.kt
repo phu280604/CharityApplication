@@ -25,6 +25,13 @@ abstract class ValidationAbs {
         )
     }
 
+    fun isDateNull(): ValidateResult{
+        return ValidateResult(
+            successful =  false,
+            errorMessage = getStringError(R.string.error_null_date)
+        )
+    }
+
     fun containsAtLeastWord(resId: Int, count: Int = 1): ValidateResult{
         val string = getStringError(R.string.error_contain_at_least_field) + " ${count} " +
                 getStringError(resId)

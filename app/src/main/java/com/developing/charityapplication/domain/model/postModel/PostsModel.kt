@@ -8,8 +8,8 @@ import java.util.Date
 data class RequestPostContentM(
     val profileId: String,
     val content: String,
-    val startDate: LocalDate?,
-    val endDate: LocalDate?,
+    val donationStartTime: String?,
+    val donationEndTime: String?,
     val privacy: String = "PUBLIC"
 )
 
@@ -18,6 +18,8 @@ data class ResponsePostM(
     val profileId: String,
     val content: String,
     val fileIds: List<String>,
+    val donationStartTime: LocalDateTime?,
+    val donationEndTime: LocalDateTime?,
     val reactions: List<ReactionM>,
     val tags: List<String>,
     val privacy: String,

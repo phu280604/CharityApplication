@@ -22,7 +22,7 @@ android {
         //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
-        versionName = "1.1"
+        versionName = "Beta Test 2.0"
 
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
@@ -169,5 +169,22 @@ dependencies{
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
 }
 
+// endregion
+
+// region -- Payment --
+dependencies{
+    implementation ("androidx.compose.ui:ui:1.5.1")
+    implementation ("androidx.compose.material:material:1.5.1")
+
+    // Jsoup for web scraping
+    // Jsoup để phân tích HTML
+    implementation ("org.jsoup:jsoup:1.16.1")
+    // ZXing để xử lý mã QR
+    implementation ("com.google.zxing:core:3.5.3")
+    implementation ("com.google.zxing:javase:3.5.3")
+
+    // Coroutines for async operations
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+}
 // endregion
 

@@ -61,6 +61,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.presentation.view.component.inputField.InputFieldConfig
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
@@ -74,6 +75,7 @@ import com.developing.charityapplication.domain.model.identityModel.RequestCreat
 import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.event.activityEvent.RegisterFormEvent
 import com.developing.charityapplication.presentation.state.activityState.RegisterFormState
+import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RegisterFormViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.UserViewModel
@@ -99,6 +101,8 @@ class RegisterFormActivity: ComponentActivity() {
     // region --- Register Screen ---
     @Composable
     fun RegisterScreen(){
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
+
         HeartBellTheme {
             Scaffold(
                 topBar = {
@@ -146,7 +150,9 @@ class RegisterFormActivity: ComponentActivity() {
                             )
                     )
                 },
-                modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                modifier = Modifier
+                    .zIndex(0f)
+                    .windowInsetsPadding(WindowInsets.systemBars)
             ) { innerPadding ->
                 Box(
                     modifier = Modifier
@@ -159,6 +165,8 @@ class RegisterFormActivity: ComponentActivity() {
                     RegisterForm()
                 }
             }
+            if(isLoading)
+                LoadingScreen(modifier = Modifier.zIndex(1f))
         }
     }
 

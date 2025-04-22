@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_title">Thanh toán</string>
+    <string name="checkout_payment">Kiểm tra giao dịch</string>
+    <string name="scan_qr">Quét mã QR</string>
+    <string name="qr_expired">Hết hạn sau</string>
+</resources>

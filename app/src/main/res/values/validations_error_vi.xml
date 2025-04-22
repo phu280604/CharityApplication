@@ -7,6 +7,7 @@
     <string name="error_contain_at_least_field">có ít nhất</string>
     <string name="error_email_field">không đúng định dạng</string>
     <string name="error_not_match_field">không trùng khớp</string>
+    <string name="error_null_date">Ngày quyên góp không được để trống</string>
     <string name="word">ký tự</string>
     <string name="number">số</string>
     <string name="special_word">ký tự đặc biệt</string>

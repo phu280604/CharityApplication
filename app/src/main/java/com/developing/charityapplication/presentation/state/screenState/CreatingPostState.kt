@@ -14,9 +14,9 @@ import java.util.Calendar
 data class CreatingPostState(
     val content: String = "",
     val contentError: String? = null,
-    val startDate: LocalDate? = null,
+    val startDate: LocalDateTime? = null,
     val startDateError: String? = null,
-    val endDate: LocalDate? = null,
+    val endDate: LocalDateTime? = null,
     val endDateError: String? = null,
     val files: List<MultipartBody.Part>? = null,
     val filesError: String? = null,

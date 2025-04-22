@@ -66,6 +66,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Locale
 import kotlin.collections.forEach
@@ -109,13 +110,14 @@ fun ContentBox(
 
 @Composable
 fun DTPBox(
-    state: List<LocalDate?>,
+    state: List<LocalDateTime?>,
+    isEdit: Boolean = false,
     onReset: () -> Unit,
-    onChangeValue: (Boolean, LocalDate) -> Unit,
+    onChangeValue: (Boolean, LocalDateTime) -> Unit,
     modifier: Modifier
 ){
     LaunchedEffect(state[0]) {
-        onReset()
+        if(!isEdit) onReset()
     }
 
     Box(
@@ -195,10 +197,11 @@ fun DTPBox(
                     onCalendarChange = {
                             value ->
                         Log.d("Selected_datetime", "Value: ${value}")
-                        val newValue = ConverterData.convertCalendarToLocalDate(value)
+                        val newValue = ConverterData.convertCalendarToLocalDateTime(value)
                         Log.d("Selected_datetime", "NewValue: ${newValue}")
                         onChangeValue(true, newValue)
-                    }
+                    },
+                    isEnabled = if(!isEdit) true else false
                 )
 
                 // endregion
@@ -236,7 +239,7 @@ fun DTPBox(
                     },
                     onCalendarChange = {
                             value ->
-                        val newValue = ConverterData.convertCalendarToLocalDate(value)
+                        val newValue = ConverterData.convertCalendarToLocalDateTime(value)
                         onChangeValue(false, newValue)
                     },
                     hasStart = if(state[0] != null) state[0].let {
@@ -244,7 +247,7 @@ fun DTPBox(
                         calendar
                     }
                     else null,
-                    isEnabled = isEnabled
+                    isEnabled = if(!isEdit) isEnabled else false
                 )
                 // endregion
             }

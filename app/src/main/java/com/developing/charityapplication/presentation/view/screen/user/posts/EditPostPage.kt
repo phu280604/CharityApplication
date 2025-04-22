@@ -71,6 +71,9 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.creatingPost.CreatingPostViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.FooterViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.rofile.HeaderViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.postViewModel.PostViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -126,7 +129,9 @@ fun EditPostPageScreen(
     // region -- Value Default --
     val context = LocalContext.current
 
-    val creatingSuccessful = stringResource(id = R.string.creating_successful)
+    val creatingSuccessful = stringResource(id = R.string.edit_successful)
+
+    val title = stringResource(id = R.string.content_area)
     // endregion
 
     // region -- ViewModel --
@@ -139,12 +144,14 @@ fun EditPostPageScreen(
     val postResponse by postVM.postResponse.collectAsState()
     val profileId by DataStoreManager.getProfileId(context).collectAsState(initial = null)
     val initialized = remember { mutableStateOf(false) }
+    var isError by remember { mutableStateOf(false) }
     var multipartList = remember { mutableStateListOf<Pair<Uri, MultipartBody.Part>>() }
 
     // endregion
 
     // region -- SetUp Data --
     LaunchedEffect(imageUrls) {
+        LoadingViewModel.enableLoading(true)
         if (!initialized.value && imageUrls.count() != 0) {
             val initialList = imageUrls.mapIndexedNotNull { index, url ->
                 state.files?.getOrNull(index)?.let { part ->
@@ -156,6 +163,7 @@ fun EditPostPageScreen(
             multipartList.addAll(initialList)
             initialized.value = true
         }
+        LoadingViewModel.enableLoading(false)
     }
     // endregion
 
@@ -171,8 +179,8 @@ fun EditPostPageScreen(
                         postRequest = RequestPostContentM(
                             profileId = profileId ?: "",
                             content = state.content,
-                            startDate = state.startDate,
-                            endDate = state.endDate
+                            donationStartTime = state.startDate.toString(),
+                            donationEndTime = state.endDate.toString()
                         ),
                         files = files
                     )
@@ -182,6 +190,34 @@ fun EditPostPageScreen(
     }
     // endregion
 
+    LaunchedEffect(state) {
+        var errorSms = ""
+        if(state.contentError != null) {
+            errorSms =  title + " " + state.contentError.toString()
+            isError = true
+        }
+
+        if(state.startDateError != null) {
+            errorSms = state.startDateError.toString()
+            isError = true
+        }
+
+        if(state.endDateError != null) {
+            errorSms = state.endDateError.toString()
+            isError = true
+        }
+
+        if(isError)
+        {
+            Toast.makeText(
+                context,
+                errorSms,
+                Toast.LENGTH_SHORT
+            ).show()
+            editPostVM.resetErrorState()
+            isError = false
+        }
+    }
 
     // region -- Back To ProfilePage --
     LaunchedEffect(postResponse) {
@@ -192,9 +228,8 @@ fun EditPostPageScreen(
                 Toast.LENGTH_LONG
             ).show()
 
-            navController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.set("selectedIndex", 4)
+            HeaderViewModel.changeSelectedIndex(R.string.nav_profile)
+            FooterViewModel.changeSelectedIndex(4)
 
             navController.popBackStack()
         }
@@ -231,6 +266,7 @@ fun EditPostPageScreen(
 
         DTPBox(
             state = listOf(state.startDate, state.endDate),
+            isEdit = true,
             onReset = {
                 editPostVM.onEvent(CreatingPostEvent.ResetEndDateChange())
             },

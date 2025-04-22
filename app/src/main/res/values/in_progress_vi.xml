@@ -2,4 +2,5 @@
 <resources>
     <string name="in_progress_sms_first">Chức năng</string>
     <string name="in_progress_sms_last">đang trong quá trình phát triển</string>
+    <string name="not_in_progress">Chức năng hiện chưa được phát triển</string>
 </resources>

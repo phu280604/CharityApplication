@@ -13,6 +13,7 @@
     <string name="content_area">Nội dung</string>
     <string name="creating_post">Đăng</string>
     <string name="creating_successful">Đăng bài thành công!</string>
+    <string name="edit_successful">Chỉnh sửa bài đăng thành công!</string>
     <string name="minimize">Thu gọn</string>
     <string name="maximize">Xem thêm</string>
 </resources>

@@ -122,6 +122,8 @@ fun CreatingPostPageScreen(navController: NavHostController){
     val context = LocalContext.current
 
     val creatingSuccessful = stringResource(id = R.string.creating_successful)
+
+    val title = stringResource(id = R.string.content_area)
     // endregion
 
     // region -- ViewModel --
@@ -132,6 +134,7 @@ fun CreatingPostPageScreen(navController: NavHostController){
     // region -- State --
     val state by creatingPostVM.state.collectAsState()
     val postResponse by postVM.postResponse.collectAsState()
+    var isError by remember { mutableStateOf(false) }
     val profileId by DataStoreManager.getProfileId(context).collectAsState(initial = null)
     val multipartList = remember { mutableStateListOf<Pair<Uri, MultipartBody.Part>>() }
 
@@ -147,12 +150,13 @@ fun CreatingPostPageScreen(navController: NavHostController){
                             item ->
                         Log.d("MediaItems", "CreatingPost: ${item}")
                     }
+                    Log.d("DateTime", state.startDate.toString())
                     postVM.createPost(
                         postRequest = RequestPostContentM(
                             profileId = profileId ?: "",
                             content = state.content,
-                            startDate = state.startDate,
-                            endDate = state.endDate
+                            donationStartTime = state.startDate.toString(),
+                            donationEndTime = state.endDate.toString()
                         ),
                         files = files
                     )
@@ -161,6 +165,35 @@ fun CreatingPostPageScreen(navController: NavHostController){
         }
     }
     // endregion
+
+    LaunchedEffect(state) {
+        var errorSms = ""
+        if(state.contentError != null) {
+            errorSms =  title + " " + state.contentError.toString()
+            isError = true
+        }
+
+        if(state.startDateError != null) {
+            errorSms = state.startDateError.toString()
+            isError = true
+        }
+
+        if(state.endDateError != null) {
+            errorSms = state.endDateError.toString()
+            isError = true
+        }
+
+        if(isError)
+        {
+            Toast.makeText(
+                context,
+                errorSms,
+                Toast.LENGTH_SHORT
+            ).show()
+            creatingPostVM.resetErrorState()
+            isError = false
+        }
+    }
 
     // region -- Back To HomePage --
     LaunchedEffect(postResponse) {

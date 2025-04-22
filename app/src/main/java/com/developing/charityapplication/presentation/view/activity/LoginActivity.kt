@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.R
 import com.developing.charityapplication.domain.model.identityModel.RequestLoginM
@@ -64,6 +65,7 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
+import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
 import com.developing.charityapplication.presentation.view.theme.*
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.LoginFormViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
@@ -107,6 +109,7 @@ class LoginActivity() : ComponentActivity() {
         // region -- Show Notification --
         var showSms = remember { mutableStateOf(false) }
         var funcTitle by remember { mutableIntStateOf(0) }
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
 
         val loginSuccessful: String = stringResource(id = R.string.login_success)
         val loginFailed: String = stringResource(id = R.string.login_failed)
@@ -161,6 +164,7 @@ class LoginActivity() : ComponentActivity() {
             Scaffold { innerPadding ->
                 Card(
                     modifier = Modifier
+                        .zIndex(0f)
                         .padding(innerPadding)
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.primary),
@@ -204,6 +208,12 @@ class LoginActivity() : ComponentActivity() {
                         )
                     }
                 }
+                if (isLoading)
+                    LoadingScreen(
+                        modifier = Modifier
+                            .zIndex(0f)
+                            .padding(innerPadding)
+                    )
             }
         }
 

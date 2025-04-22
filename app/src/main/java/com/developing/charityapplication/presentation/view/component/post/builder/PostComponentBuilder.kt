@@ -23,7 +23,16 @@ class PostComponentBuilder : IBaseBuilder<IPostComponentDecorator> {
     // region --- Fields ---
 
     private var _config = PostConfig(
-        maximizeImage = {}
+        maximizeImage = {},
+        dateStart = null,
+        dateEnd = null,
+        onDonation = { },
+        onLike = { },
+        onComment = { },
+        onShare = { },
+        onSave = { },
+        onAnalysis = { },
+        onReport = { }
     )
 
     // endregion

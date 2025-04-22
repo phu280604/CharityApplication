@@ -15,7 +15,10 @@ import com.developing.charityapplication.presentation.view.screen.user.message.*
 import com.developing.charityapplication.presentation.view.screen.user.profile.*
 import androidx.compose.animation.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.developing.charityapplication.presentation.view.screen.user.donation.DonationPage
+import com.developing.charityapplication.presentation.view.screen.user.donation.PaymentPage
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.creatingPost.CreatingPostViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.donation.ShareDonationInfoViewModel
 import com.developing.charityapplication.presentation.viewmodel.screenViewModel.profile.EditProfileViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -25,6 +28,7 @@ import com.google.accompanist.navigation.animation.composable
 fun NavigationUsersApplication(modifier: Modifier, navController: NavHostController) {
     val sharedProfileInfo: EditProfileViewModel = hiltViewModel()
     val sharedPostInfo: CreatingPostViewModel = hiltViewModel()
+    val sharedDonationInfo: ShareDonationInfoViewModel = hiltViewModel()
 
     AnimatedNavHost(
         navController = navController,
@@ -61,7 +65,7 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
             route = HomeDestinations.Destination.route
         ) {
             composable(HomeDestinations.HomePage.route) {
-                HomePageScreen()
+                HomePageScreen(sharedDonationInfo, navController)
             }
             composable(HomeDestinations.NotificationPage.route) {
                 NotificationPageScreen()
@@ -91,6 +95,21 @@ fun NavigationUsersApplication(modifier: Modifier, navController: NavHostControl
 
             composable(PostDestinations.EditPostPage.route) {
                 EditPostPageScreen(navController, sharedPostInfo)
+            }
+        }
+        // endregion
+
+        // region -- DonationPage --
+        navigation(
+            startDestination = DonationDestinations.DonationPage.route,
+            route = DonationDestinations.Destination.route
+        ) {
+            composable(DonationDestinations.DonationPage.route) {
+                DonationPage(sharedDonationInfo ,navController)
+            }
+
+            composable(DonationDestinations.PaymentPage.route) {
+                PaymentPage(sharedDonationInfo ,navController)
             }
         }
         // endregion

@@ -46,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
@@ -58,8 +59,10 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
+import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.AuthenticationViewModel
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.EmailFormViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.AuthViewModel
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,9 +86,11 @@ class GmailActivity : ComponentActivity() {
 
     @Composable
     fun GmailFormUI(){
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
         HeartBellTheme {
             Scaffold(
                 modifier = Modifier
+                    .zIndex(0f)
                     .windowInsetsPadding(WindowInsets.systemBars),
                 topBar = {
                     CenterAlignedTopAppBar(
@@ -140,6 +145,8 @@ class GmailActivity : ComponentActivity() {
                     GmailForm()
                 }
             }
+            if(isLoading)
+                LoadingScreen(modifier = Modifier.zIndex(1f))
         }
     }
 

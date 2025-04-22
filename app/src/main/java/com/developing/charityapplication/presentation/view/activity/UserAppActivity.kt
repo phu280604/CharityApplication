@@ -76,6 +76,8 @@ import com.developing.charityapplication.presentation.view.navigate.userNav.dest
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.PostDestinations.CreatePostPage
 import com.developing.charityapplication.presentation.view.navigate.userNav.destination.ProfileDestinations.ProfilePage
 import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
+import com.developing.charityapplication.presentation.view.screen.user.donation.HeaderDonation
+import com.developing.charityapplication.presentation.view.screen.user.donation.HeaderPayment
 import com.developing.charityapplication.presentation.view.screen.user.posts.HeaderCreatingPost
 import com.developing.charityapplication.presentation.view.screen.user.follower.HeaderFollower
 import com.developing.charityapplication.presentation.view.screen.user.home.HeaderNotification
@@ -117,6 +119,8 @@ class UserAppActivity : ComponentActivity() {
     fun UserAppUI (
         isEnable: Boolean
     ){
+        val sms = stringResource(R.string.notification_page)
+
         val profileVM: ProfileViewModel = hiltViewModel()
 
         val profilesResponse by profileVM.profilesResponse.collectAsState()
@@ -163,7 +167,11 @@ class UserAppActivity : ComponentActivity() {
                     topBar = {
                         Header(
                             navController = navController,
-                            selectedIndex = state
+                            selectedIndex = state,
+                            onShowMessage = { sms ->
+                                showMessage.value = true
+                                funcTitle = sms
+                            }
                         )
                     },
                     bottomBar = {
@@ -228,7 +236,8 @@ class UserAppActivity : ComponentActivity() {
     @Composable
     fun Header(
         navController: NavHostController,
-        selectedIndex: Int
+        selectedIndex: Int,
+        onShowMessage: (Int) -> Unit
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -332,6 +341,8 @@ class UserAppActivity : ComponentActivity() {
                             .withConfig(
                                 newConfig = defaultButton.copy(
                                     onClick = {
+                                        onShowMessage(R.string.notification_page)
+                                        return@copy
                                         HeaderViewModel.changeSelectedIndex(-1)
                                         FooterViewModel.changeSelectedIndex()
                                         navController.navigate(route = NotificationPage.route){
@@ -408,6 +419,26 @@ class UserAppActivity : ComponentActivity() {
                     }
 
                     HeaderProfile(navController)
+                }
+                R.string.donate_post -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        HeaderViewModel.changeSelectedIndex()
+                        FooterViewModel.changeSelectedIndex()
+                        navController.popBackStack()
+                    }
+
+                    HeaderDonation(navController)
+                }
+                R.string.payment_title -> {
+                    BackHandler {
+                        Log.d("backHandler", "Total")
+                        HeaderViewModel.changeSelectedIndex(R.string.donate_post)
+                        FooterViewModel.changeSelectedIndex()
+                        navController.popBackStack()
+                    }
+
+                    HeaderPayment(navController)
                 }
                 R.string.edit_post -> {
                     BackHandler {

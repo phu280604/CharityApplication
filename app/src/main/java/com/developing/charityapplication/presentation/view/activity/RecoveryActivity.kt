@@ -60,6 +60,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.developing.charityapplication.R
 import com.developing.charityapplication.domain.model.identityModel.RequestEmailM
@@ -69,10 +70,12 @@ import com.developing.charityapplication.presentation.view.component.inputField.
 import com.developing.charityapplication.presentation.view.component.inputField.builder.InputFieldComponentBuilder
 import com.developing.charityapplication.presentation.view.component.text.TextConfig
 import com.developing.charityapplication.presentation.view.component.text.builder.TextComponentBuilder
+import com.developing.charityapplication.presentation.view.screen.loading.LoadingScreen
 import com.developing.charityapplication.presentation.view.theme.AppColorTheme
 import com.developing.charityapplication.presentation.view.theme.AppTypography
 import com.developing.charityapplication.presentation.view.theme.HeartBellTheme
 import com.developing.charityapplication.presentation.viewmodel.activityViewModel.RecoveryViewModel
+import com.developing.charityapplication.presentation.viewmodel.screenViewModel.loading.LoadingViewModel
 import com.developing.charityapplication.presentation.viewmodel.serviceViewModel.identityViewModel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -116,6 +119,8 @@ class RecoveryActivity : ComponentActivity() {
         val state by recoveryVM.state.collectAsState()
 
         val resetResponse by apiAuthVM.resetPasswordResponse.collectAsState()
+
+        val isLoading by LoadingViewModel.isLoading.collectAsState()
         // endregion
 
         // region -- Reset Data --
@@ -205,6 +210,7 @@ class RecoveryActivity : ComponentActivity() {
                     )
                 },
                 modifier = Modifier
+                    .zIndex(0f)
                     .windowInsetsPadding(WindowInsets.systemBars)
             ) { innerPadding ->
                 Column(
@@ -232,6 +238,8 @@ class RecoveryActivity : ComponentActivity() {
                     )
                 }
             }
+            if(isLoading)
+                LoadingScreen(modifier = Modifier.zIndex(1f))
         }
     }
 

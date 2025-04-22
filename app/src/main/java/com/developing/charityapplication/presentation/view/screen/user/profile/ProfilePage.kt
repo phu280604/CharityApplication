@@ -67,6 +67,8 @@ import com.developing.charityapplication.domain.model.postModel.ResponsePostsByP
 import com.developing.charityapplication.domain.model.profileModel.RequestUpdateProfileM
 import com.developing.charityapplication.domain.model.profileModel.ResponseProfilesM
 import com.developing.charityapplication.infrastructure.utils.DefaultValue
+import com.developing.charityapplication.infrastructure.utils.ParseToAreaTimeZone
+import com.developing.charityapplication.infrastructure.utils.SmallShowSMS
 import com.developing.charityapplication.infrastructure.utils.StatusCode
 import com.developing.charityapplication.presentation.view.activity.LoginActivity
 import com.developing.charityapplication.presentation.view.component.post.PostConfig
@@ -275,6 +277,8 @@ fun ProfilePageScreen(
                 editPostVM.setEditPostData(
                     context = context,
                     postInfo = item,
+                    startDate = item.donationStartTime,
+                    endDate = item.donationEndTime,
                     postId = item.id
                 )
 
@@ -310,6 +314,10 @@ fun BodyProfile(
     onDelete: (String) -> Unit,
     modifier: Modifier
 ){
+    var isShow by remember { mutableStateOf(false) }
+    val inProgress = stringResource(id = R.string.not_in_progress)
+    val context = LocalContext.current
+
     var selectedImage by remember { mutableStateOf<String?>(null) }
     val avatar = if(profile?.avatarUrl == null)
         painterResource(DefaultValue.avatar)
@@ -363,15 +371,49 @@ fun BodyProfile(
                             timeAgo = item.createdAt,
                             donationValue = "0",
                             readOnly = false,
+                            blockDonate = true,
                             maximizeImage = { image -> selectedImage = image },
                             onEdit = { onEdit(item) },
-                            onDelete = { onDelete(item.id) }
+                            onDelete = { onDelete(item.id) },
+                            dateStart = item.donationStartTime?.toLocalDate(),
+                            dateEnd = item.donationEndTime?.toLocalDate(),
+                            onDonation = { /*TODO: Donation*/ },
+                            onLike = {
+                                isShow = true
+                                /*TODO: Like*/
+                            },
+                            onComment = {
+                                isShow = true
+                                /*TODO: Comment*/
+                            },
+                            onShare = {
+                                isShow = true
+                                /*TODO: Share*/
+                            },
+                            onSave = {
+                                isShow = true
+                                /*TODO: Save*/
+                            },
+                            onAnalysis = {
+                                isShow = true
+                                /*TODO: Analysis*/
+                            },
+                            onReport = {
+                                isShow = true
+                                /*TODO: Report*/
+                            }
                         )
                     )
                     .build()
                     .BaseDecorate {  }
             }
             // endregion
+
+            if(isShow)
+            {
+                SmallShowSMS(context, inProgress, isShow)
+                isShow = false
+            }
         }
     }
     // region -- Overlay Maximize Image --

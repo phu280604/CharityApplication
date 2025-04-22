@@ -1,7 +1,9 @@
 package com.developing.charityapplication.infrastructure.utils
 
 import com.google.gson.Gson
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -28,8 +30,14 @@ object ConverterData {
         return LocalDate.parse(dateString, formatter)
     }
 
+    fun convertCalendarToLocalDateTime(calendar: Calendar): LocalDateTime {
+        // Get Instant from Calendar
+        val instant = Instant.ofEpochMilli(calendar.timeInMillis)
+        // Convert to LocalDateTime using Vietnam time zone (Asia/Ho_Chi_Minh)
+        return LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Ho_Chi_Minh"))
+    }
 
-    fun convertLocalDateToCalendar(localDate: LocalDate): Calendar {
+    fun convertLocalDateToCalendar(localDate: LocalDateTime): Calendar {
         // Format LocalDate thành chuỗi với đúng định dạng khớp
         val dateString = localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
 
@@ -58,4 +66,19 @@ object ConverterData {
         return "$visiblePart$maskedPart@$domain"
     }
 
+    fun String.toVndCurrencyCompact(): String {
+        val number = this.toDoubleOrNull() ?: 0.0
+        val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
+        return formatter.format(number).replace(Regex("[^\\d.,]"), "")
+    }
+
+    fun Long.toVndCurrencyCompact(): String {
+        val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
+        return formatter.format(this).replace(Regex("[^\\d.,]"), "")
+    }
+
+    fun Int.toVndCurrencyCompact(): String {
+        val formatter = NumberFormat.getCurrencyInstance(Locale("vi", "VN"))
+        return formatter.format(this).replace(Regex("[^\\d.,]"), "")
+    }
 }

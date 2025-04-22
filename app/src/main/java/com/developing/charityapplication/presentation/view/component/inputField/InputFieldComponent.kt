@@ -27,7 +27,7 @@ class InputFieldComponent(
     override fun BaseDecorate(content: @Composable (() -> Unit)) {
 
         OutlinedTextField(
-            value = config.value,
+            value =  config.value,
             textStyle = config.valueStyle,
             onValueChange = config.onValueChange ?: {},
             label = config.label,
